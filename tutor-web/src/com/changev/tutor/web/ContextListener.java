@@ -1,5 +1,7 @@
-/**
- * 
+/*
+ * File   ContextListener.java
+ * Create 2012/12/26
+ * Copyright (c) change-v.com 2012 
  */
 package com.changev.tutor.web;
 
@@ -15,6 +17,20 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import com.changev.tutor.Tutor;
 
 /**
+ * <p>
+ * 网站启动时加载必要的设置。
+ * </p>
+ * 
+ * <p>
+ * 上下文设定参数：
+ * <ul>
+ * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br />
+ * 默认为{@link com.changev.tutor.Tutor#DEFAULT_LOG4J_CONFIG_PATH}。</li>
+ * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br />
+ * 默认为{@link com.changev.tutor.Tutor#DEFAULT_BEAN_CONFIG_PATH}。</li>
+ * </ul>
+ * </p>
+ * 
  * @author ren
  * 
  */

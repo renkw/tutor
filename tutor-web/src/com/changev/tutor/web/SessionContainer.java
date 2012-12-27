@@ -14,6 +14,10 @@ import com.changev.tutor.Tutor;
 import com.changev.tutor.model.UserModel;
 
 /**
+ * <p>
+ * 会话上下文容器。
+ * </p>
+ * 
  * @author ren
  * 
  */
@@ -21,6 +25,19 @@ public final class SessionContainer implements Serializable {
 
 	private static final long serialVersionUID = -1701049081787559238L;
 
+	/**
+	 * <p>
+	 * 取得当前会话中保存的容器实例。
+	 * </p>
+	 * 
+	 * <p>
+	 * 如果指定create为true，当会话对象不存在或容器实例不存在时，自动创建。
+	 * </p>
+	 * 
+	 * @param request
+	 * @param create
+	 * @return
+	 */
 	public static SessionContainer getInstance(HttpServletRequest request,
 			boolean create) {
 		SessionContainer container = null;
@@ -35,10 +52,22 @@ public final class SessionContainer implements Serializable {
 		return container;
 	}
 
+	/**
+	 * <p>
+	 * 取得当前会话中保存的容器实例。
+	 * </p>
+	 * 
+	 * <p>
+	 * 相同于getInstance(request, false),实例不存在时不会创建对象。
+	 * </p>
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public static SessionContainer getInstance(HttpServletRequest request) {
 		return getInstance(request, false);
 	}
-	
+
 	private UserModel loginUser;
 
 	private SessionContainer() {

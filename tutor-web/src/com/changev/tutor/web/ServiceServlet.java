@@ -13,8 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * <p>
+ * 执行系统服务。
+ * </p>
+ * 
  * @author ren
- *
+ * 
  */
 public class ServiceServlet extends HttpServlet {
 

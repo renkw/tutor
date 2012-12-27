@@ -6,8 +6,12 @@
 package com.changev.tutor.model;
 
 /**
+ * <p>
+ * 用户角色。
+ * </p>
+ * 
  * @author ren
- *
+ * 
  */
 public enum UserRole {
 	Admin, Parent, Student, Teacher, Organization

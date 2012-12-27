@@ -8,13 +8,17 @@ package com.changev.tutor.model;
 import java.sql.Timestamp;
 
 /**
+ * <p>
+ * 用户模型。
+ * </p>
+ * 
  * @author ren
  * 
  */
 public class UserModel extends AbstractModel {
 
 	private static final long serialVersionUID = -360438261627805753L;
-	
+
 	private String username;
 	private String password;
 	private String tel;

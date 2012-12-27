@@ -13,11 +13,33 @@ import javax.servlet.ServletException;
 import com.changev.tutor.model.UserModel;
 
 /**
+ * <p>
+ * 系统服务接口。
+ * </p>
+ * 
  * @author ren
  * 
  */
 public interface Service extends Serializable {
 
-	Object run(UserModel user, Object input) throws ServletException, IOException;
+	/**
+	 * <p>
+	 * 执行服务处理过程。
+	 * </p>
+	 * 
+	 * <p>
+	 * 通常情况下，由客户端发送JSON转换为输入参数，处理结果也转换为JSON发送到客户端。
+	 * </p>
+	 * 
+	 * @param user
+	 *            登录用户
+	 * @param input
+	 *            输入参数
+	 * @return 处理结果
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	Object run(UserModel user, Object input) throws ServletException,
+			IOException;
 
 }

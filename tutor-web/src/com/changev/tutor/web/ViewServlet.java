@@ -22,6 +22,21 @@ import freemarker.template.Template;
 import freemarker.template.TemplateModel;
 
 /**
+ * <p>
+ * 输出网页视图。
+ * </p>
+ * 
+ * <p>
+ * 处理过程：
+ * <ol>
+ * <li>根据请求模板名称，转换为spring定义的对象名称。<br />
+ * 例如模板名称foo/template.html，转换后对象名称为foo.template。</li>
+ * <li>在BeanFactory中查找对于名称的View实例，如果存在执行前处理。</li>
+ * <li>输出模板内容。参考{@link freemarker.ext.servlet.FreemarkerServlet}。</li>
+ * <li>如果2.中存在View实例，执行后处理。</li>
+ * </ol>
+ * </p>
+ * 
  * @author ren
  * 
  */

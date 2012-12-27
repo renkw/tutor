@@ -21,8 +21,16 @@ import org.apache.log4j.Logger;
  * </p>
  * 
  * <p>
- * 符合maxFileSize和acceptContentTypes的上传文件将被保存在uploadDir中。
- * 返回客户端文件序列ID。
+ * 设定参数：
+ * <ul>
+ * <li><strong>maxFileSize</strong> - 可选参数。最大允许的上传文件大小（bytes）。<br />
+ * 默认表示无限制。</li>
+ * <li><strong>acceptContentTypes</strong> - 可选参数。允许的上传文件类型。<br />
+ * 可指定泛类型，如image/*等。默认表示无限制。</li>
+ * <li><strong>uploadDir</strong> - 可选参数。上传文件目录。<br />
+ * 默认为{@link com.changev.tutor.Tutor#DEFAULT_UPLOAD_PATH}。
+ * </ul>
+ * 符合maxFileSize和acceptContentTypes的上传文件将被保存在uploadDir中。 返回客户端文件序列ID。
  * </p>
  * 
  * @author ren

@@ -26,6 +26,19 @@ import org.apache.log4j.Logger;
 import com.changev.tutor.model.UserRole;
 
 /**
+ * <p>
+ * 验证用户登录信息。
+ * </p>
+ * 
+ * <p>
+ * 设定参数：
+ * <ul>
+ * <li><strong>userRoles</strong> - 必须参数。允许的用户角色，用逗号分隔。</li>
+ * <li><strong>loginPagePath</strong> - 必须参数。登录页面路径。</li>
+ * <li><strong>excludePaths</strong> - 可选参数。非验证页面路径。</li>
+ * </ul>
+ * </p>
+ * 
  * @author ren
  * 
  */

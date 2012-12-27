@@ -8,6 +8,10 @@ package com.changev.tutor.model;
 import java.sql.Date;
 
 /**
+ * <p>
+ * 学生模型。
+ * </p>
+ * 
  * @author ren
  * 
  */
@@ -121,7 +125,8 @@ public class StudentModel extends UserModel {
 	}
 
 	/**
-	 * @param level the level to set
+	 * @param level
+	 *            the level to set
 	 */
 	public void setLevel(Integer level) {
 		this.level = level;

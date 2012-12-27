@@ -8,6 +8,10 @@ package com.changev.tutor.model;
 import java.sql.Date;
 
 /**
+ * <p>
+ * 教师模型。
+ * </p>
+ * 
  * @author ren
  * 
  */

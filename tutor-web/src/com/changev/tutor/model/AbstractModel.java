@@ -6,9 +6,14 @@
 package com.changev.tutor.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 
 /**
+ * <p>
+ * 定义公共模型属性。
+ * </p>
+ * 
  * @author ren
  * 
  */
@@ -30,6 +35,29 @@ public abstract class AbstractModel implements Serializable {
 		this.setCreateDate(copy.getCreateDate());
 		this.setUpdateDate(copy.getUpdateDate());
 		this.setDeleted(copy.getDeleted());
+	}
+
+	@Override
+	public String toString() {
+		try {
+			StringBuilder buf = new StringBuilder(getClass().getSimpleName());
+			buf.append(" {");
+			for (Class<?> cls = getClass(); cls != Object.class; cls = cls
+					.getSuperclass()) {
+				Field[] flds = cls.getDeclaredFields();
+				for (int i = 0; i < flds.length; i++) {
+					if (i != 0)
+						buf.append(", ");
+					flds[i].setAccessible(true);
+					buf.append(flds[i].getName()).append(" = ")
+							.append(flds[i].get(this));
+				}
+			}
+			buf.append("}");
+			return buf.toString();
+		} catch (IllegalAccessException e) {
+			return super.toString();
+		}
 	}
 
 	/**
