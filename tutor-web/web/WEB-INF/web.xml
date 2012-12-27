@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	     version="3.0" 
+	     metadata-complete="true">
+
+	<display-name>Tutor</display-name>
+	<description>
+	 Tutor website
+	</description>
+
+	<!-- Listeners -->
+	<listener>
+		<description>
+         Context listener for initializing this website
+		</description>
+		<listener-class>com.changev.tutor.web.ContextListener</listener-class>
+	</listener>
+	<!-- 
+	<context-param>
+		<description> 
+		 Log4j configuration file path, used in Context Listener 
+		</description>
+		<param-name>log4jConfigPath</param-name>
+		<param-value>//META-INF/com.changev.tutor.log4j.xml</param-value>
+	</context-param>
+	<context-param>
+		<description> 
+		 Spring configuration file path, used in Context Listener 
+		</description>
+		<param-name>beanConfigPath</param-name>
+		<param-value>//META-INF/com.changev.tutor.beans.xml</param-value>
+	</context-param>
+	 -->
+
+	<!-- Servlets -->
+	<servlet>
+		<description>
+         Process request action and render the response with ftl
+    	</description>
+		<servlet-name>ViewServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.ViewServlet</servlet-class>
+		<init-param>
+			<param-name>TemplatePath</param-name>
+			<param-value>/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>NoCache</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ContentType</param-name>
+			<param-value>text/html; charset=UTF-8</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewServlet</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+		</description>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.UploadServlet</servlet-class>
+		<init-param>
+			<description>
+			</description>
+			<param-name>uploadDir</param-name>
+			<param-value>//../upload/</param-value>
+		</init-param>
+		<init-param>
+			<description>
+			</description>
+			<param-name>maxFileSize</param-name>
+			<param-value>1000000</param-value>
+		</init-param>
+		<init-param>
+			<description>
+			</description>
+			<param-name>acceptContentTypes</param-name>
+			<param-value>image/*</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/upload/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+		</description>
+		<servlet-name>ServiceServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.ServiceServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ServiceServlet</servlet-name>
+		<url-pattern>/service/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Authentication -->
+	<filter>
+		<filter-name>FrontAuthFilter</filter-name>
+		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
+		<init-param>
+			<param-name>userRoles</param-name>
+			<param-value>Parent,Student</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginPagePath</param-name>
+			<param-value>/front/login.html</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludePaths</param-name>
+			<param-value>/front/login.html</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>FrontAuthFilter</filter-name>
+		<url-pattern>/front/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>BackAuthFilter</filter-name>
+		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
+		<init-param>
+			<param-name>userRoles</param-name>
+			<param-value>Organization,Teacher</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginPagePath</param-name>
+			<param-value>/back/login.html</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludePaths</param-name>
+			<param-value>/back/login.html</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>BackAuthFilter</filter-name>
+		<url-pattern>/back/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>ManageAuthFilter</filter-name>
+		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
+		<init-param>
+			<param-name>userRoles</param-name>
+			<param-value>Admin</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginPagePath</param-name>
+			<param-value>/manage/login.html</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludePaths</param-name>
+			<param-value>/manage/login.html</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>ManageAuthFilter</filter-name>
+		<url-pattern>/manage/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- Common Settings -->
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+	
+	<welcome-file-list>
+		<welcome-file>home.html</welcome-file>
+	</welcome-file-list>
+
+</web-app>
