@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.changev.tutor.Tutor;
 import com.changev.tutor.web.View;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
 
 /**
  * @author ren
@@ -30,7 +33,16 @@ public class SampleView implements View {
 			HttpServletResponse response) throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
-		request.setAttribute("user", "Foo");
+		ObjectContainer objc = Tutor.getCurrentContainer();
+		ObjectSet<SimpleBean> set = objc.query(SimpleBean.class);
+		SimpleBean bean = null;
+		if (set.isEmpty()) {
+			objc.store(bean = new SimpleBean());
+			objc.commit();
+		} else {
+			bean = set.next();
+		}
+		request.setAttribute("user", bean);
 		return true;
 	}
 
@@ -41,4 +53,29 @@ public class SampleView implements View {
 			logger.trace("[postRender] called");
 	}
 
+	public static class SimpleBean {
+
+		private String name = "Foo";
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		/**
+		 * @return the name
+		 */
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * @param name
+		 *            the name to set
+		 */
+		public void setName(String name) {
+			this.name = name;
+		}
+
+	}
 }

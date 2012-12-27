@@ -116,10 +116,12 @@
 			<param-value>/front/login.html</param-value>
 		</init-param>
 	</filter>
+	<!-- 
 	<filter-mapping>
 		<filter-name>FrontAuthFilter</filter-name>
 		<url-pattern>/front/*</url-pattern>
 	</filter-mapping>
+	 -->
 	
 	<filter>
 		<filter-name>BackAuthFilter</filter-name>

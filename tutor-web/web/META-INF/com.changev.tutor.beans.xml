@@ -10,10 +10,24 @@
 		http://www.springframework.org/schema/util		http://www.springframework.org/schema/util/spring-util-3.0.xsd
        ">
 
-	<!-- Views -->
-	<bean id="front.sample" class="com.changev.tutor.web.front.SampleView">
+	<!-- Timer -->
+	<bean id="timer" class="java.util.Timer">
+		<constructor-arg type="boolean" value="true" />
 	</bean>
-	
+
+	<!-- Startup -->
+	<bean id="startup" class="com.changev.tutor.util.TaskRunner">
+		<property name="timer" ref="timer" />
+		<property name="period" value="3600000" />
+		<property name="task">
+			<!-- clean invalid db4o sessions -->
+			<bean class="com.changev.tutor.util.Db4oCleanTask" />
+		</property>
+	</bean>
+
+	<!-- Views -->
+	<bean id="front.sample" class="com.changev.tutor.web.front.SampleView"></bean>
+
 	<!-- Services -->
 
 </beans>

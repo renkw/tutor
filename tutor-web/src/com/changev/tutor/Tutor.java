@@ -3,12 +3,21 @@
  */
 package com.changev.tutor;
 
+import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.BeanFactory;
+
+import com.db4o.ObjectContainer;
+import com.db4o.ext.ExtObjectContainer;
 
 /**
  * <p>
@@ -19,9 +28,6 @@ import org.apache.commons.lang3.StringUtils;
  * 
  */
 public final class Tutor {
-
-	/** 在ServletContext中的BeanFactory实例键 */
-	public static final String KEY_BEAN_FACTORY = "com.changev.tutor.KEY_BEAN_FACTORY";
 
 	/** 在HttpServletRequest中的View实例键 */
 	public static final String KEY_REQUEST_VIEW = "com.changev.tutor.KEY_REQUEST_VIEW";
@@ -50,7 +56,7 @@ public final class Tutor {
 	/** 默认的货币格式 */
 	public static final String DEFAULT_CURRENCY_FORMAT = "#,##0.00";
 
-	static String contextRootPath = "";
+	private static String contextRootPath = "";
 
 	/**
 	 * @param path
@@ -82,6 +88,88 @@ public final class Tutor {
 	public static String getRealPath(String path) {
 		return path.startsWith("//") ? (contextRootPath + path.substring(1))
 				: path;
+	}
+
+	private static BeanFactory beanFactory;
+
+	/**
+	 * @return the beanFactory
+	 */
+	public static BeanFactory getBeanFactory() {
+		return beanFactory;
+	}
+
+	/**
+	 * @param beanFactory
+	 *            the beanFactory to set
+	 */
+	public static void setBeanFactory(BeanFactory beanFactory) {
+		Tutor.beanFactory = beanFactory;
+	}
+
+	private static ExtObjectContainer topContainer;
+	private static Map<Long, ObjectContainer> localContainers = new HashMap<Long, ObjectContainer>();
+
+	/**
+	 * @return the topContainer
+	 */
+	public static ExtObjectContainer getTopContainer() {
+		return topContainer;
+	}
+
+	/**
+	 * @param topContainer
+	 *            the topContainer to set
+	 */
+	public static void setTopContainer(ExtObjectContainer topContainer) {
+		Tutor.topContainer = topContainer;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前线程关联的ObjectContainer实例。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static ObjectContainer getCurrentContainer() {
+		ObjectContainer objc;
+		Long tid = Thread.currentThread().getId();
+		synchronized (localContainers) {
+			objc = localContainers.get(tid);
+			if (objc == null) {
+				objc = topContainer.openSession();
+				localContainers.put(tid, objc);
+			}
+		}
+		return objc;
+	}
+
+	/**
+	 * <p>
+	 * 结束并删除已结束线程的ObjectContainer实例。
+	 * </p>
+	 */
+	public static void cleanLocalContainers() {
+		if (localContainers.isEmpty())
+			return;
+
+		long[] tids = ManagementFactory.getThreadMXBean().getAllThreadIds();
+		Arrays.sort(tids);
+		synchronized (localContainers) {
+			Iterator<Map.Entry<Long, ObjectContainer>> iter = localContainers
+					.entrySet().iterator();
+			while (iter.hasNext()) {
+				Map.Entry<Long, ObjectContainer> entry = iter.next();
+				ExtObjectContainer objc = entry.getValue().ext();
+				if (objc.isClosed()
+						|| Arrays.binarySearch(tids, entry.getKey()) < 0) {
+					iter.remove();
+					if (!objc.isClosed())
+						objc.close();
+				}
+			}
+		}
 	}
 
 	/**

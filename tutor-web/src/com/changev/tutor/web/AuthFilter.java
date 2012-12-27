@@ -63,22 +63,26 @@ public class AuthFilter implements Filter {
 		String userRoles = config.getInitParameter(USER_ROLES);
 		String loginPagePath = config.getInitParameter(LOGIN_PAGE_PATH);
 		String excludePaths = config.getInitParameter(EXCLUDE_PATHS);
-		if (StringUtils.isBlank(userRoles)
-				|| StringUtils.isBlank(loginPagePath))
+		if (StringUtils.isEmpty(userRoles)
+				|| StringUtils.isEmpty(loginPagePath))
 			throw new ServletException(
 					"parameter userRoles and loginPagePath is required");
 
 		this.userRoles = new HashSet<>();
-		for (String s : StringUtils.split(userRoles, ','))
-			this.userRoles.add(UserRole.valueOf(s.trim()));
+		for (String s : StringUtils.split(userRoles, ',')) {
+			if (!(s = s.trim()).isEmpty())
+				this.userRoles.add(UserRole.valueOf(s));
+		}
 
 		this.loginPagePath = context.getContextPath() + loginPagePath;
 
 		this.excludePaths = Collections.emptySet();
-		if (StringUtils.isNotBlank(excludePaths)) {
+		if (StringUtils.isNotEmpty(excludePaths)) {
 			this.excludePaths = new HashSet<>();
-			for (String s : StringUtils.split(excludePaths, ','))
-				this.excludePaths.add(context.getContextPath() + s.trim());
+			for (String s : StringUtils.split(excludePaths, ',')) {
+				if (!(s = s.trim()).isEmpty())
+					this.excludePaths.add(context.getContextPath() + s);
+			}
 		}
 	}
 

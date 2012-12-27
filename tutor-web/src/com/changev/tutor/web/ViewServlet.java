@@ -57,8 +57,7 @@ public class ViewServlet extends FreemarkerServlet {
 		if (container != null && container.getLoginUser() != null)
 			request.setAttribute("loginUser", container.getLoginUser());
 		// get view instance and call its preRender method if exists
-		BeanFactory beanFactory = (BeanFactory) getServletContext()
-				.getAttribute(Tutor.KEY_BEAN_FACTORY);
+		BeanFactory beanFactory = Tutor.getBeanFactory();
 		if (beanFactory != null) {
 			String beanName = getViewName(template.getName());
 			if (logger.isDebugEnabled())
