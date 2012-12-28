@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>数据列表</title>
+</head>
+<body>
+<form method="post">
+	<table>
+		<tbody>
+			<tr>
+				<th>类型</th>
+				<td>
+					<select name="type">
+						<optgroup label="用户账户">
+							<option value="UserModel" selected="selected">全部用户</option>
+							<option value="StudentModel">学生用户</option>
+							<option value="TeacherModel">教师用户</option>
+						</optgroup>
+					</select>
+				</td>
+				<th>删除</th>
+				<td>
+					<select name="deleted">
+						<option value="">不限</option>
+						<option value="false" selected="selected">未删除</option>
+						<option value="true">已删除</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>创建时间</th>
+				<td>
+					<input type="text" name="createFrom" value="${params.createFrom}" />
+					～
+					<input type="text" name="createTo" value="${params.createTo}" />
+				</td>
+				<th>修改时间</th>
+				<td>
+					<input type="text" name="updateFrom" value="${params.updateFrom}" />
+					～
+					<input type="text" name="updateTo" value="${params.updateTo}" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<input type="submit" name="search" value="检索" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+<#if result??>
+<table border="1">
+	<thead>
+		<tr>
+			<#list result.names as name>
+			<th>${name}</th>
+			</#list>
+		</tr>
+	</thead>
+	<tbody>
+		<#list result.rows as row>
+		<tr>
+			<#list result.names as name>
+			<td>${Tutor.toString(row[name])}</td>
+			</#list>
+		</tr>
+		</#list>
+	</tbody>
+</table>
+</#if>
+</body>
+</html>
