@@ -5,7 +5,9 @@
  */
 package com.changev.tutor.model;
 
-import java.sql.Timestamp;
+import java.util.Date;
+
+import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
@@ -19,12 +21,13 @@ public class UserModel extends AbstractModel {
 
 	private static final long serialVersionUID = -360438261627805753L;
 
+	@Indexed
 	private String username;
 	private String password;
 	private String tel;
 	private String email;
 	private UserRole role;
-	private Timestamp lastLoginTime;
+	private Date loginDateTime;
 	private String securityCode;
 	private UserModel parentUser;
 
@@ -38,7 +41,7 @@ public class UserModel extends AbstractModel {
 		this.setTel(copy.getTel());
 		this.setEmail(copy.getEmail());
 		this.setRole(copy.getRole());
-		this.setLastLoginTime(copy.getLastLoginTime());
+		this.setLoginDateTime(copy.getLoginDateTime());
 		this.setSecurityCode(copy.getSecurityCode());
 		this.setParentUser(copy.getParentUser());
 	}
@@ -119,18 +122,18 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the lastLoginTime
+	 * @return the loginDateTime
 	 */
-	public Timestamp getLastLoginTime() {
-		return lastLoginTime;
+	public Date getLoginDateTime() {
+		return loginDateTime;
 	}
 
 	/**
-	 * @param lastLoginTime
-	 *            the lastLoginTime to set
+	 * @param loginDateTime
+	 *            the loginDateTime to set
 	 */
-	public void setLastLoginTime(Timestamp lastLoginTime) {
-		this.lastLoginTime = lastLoginTime;
+	public void setLoginDateTime(Date loginDateTime) {
+		this.loginDateTime = loginDateTime;
 	}
 
 	/**

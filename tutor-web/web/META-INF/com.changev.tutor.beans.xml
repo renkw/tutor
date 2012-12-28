@@ -24,9 +24,27 @@
 			<bean class="com.changev.tutor.util.Db4oCleanTask" />
 		</property>
 	</bean>
+	
+	<!-- Freemarker Configuration -->
+	<bean id="freemarkerConfig" class="freemarker.template.Configuration">
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="objectWrapper">
+			<bean class="freemarker.template.DefaultObjectWrapper" />
+		</property>
+	</bean>
 
 	<!-- Views -->
-	<bean id="front.sample" class="com.changev.tutor.web.front.SampleView"></bean>
+	<bean id="front.sampleView" class="com.changev.tutor.web.front.SampleView" />
+	
+	<bean id="front.registerView" class="com.changev.tutor.web.front.RegisterView"
+		p:successPage="/front/login.html"
+	/>
+	
+	<bean id="front.loginView" class="com.changev.tutor.web.front.LoginView"
+		p:successPage="/front/sample.html"
+	/>
+	
+	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 
 	<!-- Services -->
 

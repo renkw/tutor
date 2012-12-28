@@ -5,10 +5,7 @@
  */
 package com.changev.tutor.web;
 
-import java.io.IOException;
 import java.io.Serializable;
-
-import javax.servlet.ServletException;
 
 import com.changev.tutor.model.UserModel;
 
@@ -36,10 +33,8 @@ public interface Service extends Serializable {
 	 * @param input
 	 *            输入参数
 	 * @return 处理结果
-	 * @throws ServletException
-	 * @throws IOException
+	 * @throws Throwable
 	 */
-	Object run(UserModel user, Object input) throws ServletException,
-			IOException;
+	Object run(UserModel user, Object input) throws Throwable;
 
 }

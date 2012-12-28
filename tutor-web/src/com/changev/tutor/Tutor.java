@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.db4o.ObjectContainer;
@@ -29,8 +29,10 @@ import com.db4o.ext.ExtObjectContainer;
  */
 public final class Tutor {
 
-	/** 在HttpServletRequest中的View实例键 */
-	public static final String KEY_REQUEST_VIEW = "com.changev.tutor.KEY_REQUEST_VIEW";
+	public static final Tutor SINGLETON = new Tutor();
+
+	/** 在HttpServletRequest中的ViewContext实例键 */
+	public static final String KEY_VIEW_CONTEXT = "com.changev.tutor.KEY_VIEW_CONTEXT";
 
 	/** 在HttpSession中的SessionContainer实例键 */
 	public static final String KEY_SESSION_CONTAINER = "com.changev.tutor.KEY_SESSION_CONTAINER";
@@ -327,6 +329,29 @@ public final class Tutor {
 	 */
 	public static Number parseCurrency(String str) {
 		return parseNumber(str, DEFAULT_CURRENCY_FORMAT);
+	}
+
+	/**
+	 * <p>
+	 * 取得对象的字符串表达形式。
+	 * </p>
+	 * 
+	 * <p>
+	 * 日期对象用{@link #DEFAULT_DATETIME_FORMAT}格式化。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static String toString(Object obj) {
+		if (obj == null)
+			return null;
+		if (obj.getClass() == Date.class)
+			return formatDateTime((Date) obj);
+		return obj.toString();
+	}
+
+	private Tutor() {
 	}
 
 }

@@ -9,7 +9,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -28,12 +28,12 @@ import com.db4o.cs.Db4oClientServer;
  * 上下文设定参数：
  * <ul>
  * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br />
- * 默认为{@link com.changev.tutor.Tutor#DEFAULT_LOG4J_CONFIG_PATH}。</li>
+ * 默认为{@link Tutor#DEFAULT_LOG4J_CONFIG_PATH DEFAULT_LOG4J_CONFIG_PATH}。</li>
  * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br />
- * 默认为{@link com.changev.tutor.Tutor#DEFAULT_BEAN_CONFIG_PATH}。</li>
+ * 默认为{@link Tutor#DEFAULT_BEAN_CONFIG_PATH DEFAULT_BEAN_CONFIG_PATH}。</li>
  * <li><strong>db4oConnectPath</strong> - 可选参数。Db4o数据文件路径或服务器连接字符串。<br />
  * 服务器连接字符串格式：db4o:<i>host</i>:<i>port</i>?user=<i>user</i>&amp;password=<i>password</i><br />
- * 默认为{@link com.changev.tutor.Tutor#DEFAULT_DATAFILE_PATH}。</li>
+ * 默认为{@link Tutor#DEFAULT_DATAFILE_PATH DEFAULT_DATAFILE_PATH}。</li>
  * </ul>
  * </p>
  * 

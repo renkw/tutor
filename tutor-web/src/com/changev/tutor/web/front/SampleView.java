@@ -5,9 +5,6 @@
  */
 package com.changev.tutor.web.front;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +27,7 @@ public class SampleView implements View {
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
 		ObjectContainer objc = Tutor.getCurrentContainer();
@@ -48,7 +45,7 @@ public class SampleView implements View {
 
 	@Override
 	public void postRender(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 	}

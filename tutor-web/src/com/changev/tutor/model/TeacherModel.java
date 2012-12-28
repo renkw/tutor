@@ -5,7 +5,7 @@
  */
 package com.changev.tutor.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * <p>

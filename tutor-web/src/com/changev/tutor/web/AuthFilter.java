@@ -20,7 +20,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.model.UserRole;
@@ -107,14 +107,19 @@ public class AuthFilter implements Filter {
 			if (logger.isDebugEnabled())
 				logger.debug("[doFilter] skip login");
 		} else {
-			SessionContainer container = SessionContainer.getInstance(request);
-			if (container == null || container.getLoginUser() == null
-					|| !userRoles.contains(container.getLoginUser().getRole())) {
+			SessionContainer container = SessionContainer.get(request);
+			if (container == null || container.getLoginUser() == null) {
 				if (logger.isDebugEnabled())
 					logger.debug("[doFilter] user not logged in. goto "
 							+ loginPagePath);
 				// TODO save request info
 				response.sendRedirect(loginPagePath);
+				return;
+			}
+			if (!userRoles.contains(container.getLoginUser().getRole())) {
+				if (logger.isDebugEnabled())
+					logger.debug("[doFilter] user not in role. send code 403.");
+				response.sendError(HttpServletResponse.SC_FORBIDDEN);
 				return;
 			}
 		}

@@ -113,15 +113,16 @@
 		</init-param>
 		<init-param>
 			<param-name>excludePaths</param-name>
-			<param-value>/front/login.html</param-value>
+			<param-value>
+			 /front/login.html,
+			 /front/register.html
+			</param-value>
 		</init-param>
 	</filter>
-	<!-- 
 	<filter-mapping>
 		<filter-name>FrontAuthFilter</filter-name>
 		<url-pattern>/front/*</url-pattern>
 	</filter-mapping>
-	 -->
 	
 	<filter>
 		<filter-name>BackAuthFilter</filter-name>
@@ -160,15 +161,21 @@
 			<param-value>/manage/login.html</param-value>
 		</init-param>
 	</filter>
+	<!-- 
 	<filter-mapping>
 		<filter-name>ManageAuthFilter</filter-name>
 		<url-pattern>/manage/*</url-pattern>
 	</filter-mapping>
+	 -->
 	
 	<!-- Common Settings -->
 	<session-config>
 		<session-timeout>120</session-timeout>
 	</session-config>
+	
+	<error-page>
+		<location>/error.html</location>
+	</error-page>
 	
 	<welcome-file-list>
 		<welcome-file>home.html</welcome-file>

@@ -5,10 +5,8 @@
  */
 package com.changev.tutor.web;
 
-import java.io.IOException;
 import java.io.Serializable;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,11 +32,10 @@ public interface View extends Serializable {
 	 * @param request
 	 * @param response
 	 * @return true表示可以继续执行模板输出。
-	 * @throws ServletException
-	 * @throws IOException
+	 * @throws Throwable
 	 */
 	boolean preRender(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException;
+			throws Throwable;
 
 	/**
 	 * <p>
@@ -47,10 +44,9 @@ public interface View extends Serializable {
 	 * 
 	 * @param request
 	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
+	 * @throws Throwable
 	 */
 	void postRender(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException;
+			throws Throwable;
 
 }

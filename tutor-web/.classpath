@@ -8,7 +8,6 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-fileupload-1.2.2.jar" sourcepath="lib/src/commons-fileupload-1.2.2-src.zip"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang3-3.1.jar" sourcepath="lib/src/commons-lang3-3.1-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/db4o-8.0.249.16098-all-java5.jar" sourcepath="lib/src/db4o-8.0-java-src.zip"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/log4j-1.2.17.jar" sourcepath="lib/src/apache-log4j-1.2.17-src.zip"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-beans-3.2.0.RELEASE.jar" sourcepath="lib/src/spring-beans-3.2.0.RELEASE-sources.jar"/>
@@ -18,5 +17,7 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-logging-1.1.1.jar" sourcepath="lib/src/commons-logging-1.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-expression-3.2.0.RELEASE.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/gson-2.2.2.jar" sourcepath="lib/src/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang-2.6.jar" sourcepath="lib/src/commons-lang-2.6-sources.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

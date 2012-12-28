@@ -7,7 +7,8 @@ package com.changev.tutor.model;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
+import java.lang.reflect.Modifier;
+import java.util.Date;
 
 /**
  * <p>
@@ -19,21 +20,18 @@ import java.sql.Timestamp;
  */
 public abstract class AbstractModel implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	private Timestamp createDate;
-	private Timestamp updateDate;
+	private Date createDateTime;
+	private Date updateDateTime;
 	private Boolean deleted;
 
 	public AbstractModel() {
 	}
 
 	public AbstractModel(AbstractModel copy) {
-		this.setCreateDate(copy.getCreateDate());
-		this.setUpdateDate(copy.getUpdateDate());
+		this.setCreateDateTime(copy.getCreateDateTime());
+		this.setUpdateDateTime(copy.getUpdateDateTime());
 		this.setDeleted(copy.getDeleted());
 	}
 
@@ -45,9 +43,13 @@ public abstract class AbstractModel implements Serializable {
 			for (Class<?> cls = getClass(); cls != Object.class; cls = cls
 					.getSuperclass()) {
 				Field[] flds = cls.getDeclaredFields();
+				boolean comma = false;
 				for (int i = 0; i < flds.length; i++) {
-					if (i != 0)
+					if (Modifier.isStatic(flds[i].getModifiers()))
+						continue;
+					if (comma)
 						buf.append(", ");
+					comma = true;
 					flds[i].setAccessible(true);
 					buf.append(flds[i].getName()).append(" = ")
 							.append(flds[i].get(this));
@@ -61,33 +63,33 @@ public abstract class AbstractModel implements Serializable {
 	}
 
 	/**
-	 * @return the createDate
+	 * @return the createDateTime
 	 */
-	public Timestamp getCreateDate() {
-		return createDate;
+	public Date getCreateDateTime() {
+		return createDateTime;
 	}
 
 	/**
-	 * @param createDate
-	 *            the createDate to set
+	 * @param createDateTime
+	 *            the createDateTime to set
 	 */
-	public void setCreateDate(Timestamp createDate) {
-		this.createDate = createDate;
+	public void setCreateDateTime(Date createDateTime) {
+		this.createDateTime = createDateTime;
 	}
 
 	/**
-	 * @return the updateDate
+	 * @return the updateDateTime
 	 */
-	public Timestamp getUpdateDate() {
-		return updateDate;
+	public Date getUpdateDateTime() {
+		return updateDateTime;
 	}
 
 	/**
-	 * @param updateDate
-	 *            the updateDate to set
+	 * @param updateDateTime
+	 *            the updateDateTime to set
 	 */
-	public void setUpdateDate(Timestamp updateDate) {
-		this.updateDate = updateDate;
+	public void setUpdateDateTime(Date updateDateTime) {
+		this.updateDateTime = updateDateTime;
 	}
 
 	/**

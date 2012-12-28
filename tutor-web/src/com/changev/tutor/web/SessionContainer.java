@@ -38,7 +38,7 @@ public final class SessionContainer implements Serializable {
 	 * @param create
 	 * @return
 	 */
-	public static SessionContainer getInstance(HttpServletRequest request,
+	public static SessionContainer get(HttpServletRequest request,
 			boolean create) {
 		SessionContainer container = null;
 		HttpSession session = request.getSession(create);
@@ -54,18 +54,18 @@ public final class SessionContainer implements Serializable {
 
 	/**
 	 * <p>
-	 * 取得当前会话中保存的容器实例。
+	 * 取得当前会话中保存的容器实例，实例不存在时不会创建对象。
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于getInstance(request, false),实例不存在时不会创建对象。
+	 * 相同于{@link #get(HttpServletRequest, boolean) get(request, false)}。
 	 * </p>
 	 * 
 	 * @param request
 	 * @return
 	 */
-	public static SessionContainer getInstance(HttpServletRequest request) {
-		return getInstance(request, false);
+	public static SessionContainer get(HttpServletRequest request) {
+		return get(request, false);
 	}
 
 	private UserModel loginUser;
