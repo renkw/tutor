@@ -32,8 +32,6 @@ import com.db4o.ObjectContainer;
  */
 public class RegisterView implements View {
 
-	private static final long serialVersionUID = -5639686104406347868L;
-
 	private static final Logger logger = Logger.getLogger(RegisterView.class);
 
 	private String successPage;

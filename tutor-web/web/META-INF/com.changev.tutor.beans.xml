@@ -31,6 +31,7 @@
 		<property name="objectWrapper">
 			<bean class="freemarker.template.DefaultObjectWrapper" />
 		</property>
+		<property name="tagSyntax" value="0" />
 	</bean>
 
 	<!-- Views -->
@@ -47,5 +48,6 @@
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 
 	<!-- Services -->
+	<bean id="app.testService" class="com.changev.tutor.web.service.TestService" />
 
 </beans>

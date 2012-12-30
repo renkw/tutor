@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
@@ -29,10 +30,8 @@ import com.db4o.ext.ExtObjectContainer;
  */
 public final class Tutor {
 
-	public static final Tutor SINGLETON = new Tutor();
-
-	/** 在HttpServletRequest中的ViewContext实例键 */
-	public static final String KEY_VIEW_CONTEXT = "com.changev.tutor.KEY_VIEW_CONTEXT";
+	/** 在HttpServletRequest中的Messages实例键 */
+	public static final String KEY_MESSAGES = "com.changev.tutor.KEY_MESSAGES";
 
 	/** 在HttpSession中的SessionContainer实例键 */
 	public static final String KEY_SESSION_CONTAINER = "com.changev.tutor.KEY_SESSION_CONTAINER";
@@ -57,6 +56,9 @@ public final class Tutor {
 
 	/** 默认的货币格式 */
 	public static final String DEFAULT_CURRENCY_FORMAT = "#,##0.00";
+
+	/** 实例原型（在Freemarker中使用） */
+	public static final Tutor SINGLETON = new Tutor();
 
 	private static String contextRootPath = "";
 
@@ -210,7 +212,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于formatDate(date, DEFAULT_DATE_FORMAT)。
+	 * 相同于{@link #formatDate(Date, String) formatDate(date,
+	 * DEFAULT_DATE_FORMAT)}。
 	 * </p>
 	 * 
 	 * @param date
@@ -227,7 +230,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于parseDate(str, DEFAULT_DATE_FORMAT)。
+	 * 相同于{@link #parseDate(String, String) parseDate(str, DEFAULT_DATE_FORMAT)}
+	 * 。
 	 * </p>
 	 * 
 	 * @param str
@@ -243,7 +247,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于formatDate(date, DEFAULT_DATETIME_FORMAT)。
+	 * 相同于{@link #formatDate(Date, String) formatDate(date,
+	 * DEFAULT_DATETIME_FORMAT)}。
 	 * </p>
 	 * 
 	 * @param date
@@ -259,7 +264,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于parseDate(str, DEFAULT_DATETIME_FORMAT)。
+	 * 相同于{@link #parseDate(String, String) parseDate(str,
+	 * DEFAULT_DATETIME_FORMAT)}。
 	 * </p>
 	 * 
 	 * @param str
@@ -305,7 +311,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于formatNumber(num, DEFAULT_CURRENCY_FORMAT)。
+	 * 相同于{@link #formatNumber(Number, String) formatNumber(num,
+	 * DEFAULT_CURRENCY_FORMAT)}。
 	 * </p>
 	 * 
 	 * @param num
@@ -321,7 +328,8 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于parseNumber(str, DEFAULT_CURRENCY_FORMAT)。
+	 * 相同于{@link #parseNumber(String, String) parseNumber(str,
+	 * DEFAULT_CURRENCY_FORMAT)}。
 	 * </p>
 	 * 
 	 * @param str
@@ -345,13 +353,32 @@ public final class Tutor {
 	 */
 	public static String toString(Object obj) {
 		if (obj == null)
-			return null;
+			return "null";
 		if (obj.getClass() == Date.class)
 			return formatDateTime((Date) obj);
 		return obj.toString();
 	}
 
-	private Tutor() {
+	/**
+	 * <p>
+	 * 测试对象是否指定类型。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @param clsname
+	 * @return 当指定类型为原始类型而且对象为null，返回false。<br />
+	 *         当指定类型非原始类型而且对象为null，返回true。
+	 * @throws ClassNotFoundException
+	 */
+	public static boolean is(Object obj, String clsname)
+			throws ClassNotFoundException {
+		Class<?> cls = ClassUtils.getClass(clsname);
+		if (cls.isPrimitive()) {
+			if (obj == null)
+				return false;
+			cls = ClassUtils.primitiveToWrapper(cls);
+		}
+		return obj == null || cls.isInstance(obj);
 	}
 
 }

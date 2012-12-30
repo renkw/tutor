@@ -5,11 +5,12 @@
  */
 package com.changev.tutor.web;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,15 +23,17 @@ import org.springframework.beans.factory.BeanFactory;
 
 import com.changev.tutor.Tutor;
 
-import freemarker.cache.FileTemplateLoader;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.HttpRequestHashModel;
 import freemarker.ext.servlet.HttpRequestParametersHashModel;
 import freemarker.ext.servlet.HttpSessionHashModel;
 import freemarker.ext.servlet.ServletContextHashModel;
 import freemarker.template.Configuration;
+import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
 /**
  * <p>
@@ -49,9 +52,20 @@ import freemarker.template.TemplateException;
  * 
  * 模板可用公共变量：
  * <ul>
- * <li><string>{@link SessionContainer#getLoginUser() loginUser}</strong> -
- * 登录用户。</li>
- * <li><string>{@link Messages#get(HttpServletRequest) msg}</strong> - 处理消息。</li>
+ * <li><string>{@link Tutor Tutor}</strong> - 公共方法常量。</li>
+ * <li><string>{@link SessionContainer tutor}</strong> - 会话容器。</li>
+ * <li><string>{@link HttpServletRequest#getAttribute(String) Request}</strong>
+ * - 请求变量域。</li>
+ * <li><string>{@link HttpSession#getAttribute(String) Session}</strong> -
+ * 会话变量域。</li>
+ * <li><string>{@link ServletContext#getAttribute(String) Application}</strong>
+ * - 上下文变量域。</li>
+ * <li><string>{@link HttpServletRequest request}</strong> - 请求对象。</li>
+ * <li><string>{@link HttpSession session}</strong> - 会话对象。</li>
+ * <li><string>{@link ServletContext application}</strong> - 上下文对象。</li>
+ * <li><string>{@link HttpServletRequest#getParameter(String) params}</strong> -
+ * 请求参数。</li>
+ * <li><string>{@link Messages msg}</strong> - 处理消息。</li>
  * </ul>
  * </p>
  * 
@@ -62,21 +76,19 @@ public class ViewServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7406529024541977198L;
 
+	static final String KEY_TEMPLATE_MODEL = "com.changev.tutor.web.ViewServlet#KEY_TEMPLATE_MODEL";
+
 	private static final Logger logger = Logger.getLogger(ViewServlet.class);
 
-	Map<String, String> viewNameMap = new ConcurrentHashMap<>();
+	Map<String, String> viewNameMap = Collections
+			.synchronizedMap(new HashMap<String, String>());
 	Configuration config;
 
 	@Override
 	public void init() throws ServletException {
 		config = (Configuration) Tutor.getBeanFactory().getBean(
 				"freemarkerConfig");
-		try {
-			config.setTemplateLoader(new FileTemplateLoader(new File(Tutor
-					.getContextRootPath())));
-		} catch (IOException e) {
-			throw new ServletException(e);
-		}
+		config.setServletContextForTemplateLoading(getServletContext(), "");
 	}
 
 	@Override
@@ -91,6 +103,16 @@ public class ViewServlet extends HttpServlet {
 		doRender(req, resp);
 	}
 
+	/**
+	 * <p>
+	 * 执行View中定义的方法，然后输出模板内容。
+	 * </p>
+	 * 
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void doRender(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
@@ -104,6 +126,17 @@ public class ViewServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * <p>
+	 * 前处理。
+	 * </p>
+	 * 
+	 * @param req
+	 * @param resp
+	 * @return
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected boolean preRender(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
@@ -127,37 +160,50 @@ public class ViewServlet extends HttpServlet {
 		return true;
 	}
 
+	/**
+	 * <p>
+	 * 输出模板内容。
+	 * </p>
+	 * 
+	 * <p>
+	 * 设置HTTP响应头<br />
+	 * Content-Type: text/html; charset=<i>模板编码</i><br />
+	 * Progam: no-cache<br />
+	 * Cache-Control: no-cache
+	 * </p>
+	 * 
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void renderTemplate(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[renderTemplate] called");
 
-		HttpSession session = req.getSession(false);
-		AllHttpScopesHashModel model = new AllHttpScopesHashModel(
-				config.getObjectWrapper(), getServletContext(), req);
-		model.put("Tutor", Tutor.SINGLETON);
-		model.put("Request",
-				new HttpRequestHashModel(req, config.getObjectWrapper()));
-		model.put("Session",
-				new HttpSessionHashModel(session, config.getObjectWrapper()));
-		model.put("Application",
-				new ServletContextHashModel(this, config.getObjectWrapper()));
-		model.put("tutor", SessionContainer.get(req));
-		model.put("request", req);
-		model.put("session", session);
-		model.put("application", getServletContext());
-		model.put("params", new HttpRequestParametersHashModel(req));
-		model.put("msg", Messages.get(req));
-
-		Template template = config.getTemplate(req.getServletPath());
 		try {
+			TemplateModel model = getTemplateModel(req);
+			Template template = config.getTemplate(req.getServletPath());
 			resp.setContentType("text/html; charset=" + template.getEncoding());
+			resp.setHeader("Pragma", "no-cache");
+			resp.setHeader("Cache-Control", "no-cache");
 			template.process(model, resp.getWriter());
 		} catch (TemplateException e) {
 			throw new ServletException(e);
 		}
 	}
 
+	/**
+	 * <p>
+	 * 后处理。
+	 * </p>
+	 * 
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void postRender(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
@@ -180,6 +226,14 @@ public class ViewServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * <p>
+	 * 取得请求路径对应的View实例名称。
+	 * </p>
+	 * 
+	 * @param path
+	 * @return
+	 */
 	protected String getViewName(String path) {
 		String name = viewNameMap.get(path);
 		if (name == null) {
@@ -194,85 +248,48 @@ public class ViewServlet extends HttpServlet {
 		return name;
 	}
 
-	//
-	// @Override
-	// protected boolean preTemplateProcess(HttpServletRequest request,
-	// HttpServletResponse response, Template template, TemplateModel data)
-	// throws ServletException, IOException {
-	// if (logger.isTraceEnabled())
-	// logger.trace("[preTemplateProcess] called");
-	// // set login user to request
-	// SessionContainer container = SessionContainer.get(request);
-	// if (container != null)
-	// request.setAttribute("loginUser", container.getLoginUser());
-	// // get view instance and call its preRender method if exists
-	// BeanFactory beanFactory = Tutor.getBeanFactory();
-	// if (beanFactory != null) {
-	// String beanName = getViewName(template.getName());
-	// if (logger.isDebugEnabled())
-	// logger.debug("[preTemplateProcess] beanName = " + beanName);
-	// if (StringUtils.isNotEmpty(beanName)
-	// && beanFactory.containsBean(beanName)) {
-	// View view = (View) beanFactory.getBean(beanName);
-	// if (logger.isDebugEnabled())
-	// logger.debug("[preTemplateProcess] view = " + view);
-	// try {
-	// return view.preRender(request, response);
-	// } catch (RuntimeException | ServletException | IOException
-	// | Error e) {
-	// throw e;
-	// } catch (Throwable t) {
-	// throw new ServletException(t);
-	// }
-	// }
-	// if (logger.isDebugEnabled())
-	// logger.debug("[preTemplateProcess] view = null");
-	// }
-	// return true;
-	// }
-	//
-	// @Override
-	// protected void postTemplateProcess(HttpServletRequest request,
-	// HttpServletResponse response, Template template, TemplateModel data)
-	// throws ServletException, IOException {
-	// if (logger.isTraceEnabled())
-	// logger.trace("[postTemplateProcess] called");
-	// // get view instance and call its postRender method if exits
-	// BeanFactory beanFactory = Tutor.getBeanFactory();
-	// if (beanFactory != null) {
-	// String beanName = getViewName(template.getName());
-	// if (StringUtils.isNotEmpty(beanName)
-	// && beanFactory.containsBean(beanName)) {
-	// View view = (View) beanFactory.getBean(beanName);
-	// try {
-	// view.postRender(request, response);
-	// } catch (RuntimeException | ServletException | IOException
-	// | Error e) {
-	// throw e;
-	// } catch (Throwable t) {
-	// throw new ServletException(t);
-	// }
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * <p>
-	// * 取得模板对应的View实例名称。
-	// * </p>
-	// *
-	// * <p>
-	// * 假设模板名为foo/template.html，对应的View实例名称应为foo.templateView。
-	// * </p>
-	// *
-	// * @param templateName
-	// * @return
-	// */
-	// protected String getViewName(String templateName) {
-	// int end = templateName.lastIndexOf('.');
-	// String name = end == -1 ? templateName : templateName.substring(0, end);
-	// name = StringUtils.replaceChars(name, '/', '.');
-	// return name + "View";
-	// }
+	/**
+	 * <p>
+	 * 取得模板变量模型。
+	 * </p>
+	 * 
+	 * <p>
+	 * 同一请求对象只生成一次模型对象。
+	 * </p>
+	 * 
+	 * @param request
+	 * @return
+	 * @throws TemplateModelException
+	 */
+	protected TemplateModel getTemplateModel(HttpServletRequest request)
+			throws TemplateModelException {
+		TemplateModel model = (TemplateModel) request
+				.getAttribute(KEY_TEMPLATE_MODEL);
+		if (model == null) {
+			HttpSession session = request.getSession(false);
+			ObjectWrapper wrapper = config.getObjectWrapper();
+			AllHttpScopesHashModel m = new AllHttpScopesHashModel(wrapper,
+					getServletContext(), request);
+
+			m.putUnlistedModel("Tutor", wrapper.wrap(Tutor.SINGLETON));
+			m.putUnlistedModel("tutor",
+					wrapper.wrap(SessionContainer.get(request, false)));
+			m.putUnlistedModel("Request", new HttpRequestHashModel(request,
+					wrapper));
+			m.putUnlistedModel("Session", new HttpSessionHashModel(session,
+					wrapper));
+			m.putUnlistedModel("Application", new ServletContextHashModel(this,
+					wrapper));
+			m.putUnlistedModel("request", wrapper.wrap(request));
+			m.putUnlistedModel("session", wrapper.wrap(session));
+			m.putUnlistedModel("application", wrapper.wrap(getServletContext()));
+			m.putUnlistedModel("params", new HttpRequestParametersHashModel(
+					request));
+			m.putUnlistedModel("msg", wrapper.wrap(Messages.get(request)));
+
+			request.setAttribute(KEY_TEMPLATE_MODEL, model = m);
+		}
+		return model;
+	}
 
 }

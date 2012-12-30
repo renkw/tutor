@@ -24,6 +24,13 @@ public class ServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6483362567814108674L;
 
+	static final String SECURE_CODE_HEADER = "Tutor-Secure-Code";
+
+	@Override
+	public void init() throws ServletException {
+		// TODO
+	}
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {

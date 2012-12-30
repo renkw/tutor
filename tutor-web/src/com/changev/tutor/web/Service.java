@@ -5,19 +5,17 @@
  */
 package com.changev.tutor.web;
 
-import java.io.Serializable;
-
 import com.changev.tutor.model.UserModel;
 
 /**
  * <p>
- * 系统服务接口。
+ * 系统服务。
  * </p>
  * 
  * @author ren
  * 
  */
-public interface Service extends Serializable {
+public interface Service<INPUT> {
 
 	/**
 	 * <p>
@@ -35,6 +33,6 @@ public interface Service extends Serializable {
 	 * @return 处理结果
 	 * @throws Throwable
 	 */
-	Object run(UserModel user, Object input) throws Throwable;
+	Object run(UserModel user, INPUT input) throws Throwable;
 
 }

@@ -31,8 +31,6 @@ import com.db4o.ObjectSet;
  */
 public class LoginView implements View {
 
-	private static final long serialVersionUID = -4214795993856718239L;
-
 	private static final Logger logger = Logger.getLogger(LoginView.class);
 
 	private String successPage;

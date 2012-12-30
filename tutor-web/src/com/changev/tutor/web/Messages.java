@@ -11,21 +11,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+
+import com.changev.tutor.Tutor;
 
 /**
  * <p>
  * 页面处理消息。
  * </p>
  * 
- * <p>
- * 使用时在HttpServletRequest或HttpSession中保存名为msg的实例。
- * </p>
- * 
  * @author ren
  * 
  */
-public final class Messages implements Serializable {
+public class Messages implements Serializable {
 
 	private static final long serialVersionUID = -6296696698861706716L;
 
@@ -37,28 +34,32 @@ public final class Messages implements Serializable {
 	 * @param request
 	 * @return
 	 */
-	public static Messages get(HttpServletRequest request) {
-		Messages msg = (Messages) request.getAttribute("msg");
-		if (msg == null) {
+	public static Messages get(HttpServletRequest request, boolean create) {
+		Messages msg = (Messages) request.getAttribute(Tutor.KEY_MESSAGES);
+		if (msg == null && create) {
 			msg = new Messages();
-			request.setAttribute("msg", msg);
+			request.setAttribute(Tutor.KEY_MESSAGES, msg);
 		}
 		return msg;
 	}
 
 	/**
 	 * <p>
-	 * 取得HttpSession中的消息实例，如果不存在则创建。
+	 * 取得HttpServletRequest中的消息实例，如果不存在则创建。
 	 * </p>
 	 * 
-	 * @param session
+	 * <p>
+	 * 相同于{@link #get(HttpServletRequest, boolean) get(request, true)}
+	 * </p>
+	 * 
+	 * @param request
 	 * @return
 	 */
-	public static Messages get(HttpSession session) {
-		Messages msg = (Messages) session.getAttribute("msg");
+	public static Messages get(HttpServletRequest request) {
+		Messages msg = (Messages) request.getAttribute(Tutor.KEY_MESSAGES);
 		if (msg == null) {
 			msg = new Messages();
-			session.setAttribute("msg", msg);
+			request.setAttribute(Tutor.KEY_MESSAGES, msg);
 		}
 		return msg;
 	}
@@ -80,21 +81,6 @@ public final class Messages implements Serializable {
 
 	/**
 	 * <p>
-	 * 添加一条错误消息到HttpSession中。
-	 * </p>
-	 * 
-	 * @param session
-	 * @param name
-	 * @param message
-	 * @return
-	 */
-	public static Messages addError(HttpSession session, String name,
-			String message) {
-		return get(session).addError(name, message);
-	}
-
-	/**
-	 * <p>
 	 * 查看HttpServletRequest中是否存在错误消息。
 	 * </p>
 	 * 
@@ -106,25 +92,9 @@ public final class Messages implements Serializable {
 		return msg != null && msg.hasErrors();
 	}
 
-	/**
-	 * <p>
-	 * 查看HttpSession中是否存在错误消息。
-	 * </p>
-	 * 
-	 * @param session
-	 * @return
-	 */
-	public static boolean hasErrors(HttpSession session) {
-		Messages msg = (Messages) session.getAttribute("msg");
-		return msg != null && msg.hasErrors();
-	}
-
 	private Map<String, String> messages = Collections.emptyMap();
 	private Map<String, String> warnings = Collections.emptyMap();
 	private Map<String, String> errors = Collections.emptyMap();
-
-	private Messages() {
-	}
 
 	/**
 	 * <p>

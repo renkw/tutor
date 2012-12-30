@@ -32,15 +32,15 @@
 			<tr>
 				<th>创建时间</th>
 				<td>
-					<input type="text" name="createFrom" value="${params.createFrom}" />
+					<input type="text" name="createFrom" value="${params.createFrom!}" />
 					～
-					<input type="text" name="createTo" value="${params.createTo}" />
+					<input type="text" name="createTo" value="${params.createTo!}" />
 				</td>
 				<th>修改时间</th>
 				<td>
-					<input type="text" name="updateFrom" value="${params.updateFrom}" />
+					<input type="text" name="updateFrom" value="${params.updateFrom!}" />
 					～
-					<input type="text" name="updateTo" value="${params.updateTo}" />
+					<input type="text" name="updateTo" value="${params.updateTo!}" />
 				</td>
 			</tr>
 			<tr>
@@ -51,25 +51,25 @@
 		</tbody>
 	</table>
 </form>
-<#if result??>
+<!-- <#if result??> -->
 <table border="1">
 	<thead>
 		<tr>
-			<#list result.names as name>
+			<!-- <#list result.names as name> -->
 			<th>${name}</th>
-			</#list>
+			<!-- </#list> -->
 		</tr>
 	</thead>
 	<tbody>
-		<#list result.rows as row>
+		<!-- <#list result.rows as row> -->
 		<tr>
-			<#list result.names as name>
+			<!-- <#list result.names as name> -->
 			<td>${Tutor.toString(row[name])}</td>
-			</#list>
+			<!-- </#list> -->
 		</tr>
-		</#list>
+		<!-- </#list> -->
 	</tbody>
 </table>
-</#if>
+<!-- </#if> -->
 </body>
 </html>

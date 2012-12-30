@@ -54,21 +54,22 @@ public final class SessionContainer implements Serializable {
 
 	/**
 	 * <p>
-	 * 取得当前会话中保存的容器实例，实例不存在时不会创建对象。
+	 * 取得当前会话中保存的容器实例，实例不存在时创建对象。
 	 * </p>
 	 * 
 	 * <p>
-	 * 相同于{@link #get(HttpServletRequest, boolean) get(request, false)}。
+	 * 相同于{@link #get(HttpServletRequest, boolean) get(request, true)}。
 	 * </p>
 	 * 
 	 * @param request
 	 * @return
 	 */
 	public static SessionContainer get(HttpServletRequest request) {
-		return get(request, false);
+		return get(request, true);
 	}
 
 	private UserModel loginUser;
+	private Messages sessionMessage = new Messages();
 
 	private SessionContainer() {
 	}
@@ -86,6 +87,21 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void setLoginUser(UserModel loginUser) {
 		this.loginUser = loginUser;
+	}
+
+	/**
+	 * @return the sessionMessage
+	 */
+	public Messages getSessionMessage() {
+		return sessionMessage;
+	}
+
+	/**
+	 * @param sessionMessage
+	 *            the sessionMessage to set
+	 */
+	public void setSessionMessage(Messages sessionMessage) {
+		this.sessionMessage = sessionMessage;
 	}
 
 }

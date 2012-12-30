@@ -107,7 +107,7 @@ public class AuthFilter implements Filter {
 			if (logger.isDebugEnabled())
 				logger.debug("[doFilter] skip login");
 		} else {
-			SessionContainer container = SessionContainer.get(request);
+			SessionContainer container = SessionContainer.get(request, false);
 			if (container == null || container.getLoginUser() == null) {
 				if (logger.isDebugEnabled())
 					logger.debug("[doFilter] user not logged in. goto "

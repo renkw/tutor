@@ -65,6 +65,14 @@ public class DataView implements View {
 		String sCreateTo = request.getParameter("createTo");
 		String sUpdateFrom = request.getParameter("updateFrom");
 		String sUpdateTo = request.getParameter("updateTo");
+		if (logger.isDebugEnabled()) {
+			logger.debug("type = " + sType);
+			logger.debug("deleted = " + sDeleted);
+			logger.debug("createFrom = " + sCreateFrom);
+			logger.debug("createTo = " + sCreateTo);
+			logger.debug("updateFrom = " + sUpdateFrom);
+			logger.debug("updateTo = " + sUpdateTo);
+		}
 		// TODO complex search
 		Class<?> type = Class.forName("com.changev.tutor.model." + sType);
 		Boolean deleted = StringUtils.isEmpty(sDeleted) ? null : Boolean

@@ -21,8 +21,6 @@ import com.db4o.ObjectSet;
  */
 public class SampleView implements View {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger logger = Logger.getLogger(SampleView.class);
 
 	@Override
