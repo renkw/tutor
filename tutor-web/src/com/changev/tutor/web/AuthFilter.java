@@ -6,9 +6,9 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -50,9 +50,9 @@ public class AuthFilter implements Filter {
 
 	private static final Logger logger = Logger.getLogger(AuthFilter.class);
 
-	Set<UserRole> userRoles;
+	List<UserRole> userRoles;
 	String loginPagePath;
-	Set<String> excludePaths;
+	List<String> excludePaths;
 
 	@Override
 	public void init(FilterConfig config) throws ServletException {
@@ -68,7 +68,7 @@ public class AuthFilter implements Filter {
 			throw new ServletException(
 					"parameter userRoles and loginPagePath is required");
 
-		this.userRoles = new HashSet<>();
+		this.userRoles = new ArrayList<>();
 		for (String s : StringUtils.split(userRoles, ',')) {
 			if (!(s = s.trim()).isEmpty())
 				this.userRoles.add(UserRole.valueOf(s));
@@ -76,9 +76,9 @@ public class AuthFilter implements Filter {
 
 		this.loginPagePath = context.getContextPath() + loginPagePath;
 
-		this.excludePaths = Collections.emptySet();
+		this.excludePaths = Collections.emptyList();
 		if (StringUtils.isNotEmpty(excludePaths)) {
-			this.excludePaths = new HashSet<>();
+			this.excludePaths = new ArrayList<>();
 			for (String s : StringUtils.split(excludePaths, ',')) {
 				if (!(s = s.trim()).isEmpty())
 					this.excludePaths.add(context.getContextPath() + s);

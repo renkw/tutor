@@ -93,6 +93,18 @@
 		</description>
 		<servlet-name>ServiceServlet</servlet-name>
 		<servlet-class>com.changev.tutor.web.ServiceServlet</servlet-class>
+		<init-param>
+			<param-name>publicServices</param-name>
+			<param-value>app.login</param-value>
+		</init-param>
+		<init-param>
+			<param-name>expiration</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>tokenCleanPeriod</param-name>
+			<param-value>300000</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ServiceServlet</servlet-name>
@@ -122,6 +134,7 @@
 	<filter-mapping>
 		<filter-name>FrontAuthFilter</filter-name>
 		<url-pattern>/front/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	
 	<filter>
@@ -143,6 +156,7 @@
 	<filter-mapping>
 		<filter-name>BackAuthFilter</filter-name>
 		<url-pattern>/back/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	
 	<filter>
@@ -165,6 +179,7 @@
 	<filter-mapping>
 		<filter-name>ManageAuthFilter</filter-name>
 		<url-pattern>/manage/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	 -->
 	

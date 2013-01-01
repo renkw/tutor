@@ -33,8 +33,6 @@ import com.db4o.query.Query;
  */
 public class DataView implements View {
 
-	private static final long serialVersionUID = -4399502857863981334L;
-
 	private static final Logger logger = Logger.getLogger(DataView.class);
 
 	@Override

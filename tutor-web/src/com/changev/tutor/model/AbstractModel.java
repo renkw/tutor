@@ -18,7 +18,7 @@ import java.util.Date;
  * @author ren
  * 
  */
-public abstract class AbstractModel implements Serializable {
+public abstract class AbstractModel implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,6 +33,15 @@ public abstract class AbstractModel implements Serializable {
 		this.setCreateDateTime(copy.getCreateDateTime());
 		this.setUpdateDateTime(copy.getUpdateDateTime());
 		this.setDeleted(copy.getDeleted());
+	}
+
+	@Override
+	public AbstractModel clone() {
+		try {
+			return (AbstractModel) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new UnsupportedOperationException(e);
+		}
 	}
 
 	@Override

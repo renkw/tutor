@@ -16,7 +16,6 @@ package com.changev.tutor.web;
 public class ServiceMessage {
 
 	private int code;
-
 	private String description;
 
 	public ServiceMessage() {

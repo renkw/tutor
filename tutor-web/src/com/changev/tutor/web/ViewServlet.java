@@ -86,8 +86,7 @@ public class ViewServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		config = (Configuration) Tutor.getBeanFactory().getBean(
-				"freemarkerConfig");
+		config = Tutor.getBeanFactory().getBean(Configuration.class);
 		config.setServletContextForTemplateLoading(getServletContext(), "");
 	}
 

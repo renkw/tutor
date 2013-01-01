@@ -28,7 +28,7 @@ public class UserModel extends AbstractModel {
 	private String email;
 	private UserRole role;
 	private Date loginDateTime;
-	private String securityCode;
+	private String secureCode;
 	private UserModel parentUser;
 
 	public UserModel() {
@@ -42,8 +42,13 @@ public class UserModel extends AbstractModel {
 		this.setEmail(copy.getEmail());
 		this.setRole(copy.getRole());
 		this.setLoginDateTime(copy.getLoginDateTime());
-		this.setSecurityCode(copy.getSecurityCode());
+		this.setSecureCode(copy.getSecureCode());
 		this.setParentUser(copy.getParentUser());
+	}
+
+	@Override
+	public UserModel clone() {
+		return (UserModel) super.clone();
 	}
 
 	/**
@@ -137,18 +142,18 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the securityCode
+	 * @return the secureCode
 	 */
-	public String getSecurityCode() {
-		return securityCode;
+	public String getSecureCode() {
+		return secureCode;
 	}
 
 	/**
-	 * @param securityCode
-	 *            the securityCode to set
+	 * @param secureCode
+	 *            the secureCode to set
 	 */
-	public void setSecurityCode(String securityCode) {
-		this.securityCode = securityCode;
+	public void setSecureCode(String secureCode) {
+		this.secureCode = secureCode;
 	}
 
 	/**

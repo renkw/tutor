@@ -4,6 +4,7 @@
 package com.changev.tutor;
 
 import java.lang.management.ManagementFactory;
+import java.security.Key;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -57,8 +61,27 @@ public final class Tutor {
 	/** 默认的货币格式 */
 	public static final String DEFAULT_CURRENCY_FORMAT = "#,##0.00";
 
+	/** 认证日志名 */
+	public static final String AUTH_LOGGER_NAME = "com.changev.tutor.AUTH";
+
+	/** 用户登录日志消息 */
+	public static final String AUTH_LOGIN_FORMAT = "[LOGIN ] {0}@{1}";
+
+	/** 用户退出日志消息 */
+	public static final String AUTH_LOGOUT_FORMAT = "[LOGIN ] {0}@{1}";
+
 	/** 实例原型（在Freemarker中使用） */
 	public static final Tutor SINGLETON = new Tutor();
+
+	/** AES密匙 */
+	public static final Key AES_KEY;
+
+	static {
+		// create random 128bit AES key
+		byte[] key = new byte[16];
+		new Random().nextBytes(key);
+		AES_KEY = new SecretKeySpec(key, "AES");
+	}
 
 	private static String contextRootPath = "";
 
