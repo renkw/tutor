@@ -1,0 +1,85 @@
+/*
+ * File   CheckCodeServlet.java
+ * Create 2013/01/02
+ * Copyright (c) change-v.com 2012 
+ */
+package com.changev.tutor.web;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.math.RandomUtils;
+
+/**
+ * @author ren
+ * 
+ */
+public class CheckCodeServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 8117031543160270324L;
+
+	static final Color[] BG = { new Color(0x0FFF0F5), new Color(0x0E6E6FA),
+			new Color(0x0B0C4DE), new Color(0x0E0FFFF), new Color(0x0F0FFF0),
+			new Color(0x0FAFAD2), new Color(0x0FFDAB9), new Color(0x0FFE4E1) };
+
+	static final Color[] FG = { new Color(0x04B0082), new Color(0x0191970),
+			new Color(0x02F4F4F), new Color(0x0556B2F), new Color(0x08B4513),
+			new Color(0x0800000), new Color(0x0990000), new Color(0x0338800) };
+
+	String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+	int length = 4;
+	String font = "Arial-BOLD-20";
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		SessionContainer sess = SessionContainer.get(req);
+		String code = RandomStringUtils.random(length, chars);
+		sess.setCheckCode(code);
+		BufferedImage img = createImage(code);
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Cache-Control", "no-cache");
+		resp.setContentType("image/gif");
+		ImageIO.write(img, "gif", resp.getOutputStream());
+	}
+
+	protected BufferedImage createImage(String code) {
+		Font font = Font.decode(this.font);
+		// get font's width and height
+		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+		Graphics g = img.getGraphics();
+		FontMetrics fm = g.getFontMetrics(font);
+		int base = fm.getAscent();
+		int width = fm.stringWidth(code);
+		int height = fm.getHeight();
+		g.dispose();
+		// create image
+		img = new BufferedImage(width + 20, height, BufferedImage.TYPE_INT_RGB);
+		g = img.getGraphics();
+		g.setFont(font);
+		// draw background
+		g.setColor(BG[RandomUtils.nextInt(BG.length)]);
+		g.fillRect(0, 0, img.getWidth(), img.getHeight());
+		interfer(g);
+		g.setColor(FG[RandomUtils.nextInt(FG.length)]);
+		g.drawString(code, 10, base);
+		g.dispose();
+		return img;
+	}
+
+	protected void interfer(Graphics g) {
+		// TODO
+	}
+
+}

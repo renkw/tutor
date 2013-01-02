@@ -70,6 +70,7 @@ public final class SessionContainer implements Serializable {
 
 	private UserModel loginUser;
 	private Messages sessionMessage = new Messages();
+	private String checkCode;
 
 	private SessionContainer() {
 	}
@@ -102,6 +103,20 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void setSessionMessage(Messages sessionMessage) {
 		this.sessionMessage = sessionMessage;
+	}
+
+	/**
+	 * @return the checkCode
+	 */
+	public String getCheckCode() {
+		return checkCode;
+	}
+
+	/**
+	 * @param checkCode the checkCode to set
+	 */
+	public void setCheckCode(String checkCode) {
+		this.checkCode = checkCode;
 	}
 
 }

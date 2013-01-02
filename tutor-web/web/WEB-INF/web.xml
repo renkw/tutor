@@ -37,7 +37,7 @@
 	<!-- Servlets -->
 	<servlet>
 		<description>
-         Process request action and render the response with ftl
+         Process request action and render the response with freemarker
     	</description>
 		<servlet-name>ViewServlet</servlet-name>
 		<servlet-class>com.changev.tutor.web.ViewServlet</servlet-class>
@@ -61,35 +61,7 @@
 	
 	<servlet>
 		<description>
-		</description>
-		<servlet-name>UploadServlet</servlet-name>
-		<servlet-class>com.changev.tutor.web.UploadServlet</servlet-class>
-		<init-param>
-			<description>
-			</description>
-			<param-name>uploadDir</param-name>
-			<param-value>//../upload/</param-value>
-		</init-param>
-		<init-param>
-			<description>
-			</description>
-			<param-name>maxFileSize</param-name>
-			<param-value>1000000</param-value>
-		</init-param>
-		<init-param>
-			<description>
-			</description>
-			<param-name>acceptContentTypes</param-name>
-			<param-value>image/*</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UploadServlet</servlet-name>
-		<url-pattern>/upload/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<description>
+		 Run service
 		</description>
 		<servlet-name>ServiceServlet</servlet-name>
 		<servlet-class>com.changev.tutor.web.ServiceServlet</servlet-class>
@@ -109,6 +81,15 @@
 	<servlet-mapping>
 		<servlet-name>ServiceServlet</servlet-name>
 		<url-pattern>/service/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>CheckCodeServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.CheckCodeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CheckCodeServlet</servlet-name>
+		<url-pattern>/check_code/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Authentication -->

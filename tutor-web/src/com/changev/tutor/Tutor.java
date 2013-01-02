@@ -201,6 +201,17 @@ public final class Tutor {
 
 	/**
 	 * <p>
+	 * 取得当前时间戳。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static long timestamp() {
+		return System.currentTimeMillis();
+	}
+
+	/**
+	 * <p>
 	 * 格式化日期对象。
 	 * </p>
 	 * 
