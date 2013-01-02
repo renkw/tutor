@@ -6,7 +6,10 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,6 +49,35 @@ import com.google.gson.Gson;
 /**
  * <p>
  * 执行系统服务。
+ * </p>
+ * 
+ * <p>
+ * 设置参数：
+ * <ul>
+ * <li><strong>publicServices</strong> - 可选参数。设置无需认证的服务名。</li>
+ * <li><strong>expiration</strong> - 可选参数。设置服务令牌有效期（毫秒），默认为一直有效。</li>
+ * <li><strong>tokenCleanPeriod</strong> - 可选参数。设置服务令牌清理运行周期（毫秒），默认为不清理。</li>
+ * </ul>
+ * 
+ * 请求服务的HTTP头：
+ * <ul>
+ * <li><strong>X-Tutor-UDID</strong> - 访问设备标识，主要用于日志管理。</li>
+ * <li><strong>X-Tutor-User</strong> - 认证用户码。</li>
+ * <li><strong>X-Tutor-Auth</strong> - 加密的认证令牌。</li>
+ * </ul>
+ * 
+ * 服务响应的HTTP头：
+ * <ul>
+ * <li><strong>X-Tutor-Token</strong> - 服务令牌。</li>
+ * </ul>
+ * 
+ * 服务响应状态码：
+ * <ul>
+ * <li><strong>200</strong> - 正常。</li>
+ * <li><strong>400</strong> - 当X-Tutor-User头不存在，或格式不符时。</li>
+ * <li><strong>401</strong> - 当X-Tutor-Auth头存在，但对应用户不存在或令牌不符（安全码可能过期）时。</li>
+ * <li><strong>403</strong> - 当X-Tutor-Auth头存在，但请求认证的服务名不一致时。</li>
+ * </ul>
  * </p>
  * 
  * @author ren
@@ -66,6 +99,8 @@ public class ServiceServlet extends HttpServlet {
 	static final String TUTOR_USER_HEADER = "X-Tutor-User";
 	static final String TUTOR_TOKEN_HEADER = "X-Tutor-Token";
 	static final String TUTOR_AUTH_HEADER = "X-Tutor-Auth";
+
+	static final String DEFAULT_ENCODING = "UTF-8";
 
 	List<String> publicServices;
 	long expiration;
@@ -253,7 +288,7 @@ public class ServiceServlet extends HttpServlet {
 					| NoSuchPaddingException | IllegalBlockSizeException
 					| BadPaddingException e) {
 				logger.error("[getUserModel] AES decrypt failed", e);
-				throw new RuntimeException(e);
+				throw new ServletException(e);
 			}
 
 			// username::clientToken
@@ -312,12 +347,24 @@ public class ServiceServlet extends HttpServlet {
 				| NoSuchPaddingException | IllegalBlockSizeException
 				| BadPaddingException e) {
 			logger.error("[getUserModel] HmacMD5 encrypt failed", e);
-			throw new RuntimeException(e);
+			throw new ServletException(e);
 		}
 
 		return userModel;
 	}
 
+	/**
+	 * <p>
+	 * 执行服务。
+	 * </p>
+	 * 
+	 * @param service
+	 * @param userModel
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void runService(Service service, UserModel userModel,
 			HttpServletRequest request, HttpServletResponse response)
@@ -334,8 +381,7 @@ public class ServiceServlet extends HttpServlet {
 			}
 		}
 		// run service
-		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
-		Object input = gson.fromJson(request.getReader(), inputType);
+		Object input = readInput(request, inputType);
 		Object result;
 		try {
 			result = service.run(userModel, input);
@@ -347,17 +393,106 @@ public class ServiceServlet extends HttpServlet {
 			throw new ServletException(t);
 		}
 		// output result
-		Writer writer = response.getWriter();
-		gson.toJson(result, writer);
-		writer.close();
+		writeOutput(response, result);
 	}
 
+	/**
+	 * <p>
+	 * 从请求输入流中读取服务输入参数。
+	 * </p>
+	 * 
+	 * @param request
+	 * @param type
+	 * @return
+	 * @throws IOException
+	 */
+	protected Object readInput(HttpServletRequest request, Type type)
+			throws IOException {
+		InputStream stream = request.getInputStream();
+		try {
+			// plain text
+			if (type == String.class)
+				return IOUtils.toString(stream, DEFAULT_ENCODING);
+			// stream
+			if (type == byte[].class)
+				return IOUtils.toByteArray(stream);
+			// json
+			return Tutor
+					.getBeanFactory()
+					.getBean(Gson.class)
+					.fromJson(new InputStreamReader(stream, DEFAULT_ENCODING),
+							type);
+		} finally {
+			stream.close();
+		}
+	}
+
+	/**
+	 * <p>
+	 * 写服务输出结果到响应输出流。
+	 * </p>
+	 * 
+	 * @param response
+	 * @param obj
+	 * @throws IOException
+	 */
+	protected void writeOutput(HttpServletResponse response, Object obj)
+			throws IOException {
+		OutputStream stream = response.getOutputStream();
+		try {
+			if (obj == null)
+				return;
+			// plain text
+			if (obj.getClass() == String.class) {
+				response.setContentType("text/plain");
+				response.setCharacterEncoding(DEFAULT_ENCODING);
+				IOUtils.write((String) obj, stream, DEFAULT_ENCODING);
+				return;
+			}
+			// stream
+			if (obj.getClass() == byte[].class) {
+				response.setContentType("application/oct-steam");
+				stream.write((byte[]) obj);
+				return;
+			}
+			// json
+			response.setContentType("application/json");
+			response.setCharacterEncoding(DEFAULT_ENCODING);
+			Tutor.getBeanFactory()
+					.getBean(Gson.class)
+					.toJson(obj,
+							new OutputStreamWriter(stream, DEFAULT_ENCODING));
+		} finally {
+			stream.close();
+		}
+	}
+
+	/**
+	 * <p>
+	 * 取得服务名。
+	 * </p>
+	 * 
+	 * <p>
+	 * 如果请求路径为/app.foo，则服务名为app.fooService。
+	 * </p>
+	 * 
+	 * @param path
+	 * @return
+	 */
 	protected String getServiceName(String path) {
 		if (StringUtils.isEmpty(path))
 			return null;
-		return path.charAt(0) == '/' ? path.substring(1) : path;
+		return (path.charAt(0) == '/' ? path.substring(1) : path) + "Service";
 	}
 
+	/**
+	 * <p>
+	 * 服务认证信息。
+	 * </p>
+	 * 
+	 * @author ren
+	 * 
+	 */
 	static class AuthInfo {
 
 		final String username;

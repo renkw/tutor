@@ -10,6 +10,10 @@
 		http://www.springframework.org/schema/util		http://www.springframework.org/schema/util/spring-util-3.0.xsd
        ">
 
+	<!-- ####################################### -->
+	<!-- ##       COMMON CONFIGURATION        ## -->
+	<!-- ####################################### -->
+	
 	<!-- Timer -->
 	<bean id="timer" class="java.util.Timer">
 		<constructor-arg type="boolean" value="true" />
@@ -26,7 +30,7 @@
 		</property>
 	</bean>
 	
-	<!-- Freemarker Configuration -->
+	<!-- Freemarker -->
 	<bean class="freemarker.template.Configuration"
 		p:defaultEncoding="UTF-8"
 		p:tagSyntax="0"
@@ -36,9 +40,26 @@
 		</property>
 	</bean>
 	
+	<!-- FileUpload -->
+	<bean class="org.apache.commons.fileupload.FileUpload"
+		p:fileSizeMax="#{1024*1024}"
+		p:sizeMax="#{5*1024*1024}"
+	>
+		<property name="fileItemFactory">
+			<bean class="org.apache.commons.fileupload.disk.DiskFileItemFactory" />
+		</property>
+	</bean>
+	
+	<!-- UserFileManager -->
+	<bean class="com.changev.tutor.web.util.DefaultUserFileManager" />
+	
 	<!-- Gson -->
 	<bean class="com.google.gson.Gson" />
 
+	<!-- ####################################### -->
+	<!-- ##     APPLICATION CONFIGURATION     ## -->
+	<!-- ####################################### -->
+	
 	<!-- Views -->
 	<bean id="front.sampleView" class="com.changev.tutor.web.front.SampleView" />
 	

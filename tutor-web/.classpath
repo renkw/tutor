@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/gson-2.2.2.jar" sourcepath="lib/src/gson-2.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang-2.6.jar" sourcepath="lib/src/commons-lang-2.6-sources.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-io-2.4.jar" sourcepath="lib/src/commons-io-2.4-sources.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

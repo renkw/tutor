@@ -5,7 +5,7 @@
  */
 package com.changev.tutor.web.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.web.Service;
@@ -18,63 +18,15 @@ import com.changev.tutor.web.Service;
  * @author ren
  * 
  */
-public class TestService implements Service<TestService.Input> {
+public class TestService implements Service<Object> {
+
+	private static final Logger logger = Logger.getLogger(TestService.class);
 
 	@Override
-	public Object run(UserModel user, Input input) throws Throwable {
-		Output output = new Output();
-		if (StringUtils.isEmpty(input.getCommand())) {
-			output.setResult("Service is running.");
-		} else {
-			switch (input.getCommand()) {
-			case "version":
-				output.setResult("1.0");
-				break;
-			}
-		}
-		return output;
-	}
-
-	public static class Input {
-
-		private String command;
-
-		/**
-		 * @return the command
-		 */
-		public String getCommand() {
-			return command;
-		}
-
-		/**
-		 * @param command
-		 *            the command to set
-		 */
-		public void setCommand(String command) {
-			this.command = command;
-		}
-
-	}
-
-	public static class Output {
-
-		private String result;
-
-		/**
-		 * @return the result
-		 */
-		public String getResult() {
-			return result;
-		}
-
-		/**
-		 * @param result
-		 *            the result to set
-		 */
-		public void setResult(String result) {
-			this.result = result;
-		}
-
+	public Object run(UserModel user, Object input) throws Throwable {
+		if (logger.isTraceEnabled())
+			logger.trace("[run] called");
+		return input;
 	}
 
 }
