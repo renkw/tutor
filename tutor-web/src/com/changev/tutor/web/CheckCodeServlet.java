@@ -22,6 +22,21 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
 /**
+ * <p>
+ * 随机生成验证码图片（gif格式）。
+ * </p>
+ * 
+ * <p>
+ * 设置参数：
+ * <ul>
+ * <li><strong>chars</strong> - 可选参数。全部包含的字符。默认为半角英数字。</li>
+ * <li><strong>length</strong> - 可选参数。生成验证码长度。默认为4。</li>
+ * <li><strong>font</strong> - 可选参数。生成验证码字体。默认为Arial-BOLD-20。</li>
+ * </ul>
+ * 
+ * 生成图片宽高根据指定字体和随机字符串自动计算。
+ * </p>
+ * 
  * @author ren
  * 
  */
@@ -54,6 +69,14 @@ public class CheckCodeServlet extends HttpServlet {
 		ImageIO.write(img, "gif", resp.getOutputStream());
 	}
 
+	/**
+	 * <p>
+	 * 根据设定生成图片。
+	 * </p>
+	 * 
+	 * @param code
+	 * @return
+	 */
 	protected BufferedImage createImage(String code) {
 		Font font = Font.decode(this.font);
 		// get font's width and height
@@ -71,15 +94,27 @@ public class CheckCodeServlet extends HttpServlet {
 		// draw background
 		g.setColor(BG[RandomUtils.nextInt(BG.length)]);
 		g.fillRect(0, 0, img.getWidth(), img.getHeight());
-		interfer(g);
+		interfer(g, img.getWidth(), img.getHeight());
 		g.setColor(FG[RandomUtils.nextInt(FG.length)]);
 		g.drawString(code, 10, base);
 		g.dispose();
 		return img;
 	}
 
-	protected void interfer(Graphics g) {
-		// TODO
+	/**
+	 * <p>
+	 * 在图片中添加干扰。
+	 * </p>
+	 * 
+	 * @param g
+	 */
+	protected void interfer(Graphics g, int width, int height) {
+		int n = RandomUtils.nextInt(3);
+		for (int i = 0; i <= n; i++) {
+			g.setColor(FG[RandomUtils.nextInt(FG.length)]);
+			g.drawLine(RandomUtils.nextInt(width), RandomUtils.nextInt(height),
+					RandomUtils.nextInt(width), RandomUtils.nextInt(height));
+		}
 	}
 
 }

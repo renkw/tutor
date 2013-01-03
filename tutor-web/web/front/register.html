@@ -19,30 +19,30 @@
 	</thead>
 	<tbody>
 		<tr>
-			<th class="ui-state-default noborder-top s12">用户名<span class="required">*</span></th>
+			<th class="ui-state-default noborder-top s12">邮箱地址<span class="required">*</span></th>
 			<td class="s14">
 				<input type="text" name="username" value="${params.username!}" size="30" />
-				<div class="input-error">${(msg.errors.username)!}</div>
+				<@errmsg name="username" />
 			</td>
 			<td class="ui-widget-content border-right-only left s12">
-				<div class="alpha25">登录用户名由6-10位英文字母、数字、下划线（_）组成。</div>
+				<div class="alpha25">此邮箱地址将作为登录用户名，和发送激活或更改密码时使用。</div>
 			</td>
 		</tr>
 		<tr>
 			<th class="ui-state-default noborder-top s12">密码<span class="required">*</span></th>
 			<td class="left s14">
 				<input type="password" name="password" value="" size="30" maxlength="10" />
-				<div class="input-error">${(msg.errors.password)!}</div>
+				<@errmsg name="password" />
 			</td>
 			<td class="ui-widget-content border-right-only left s12">
-				<div class="alpha25">登录密码由6-10位英文字母、数字、下划线（_）组成。</div>
+				<div class="alpha25">登录密码由6-10位任意文字组成。</div>
 			</td>
 		</tr>
 		<tr>
 			<th class="ui-state-default noborder-top s12">确认密码<span class="required">*</span></th>
 			<td class="left s14">
 				<input type="password" name="confirmPassword" value="" size="30" maxlength="10" />
-				<div class="input-error">${(msg.errors.confirmPassword)!}</div>
+				<@errmsg name="confirmPassword" />
 			</td>
 			<td class="ui-widget-content border-right-only left s12">
 				<div class="alpha25">为防止拼写错误，请再输入一次密码。</div>
@@ -52,10 +52,10 @@
 			<th class="ui-state-default noborder-top s12">验证码<span class="required">*</span></th>
 			<td class="left s14">
 				<input type="text" name="checkCode" value="" size="10" maxlength="4" />
-				<img align="absmiddle" src="${request.contextPath}/check_code/${Tutor.timestamp()?c}.gif" alt="验证码" title="单击更换图片"
-					class="pointer"
+				<img src="${request.contextPath}/check_code/${Tutor.timestamp()?c}.gif" alt="验证码" title="单击更换图片"
+					align="absmiddle" class="pointer"
 					onclick="this.src='${request.contextPath}/check_code/'+new Date().getTime()+'.gif'" />
-				<div class="input-error">${(msg.errors.confirmPassword)!}</div>
+				<@errmsg name="checkCode" />
 			</td>
 			<td class="ui-widget-content border-right-only left s12">
 				<div class="alpha25">请输入图片中的文字。</div>

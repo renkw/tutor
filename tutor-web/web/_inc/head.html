@@ -1,3 +1,27 @@
+<#macro infomsg name>
+<#if msg.messages[name]??>
+<div class="ui-state-default icon-label s12">
+	<div class="ui-icon ui-icon-comment"></div>${msg.messages[name]}
+</div>
+</#if>
+</#macro>
+
+<#macro warnmsg name>
+<#if msg.warnings[name]??>
+<div class="ui-state-highlight icon-label s12">
+	<div class="ui-icon ui-icon-alert"></div>${msg.warnings[name]}
+</div>
+</#if>
+</#macro>
+
+<#macro errmsg name>
+<#if msg.errors[name]??>
+<div class="ui-state-error icon-label s12">
+	<div class="ui-icon ui-icon-close"></div>${msg.errors[name]}
+</div>
+</#if>
+</#macro>
+
 <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/redmond/jquery-ui.css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
@@ -6,19 +30,66 @@
 .center { text-align: center !important; }
 .left { text-align: left !important; }
 .right { text-align: right !important; }
-.float-left { float: left !important; }
-.float-right { float: right !important; }
-.s10 { font-size: 10px !important; }
-.s12 { font-size: 12px !important; }
-.s14 { font-size: 14px !important; }
-.s18 { font-size: 18px !important; }
-.s20 { font-size: 20px !important; }
-.s24 { font-size: 24px !important; }
-.noborder-left, .border-top-only, .border-right-only, .border-bottom-only { border-left-width: 0 !important; }
-.noborder-top, .border-left-only, .border-right-only, .border-bottom-only { border-top-width: 0 !important; }
-.noborder-right, .border-left-only, .border-top-only, .border-bottom-only { border-right-width: 0 !important; }
-.noborder-bottom, .border-left-only, .border-top-only, .border-right-only { border-bottom-width: 0 !important; }
+.float-left { float: left; }
+.float-right { float: right; }
+.clear-left { clear: left; }
+.clear-right { clear: right; }
+.clear-both { clear: both; }
+.s10, .sb10 { font-size: 10px !important; }
+.s12, .sb12 { font-size: 12px !important; }
+.s14, .sb14 { font-size: 14px !important; }
+.s18, .sb18 { font-size: 18px !important; }
+.s20, .sb20 { font-size: 20px !important; }
+.s24, .sb24 { font-size: 24px !important; }
+.sb10, .sb12, .sb14, .sb18, .sb20, .sb24 { font-weight: bold !important; }
+.border2 { border-width: 2px; }
+.border4 { border-width: 4px; }
+.border8 { border-width: 8px; }
+.noborder-left, .noborder-lr, .noborder-tl, .noborder-bl, .border-top-only, .border-right-only, .border-bottom-only { border-left-width: 0 !important; }
+.noborder-top, .noborder-tb, .noborder-tl, .noborder-tr, .border-left-only, .border-right-only, .border-bottom-only { border-top-width: 0 !important; }
+.noborder-right, .noborder-lr, .noborder-tr, .noborder-br, .border-left-only, .border-top-only, .border-bottom-only { border-right-width: 0 !important; }
+.noborder-bottom, .noborder-tb, .noborder-bl, .noborder-br, .border-left-only, .border-top-only, .border-right-only { border-bottom-width: 0 !important; }
 .noborder { border-width: 0 !important; }
+.pad0, .lpad0 { padding-left: 0 !important; }
+.pad2, .lpad2 { padding-left: 2px !important; }
+.pad5, .lpad5 { padding-left: 5px !important; }
+.pad10, .lpad10 { padding-left: 10px !important; }
+.pad20, .lpad20 { padding-left: 20px !important; }
+.pad0, .rpad0 { padding-right: 0 !important; }
+.pad2, .rpad2 { padding-right: 2px !important; }
+.pad5, .rpad5 { padding-right: 5px !important; }
+.pad10, .rpad10 { padding-right: 10px !important; }
+.pad20, .rpad20 { padding-right: 20px !important; }
+.pad0, .tpad0 { padding-top: 0 !important; }
+.pad2, .tpad2 { padding-top: 2px !important; }
+.pad5, .tpad5 { padding-top: 5px !important; }
+.pad10, .tpad10 { padding-top: 10px !important; }
+.pad20, .tpad20 { padding-top: 20px !important; }
+.pad0, .bpad0 { padding-bottom: 0 !important; }
+.pad2, .bpad2 { padding-bottom: 2px !important; }
+.pad5, .bpad5 { padding-bottom: 5px !important; }
+.pad10, .bpad10 { padding-bottom: 10px !important; }
+.pad20, .bpad20 { padding-bottom: 20px !important; }
+.margin0, .lmargin0 { margin-left: 0 !important; }
+.margin2, .lmargin2 { margin-left: 2px !important; }
+.margin5, .lmargin5 { margin-left: 5px !important; }
+.margin10, .lmargin10 { margin-left: 10px !important; }
+.margin20, .lmargin20 { margin-left: 20px !important; }
+.margin0, .rmargin0 { margin-right: 0 !important; }
+.margin2, .rmargin2 { margin-right: 2px !important; }
+.margin5, .rmargin5 { margin-right: 5px !important; }
+.margin10, .rmargin10 { margin-right: 10px !important; }
+.margin20, .rmargin20 { margin-right: 20px !important; }
+.margin0, .tmargin0 { margin-top: 0 !important; }
+.margin2, .tmargin2 { margin-top: 2px !important; }
+.margin5, .tmargin5 { margin-top: 5px !important; }
+.margin10, .tmargin10 { margin-top: 10px !important; }
+.margin20, .tmargin20 { margin-top: 20px !important; }
+.margin0, .bmargin0 { margin-bottom: 0 !important; }
+.margin2, .bmargin2 { margin-bottom: 2px !important; }
+.margin5, .bmargin5 { margin-bottom: 5px !important; }
+.margin10, .bmargin10 { margin-bottom: 10px !important; }
+.margin20, .bmargin20 { margin-bottom: 20px !important; }
 .pointer { cursor: pointer !important; }
 .required { color: red !important; }
 .alpha { opacity: 0.0 !important; }
@@ -26,18 +97,36 @@
 .alpha50 { opacity: 0.5 !important; }
 .alpha75 { opacity: 0.75 !important; }
 .alpha100 { opacity: 1.0 !important; }
+.nowrap { white-space: nowrap; }
 .pointer { cursor: pointer !important; }
+.hscroll { overflow-x: scroll; }
+.vscroll { overflow-y: scroll; }
+.small-button, .big-button, .large-button { cursor: pointer; display: inline-block; text-align: center; vertical-align: middle; }
 .small-button { width: 100px; height: 24px; }
 .big-button { width: 150px; text-size: 32px; }
 .large-button { width: 200px; text-size: 48px; }
-.red-button { background-color: lightred; color: darkred; border: solid 1px red; }
-.green-button { background-color: lightgreen; color: darkgreen; border: solid 1px green; }
-.blue-button { background-color: lightblue; color: darkblue; border: solid 1px blue; }
-.gray-button { background-color: lightgray; color: darkgray; border: solid 1px gray; }
-
+.red-button, .red-button a { background-color: pink; color: darkred; text-decoration: none; }
+.red-button { border: 1px solid darkred; }
+.green-button, .green-button a { background-color: lightgreen; color: darkgreen; text-decoration: none; }
+.green-button { border: solid 1px darkgreen; }
+.blue-button, .blue-button a { background-color: lightblue; color: darkblue; text-decoration: none; }
+.blue-button { border: 1px solid darkblue; }
+.gray-button, .gray-button a { background-color: lightgray; color: gray; text-decoration: none; }
+.gray-button { border: 1px solid gray; }
+.pagebar { padding: 5px }
+.pagebar a { display: inline-block; min-width: 20px; text-align: center; text-decoration: none; padding: 2px; }
+.odd { background-color: #fffef9; border-top: 1px dashed darkcyan; border-bottom: 1px dashed darkcyan; }
+.even { background-color: #f6f5ec; }
+.语文, .数学, .英语 { background-repeat: no-repeat; height: 22px; padding: 10px 0 0 52px; font-size: 12px; }
+.语文 { background-image: url(${request.contextPath}/images/chinese.png); }
+.数学 { background-image: url(${request.contextPath}/images/math.png); }
+.英语 { background-image: url(${request.contextPath}/images/english.png); }
 -->
 </style>
 <script type="text/javascript">
 <!--
+function go2(path) {
+	location.href = path;
+}
 // -->
 </script>

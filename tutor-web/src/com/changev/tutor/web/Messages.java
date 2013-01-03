@@ -88,7 +88,7 @@ public class Messages implements Serializable {
 	 * @return
 	 */
 	public static boolean hasErrors(HttpServletRequest request) {
-		Messages msg = (Messages) request.getAttribute("msg");
+		Messages msg = (Messages) request.getAttribute(Tutor.KEY_MESSAGES);
 		return msg != null && msg.hasErrors();
 	}
 

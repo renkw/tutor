@@ -131,14 +131,19 @@
 		</init-param>
 		<init-param>
 			<param-name>excludePaths</param-name>
-			<param-value>/back/login.html</param-value>
+			<param-value>
+				/back/login.html,
+				/back/register.html
+			</param-value>
 		</init-param>
 	</filter>
+	<!-- 
 	<filter-mapping>
 		<filter-name>BackAuthFilter</filter-name>
 		<url-pattern>/back/*</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
+	 -->
 	
 	<filter>
 		<filter-name>ManageAuthFilter</filter-name>
