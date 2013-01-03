@@ -68,7 +68,7 @@ public class AuthFilter implements Filter {
 			throw new ServletException(
 					"parameter userRoles and loginPagePath is required");
 
-		this.userRoles = new ArrayList<>();
+		this.userRoles = new ArrayList<UserRole>();
 		for (String s : StringUtils.split(userRoles, ',')) {
 			if (!(s = s.trim()).isEmpty())
 				this.userRoles.add(UserRole.valueOf(s));
@@ -78,7 +78,7 @@ public class AuthFilter implements Filter {
 
 		this.excludePaths = Collections.emptyList();
 		if (StringUtils.isNotEmpty(excludePaths)) {
-			this.excludePaths = new ArrayList<>();
+			this.excludePaths = new ArrayList<String>();
 			for (String s : StringUtils.split(excludePaths, ',')) {
 				if (!(s = s.trim()).isEmpty())
 					this.excludePaths.add(context.getContextPath() + s);

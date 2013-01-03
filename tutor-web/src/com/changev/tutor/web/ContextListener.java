@@ -32,7 +32,8 @@ import com.db4o.cs.Db4oClientServer;
  * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br />
  * 默认为{@link Tutor#DEFAULT_BEAN_CONFIG_PATH DEFAULT_BEAN_CONFIG_PATH}。</li>
  * <li><strong>db4oConnectPath</strong> - 可选参数。Db4o数据文件路径或服务器连接字符串。<br />
- * 服务器连接字符串格式：db4o:<i>host</i>:<i>port</i>?user=<i>user</i>&amp;password=<i>password</i><br />
+ * 服务器连接字符串格式：db4o:<i>host</i>:<i>port</i>?user=<i>user</i>&amp;password=<i>
+ * password</i><br />
  * 默认为{@link Tutor#DEFAULT_DATAFILE_PATH DEFAULT_DATAFILE_PATH}。</li>
  * </ul>
  * </p>
@@ -86,14 +87,10 @@ public class ContextListener implements ServletContextListener {
 			int port = Integer.parseInt(sa[2]);
 			String user = "", password = "";
 			for (int i = 4; i < sa.length; i += 2) {
-				switch (sa[i - 1]) {
-				case "user":
+				if ("user".equals(sa[i - 1]))
 					user = sa[i];
-					break;
-				case "password":
+				else if ("password".equals(sa[i - 1]))
 					password = sa[i];
-					break;
-				}
 			}
 			objc = Db4oClientServer.openClient(host, port, user, password);
 		} else {

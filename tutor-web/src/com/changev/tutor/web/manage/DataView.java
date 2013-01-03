@@ -84,7 +84,7 @@ public class DataView implements View {
 		Timestamp updateTo = StringUtils.isEmpty(sUpdateTo) ? null : Timestamp
 				.valueOf(sUpdateTo);
 		// get all field names
-		List<String> names = new ArrayList<>();
+		List<String> names = new ArrayList<String>();
 		do {
 			Field[] fields = type.getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {

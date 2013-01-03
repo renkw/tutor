@@ -148,8 +148,13 @@ public class ViewServlet extends HttpServlet {
 			if (view != null) {
 				try {
 					return view.preRender(req, resp);
-				} catch (RuntimeException | ServletException | IOException
-						| Error e) {
+				} catch (RuntimeException e) {
+					throw e;
+				} catch (ServletException e) {
+					throw e;
+				} catch (IOException e) {
+					throw e;
+				} catch (Error e) {
 					throw e;
 				} catch (Throwable e) {
 					throw new ServletException(e);
@@ -215,8 +220,13 @@ public class ViewServlet extends HttpServlet {
 			if (view != null) {
 				try {
 					view.postRender(req, resp);
-				} catch (RuntimeException | ServletException | IOException
-						| Error e) {
+				} catch (RuntimeException e) {
+					throw e;
+				} catch (ServletException e) {
+					throw e;
+				} catch (IOException e) {
+					throw e;
+				} catch (Error e) {
 					throw e;
 				} catch (Throwable e) {
 					throw new ServletException(e);

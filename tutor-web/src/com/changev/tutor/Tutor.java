@@ -201,6 +201,18 @@ public final class Tutor {
 
 	/**
 	 * <p>
+	 * 取得对象内部ID。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static long id(Object obj) {
+		return topContainer.getID(obj);
+	}
+
+	/**
+	 * <p>
 	 * 取得当前时间戳。
 	 * </p>
 	 * 

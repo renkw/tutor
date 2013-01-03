@@ -3,13 +3,72 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Login</title>
+<title>登录</title>
+<#include "/_inc/head.html">
 </head>
 <body>
-<form method="post">
-	<label for="username">用户名</label><input type="text" id="username" name="username" value="${params.username!}" /><br />
-	<label for="password">密　码</label><input type="password" id="password" name="password" value="" /><br />
-	<input type="submit" name="login" value="登录" />
-</form>
+<#include "/_inc/bar.html">
+<form method="post" class="ui-widget"><center>
+	<table border="0" cellspacing="0" cellpadding="5" class="ui-widget-content noborder">
+	<thead>
+		<tr>
+			<th colspan="3" class="ui-widget-header ui-corner-top s14">
+				<div class="left">用户登录</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th class="ui-state-default noborder-top s12">
+				<label for="email">输入您的邮箱地址<span class="required">*</span></label>
+			</th>
+			<td class="s14">
+				<input type="text" id="email" name="email" value="${params.email!}" size="30" />
+				<div class="input-error">${(msg.errors.email)!}</div>
+			</td>
+			<td class="ui-widget-content border-right-only left s12">
+				<div class="alpha25">登录用户名由6-10位英文字母、数字、下划线（_）组成。</div>
+			</td>
+		</tr>
+		<tr>
+			<th class="ui-state-default noborder-top s12">
+				<label for="password">输入您的密码<span class="required">*</span></label>
+			</th>
+			<td class="left s14">
+				<input type="password" id="password" name="password" value="" size="30" maxlength="10" />
+				<div class="input-error">${(msg.errors.password)!}</div>
+			</td>
+			<td class="ui-widget-content border-right-only left s12">
+				<div class="alpha25">登录密码由6-10位英文字母、数字、下划线（_）组成。</div>
+			</td>
+		</tr>
+		<tr>
+			<th class="ui-state-default noborder-top s12">
+				<label for="checkCode">验证码<span class="required">*</span></label>
+			</th>
+			<td class="left s14">
+				<input type="text" id="checkCode" name="checkCode" value="" size="10" maxlength="4" />
+				<img align="absmiddle" src="${request.contextPath}/check_code/${Tutor.timestamp()?c}.gif" alt="验证码" title="单击更换图片"
+					class="pointer"
+					onclick="this.src='${request.contextPath}/check_code/'+new Date().getTime()+'.gif'" />
+				<div class="input-error">${(msg.errors.checkCode)!}</div>
+			</td>
+			<td class="ui-widget-content border-right-only left s12">
+				<div class="alpha25">请输入图片中的文字。</div>
+			</td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="3" class="ui-widget-content ui-corner-bottom noborder-top center s14">
+				<br />
+				<input type="submit" name="login" value="登录" class="green-button small-button ui-corner-all" />
+				<input type="submit" name="register" value="注册" class="green-button small-button ui-corner-all" />
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+</center></form>
+<#include "/_inc/foot.html">
 </body>
 </html>

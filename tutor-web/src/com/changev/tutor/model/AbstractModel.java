@@ -20,7 +20,7 @@ import java.util.Date;
  */
 public abstract class AbstractModel implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4390399593602862270L;
 
 	private Date createDateTime;
 	private Date updateDateTime;

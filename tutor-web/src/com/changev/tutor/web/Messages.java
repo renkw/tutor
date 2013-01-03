@@ -120,21 +120,21 @@ public class Messages implements Serializable {
 
 	public Messages addMessage(String name, String message) {
 		if (messages == Collections.EMPTY_MAP)
-			messages = new LinkedHashMap<>();
+			messages = new LinkedHashMap<String, String>();
 		messages.put(name, message);
 		return this;
 	}
 
 	public Messages addWarning(String name, String message) {
 		if (warnings == Collections.EMPTY_MAP)
-			warnings = new LinkedHashMap<>();
+			warnings = new LinkedHashMap<String, String>();
 		warnings.put(name, message);
 		return this;
 	}
 
 	public Messages addError(String name, String message) {
 		if (errors == Collections.EMPTY_MAP)
-			errors = new LinkedHashMap<>();
+			errors = new LinkedHashMap<String, String>();
 		errors.put(name, message);
 		return this;
 	}

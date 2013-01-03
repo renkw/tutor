@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class NamedLock {
 
-	private Map<String, Object> locks = new HashMap<>();
+	private Map<String, Object> locks = new HashMap<String, Object>();
 
 	public Object lock(String name) {
 		synchronized (locks) {

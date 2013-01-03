@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,10 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -105,7 +100,7 @@ public class ServiceServlet extends HttpServlet {
 	List<String> publicServices;
 	long expiration;
 
-	Map<String, AuthInfo> tokens = new ConcurrentHashMap<>();
+	Map<String, AuthInfo> tokens = new ConcurrentHashMap<String, AuthInfo>();
 
 	@Override
 	public void init() throws ServletException {
@@ -123,7 +118,7 @@ public class ServiceServlet extends HttpServlet {
 
 		this.publicServices = Collections.emptyList();
 		if (StringUtils.isNotEmpty(publicServices)) {
-			this.publicServices = new ArrayList<>();
+			this.publicServices = new ArrayList<String>();
 			for (String s : StringUtils.split(publicServices, ',')) {
 				if (!(s = s.trim()).isEmpty())
 					this.publicServices.add(s);
@@ -284,9 +279,7 @@ public class ServiceServlet extends HttpServlet {
 				content = new String(cipher.doFinal(user.getBytes()));
 				if (logger.isDebugEnabled())
 					logger.debug("[getUserModel] content = " + content);
-			} catch (InvalidKeyException | NoSuchAlgorithmException
-					| NoSuchPaddingException | IllegalBlockSizeException
-					| BadPaddingException e) {
+			} catch (Exception e) {
 				logger.error("[getUserModel] AES decrypt failed", e);
 				throw new ServletException(e);
 			}
@@ -343,9 +336,7 @@ public class ServiceServlet extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				return null;
 			}
-		} catch (InvalidKeyException | NoSuchAlgorithmException
-				| NoSuchPaddingException | IllegalBlockSizeException
-				| BadPaddingException e) {
+		} catch (Exception e) {
 			logger.error("[getUserModel] HmacMD5 encrypt failed", e);
 			throw new ServletException(e);
 		}
@@ -385,7 +376,16 @@ public class ServiceServlet extends HttpServlet {
 		Object result;
 		try {
 			result = service.run(userModel, input);
-		} catch (RuntimeException | ServletException | IOException | Error e) {
+		} catch (RuntimeException e) {
+			logger.error("[runService] error occur", e);
+			throw e;
+		} catch (ServletException e) {
+			logger.error("[runService] error occur", e);
+			throw e;
+		} catch (IOException e) {
+			logger.error("[runService] error occur", e);
+			throw e;
+		} catch (Error e) {
 			logger.error("[runService] error occur", e);
 			throw e;
 		} catch (Throwable t) {
