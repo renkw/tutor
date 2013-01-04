@@ -427,4 +427,58 @@ public final class Tutor {
 		return obj == null || cls.isInstance(obj);
 	}
 
+	/**
+	 * <p>
+	 * 转换为整数。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static int parseInt(Object obj) {
+		if (obj == null)
+			return 0;
+		if (obj instanceof Number)
+			return ((Number) obj).intValue();
+		if (obj instanceof Date)
+			return (int) ((Date) obj).getTime();
+		return Integer.parseInt(obj.toString());
+	}
+
+	/**
+	 * <p>
+	 * 转换为长整数。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static long parseLong(Object obj) {
+		if (obj == null)
+			return 0;
+		if (obj instanceof Number)
+			return ((Number) obj).longValue();
+		if (obj instanceof Date)
+			return ((Date) obj).getTime();
+		return Long.parseLong(obj.toString());
+	}
+
+	/**
+	 * <p>
+	 * 转换为浮点数。
+	 * </p>
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static double parseDouble(Object obj) {
+		if (obj == null)
+			return 0;
+		if (obj instanceof Number)
+			return ((Number) obj).doubleValue();
+		if (obj instanceof Date)
+			return ((Date) obj).getTime();
+		return Double.parseDouble(obj.toString());
+	}
+
 }
