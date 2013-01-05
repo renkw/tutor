@@ -16,7 +16,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
-import com.changev.tutor.model.UserModel;
 
 /**
  * <p>
@@ -36,7 +35,7 @@ public class DefaultUserFileManager implements UserFileManager {
 	 * </p>
 	 * 
 	 * <p>
-	 * 新建文件路径：<i>workDir</i>/<i>{@link UserModel#getUsername() username}</i><br />
+	 * 新建文件路径：<i>workDir</i>/<i>user</i><br />
 	 * 新建文件名格式：yyMMddHHmm_<i>[000-999]</i>.<i>ext</i>
 	 * </p>
 	 * 
@@ -46,8 +45,8 @@ public class DefaultUserFileManager implements UserFileManager {
 	 * @throws IOException
 	 */
 	@Override
-	public String create(UserModel user, String ext) throws IOException {
-		File dir = new File(Tutor.getRealPath(workDir), user.getUsername());
+	public String create(String user, String ext) throws IOException {
+		File dir = new File(Tutor.getRealPath(workDir), user);
 		dir.mkdirs();
 		// make file name
 		StringBuilder nameBuf = new StringBuilder(Tutor.formatDate(new Date(),
@@ -70,18 +69,18 @@ public class DefaultUserFileManager implements UserFileManager {
 	}
 
 	@Override
-	public InputStream read(UserModel user, String file) throws IOException {
+	public InputStream read(String user, String file) throws IOException {
 		if (file.indexOf('/') != -1 || file.indexOf('\\') != -1)
 			throw new IllegalArgumentException("file = " + file);
-		File dir = new File(Tutor.getRealPath(workDir), user.getUsername());
+		File dir = new File(Tutor.getRealPath(workDir), user);
 		return readFile(new File(dir, file));
 	}
 
 	@Override
-	public OutputStream write(UserModel user, String file) throws IOException {
+	public OutputStream write(String user, String file) throws IOException {
 		if (file.indexOf('/') != -1 || file.indexOf('\\') != -1)
 			throw new IllegalArgumentException("file = " + file);
-		File dir = new File(Tutor.getRealPath(workDir), user.getUsername());
+		File dir = new File(Tutor.getRealPath(workDir), user);
 		return writeFile(new File(dir, file));
 	}
 

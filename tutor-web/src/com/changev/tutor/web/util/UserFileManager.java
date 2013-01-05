@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.changev.tutor.model.UserModel;
-
 /**
  * <p>
  * 用户文件管理器。
@@ -31,7 +29,7 @@ public interface UserFileManager {
 	 * @return
 	 * @throws IOException
 	 */
-	String create(UserModel user, String ext) throws IOException;
+	String create(String user, String ext) throws IOException;
 
 	/**
 	 * <p>
@@ -43,7 +41,7 @@ public interface UserFileManager {
 	 * @return
 	 * @throws IOException
 	 */
-	InputStream read(UserModel user, String file) throws IOException;
+	InputStream read(String user, String file) throws IOException;
 
 	/**
 	 * <p>
@@ -55,6 +53,6 @@ public interface UserFileManager {
 	 * @return
 	 * @throws IOException
 	 */
-	OutputStream write(UserModel user, String file) throws IOException;
+	OutputStream write(String user, String file) throws IOException;
 
 }

@@ -40,16 +40,6 @@
 		</property>
 	</bean>
 	
-	<!-- FileUpload -->
-	<bean class="org.apache.commons.fileupload.FileUpload"
-		p:fileSizeMax="#{1024*1024}"
-		p:sizeMax="#{5*1024*1024}"
-	>
-		<property name="fileItemFactory">
-			<bean class="org.apache.commons.fileupload.disk.DiskFileItemFactory" />
-		</property>
-	</bean>
-	
 	<!-- UserFileManager -->
 	<bean class="com.changev.tutor.web.util.DefaultUserFileManager" />
 	

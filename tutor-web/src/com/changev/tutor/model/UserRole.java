@@ -14,5 +14,5 @@ package com.changev.tutor.model;
  * 
  */
 public enum UserRole {
-	Admin, Parent, Student, Teacher, Organization
+	None, Admin, Parent, Student, Teacher, Organization
 }

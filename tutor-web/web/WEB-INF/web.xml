@@ -41,18 +41,11 @@
     	</description>
 		<servlet-name>ViewServlet</servlet-name>
 		<servlet-class>com.changev.tutor.web.ViewServlet</servlet-class>
-		<init-param>
-			<param-name>TemplatePath</param-name>
-			<param-value>/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>NoCache</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ContentType</param-name>
-			<param-value>text/html; charset=UTF-8</param-value>
-		</init-param>
+		<multipart-config>
+			<max-file-size>512000</max-file-size>
+			<max-request-size>2048000</max-request-size>
+			<file-size-threshold>10240</file-size-threshold>
+		</multipart-config>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ViewServlet</servlet-name>
@@ -80,7 +73,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ServiceServlet</servlet-name>
-		<url-pattern>/service/*</url-pattern>
+		<url-pattern>/service/</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -89,85 +82,52 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>CheckCodeServlet</servlet-name>
-		<url-pattern>/check_code/*</url-pattern>
+		<url-pattern>/check_code/</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>FileDownloadServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.FileDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FileDownloadServlet</servlet-name>
+		<url-pattern>/files/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Authentication -->
 	<filter>
-		<filter-name>FrontAuthFilter</filter-name>
+		<filter-name>AuthFilter</filter-name>
 		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
 		<init-param>
-			<param-name>userRoles</param-name>
-			<param-value>Parent,Student</param-value>
-		</init-param>
-		<init-param>
-			<param-name>loginPagePath</param-name>
-			<param-value>/front/login.html</param-value>
-		</init-param>
-		<init-param>
-			<param-name>excludePaths</param-name>
+			<description>
+			 Access Control List.
+			 Rule format: '*'|pattern '*'|(('+'|'-')?role('|'('+'|'-')?role)*)? (('F'|'R')?path)?
+			 Follow by the first matched rule.
+			</description>
+			<param-name>ACL</param-name>
 			<param-value>
-			 /front/login.html,
-			 /front/register.html
+			<!-- 
+			 /front/login.html			*
+			 /front/register.html		*
+			 /front/childList.html		Parent					F/front/login.html
+			 /front/*					Parent|Student			R/front/login.html
+			 /files/*					-None					R/front/login.html
+			 /back/login.html			*
+			 /back/register.html		*
+			 /back/teacherList.html		Organization			F/back/login.html
+			 /back/*					Organization|Teacher	R/back/login.html
+			 /manage/login.html			*
+			 /manage/*					Admin					R/manage/login.html
+			  -->
 			</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>
-		<filter-name>FrontAuthFilter</filter-name>
-		<url-pattern>/front/*</url-pattern>
+		<filter-name>AuthFilter</filter-name>
+		<servlet-name>ViewServlet</servlet-name>
+		<servlet-name>FileDownloadServlet</servlet-name>
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
-	
-	<filter>
-		<filter-name>BackAuthFilter</filter-name>
-		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
-		<init-param>
-			<param-name>userRoles</param-name>
-			<param-value>Organization,Teacher</param-value>
-		</init-param>
-		<init-param>
-			<param-name>loginPagePath</param-name>
-			<param-value>/back/login.html</param-value>
-		</init-param>
-		<init-param>
-			<param-name>excludePaths</param-name>
-			<param-value>
-				/back/login.html,
-				/back/register.html
-			</param-value>
-		</init-param>
-	</filter>
-	<!-- 
-	<filter-mapping>
-		<filter-name>BackAuthFilter</filter-name>
-		<url-pattern>/back/*</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
-	 -->
-	
-	<filter>
-		<filter-name>ManageAuthFilter</filter-name>
-		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
-		<init-param>
-			<param-name>userRoles</param-name>
-			<param-value>Admin</param-value>
-		</init-param>
-		<init-param>
-			<param-name>loginPagePath</param-name>
-			<param-value>/manage/login.html</param-value>
-		</init-param>
-		<init-param>
-			<param-name>excludePaths</param-name>
-			<param-value>/manage/login.html</param-value>
-		</init-param>
-	</filter>
-	<!-- 
-	<filter-mapping>
-		<filter-name>ManageAuthFilter</filter-name>
-		<url-pattern>/manage/*</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
-	 -->
 	
 	<!-- Common Settings -->
 	<session-config>

@@ -6,20 +6,23 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -33,10 +36,20 @@ import com.changev.tutor.model.UserRole;
  * <p>
  * 设定参数：
  * <ul>
- * <li><strong>userRoles</strong> - 必须参数。允许的用户角色，用逗号分隔。</li>
- * <li><strong>loginPagePath</strong> - 必须参数。登录页面路径。</li>
- * <li><strong>excludePaths</strong> - 可选参数。非验证页面路径。</li>
+ * <li><strong>ACL</strong> - 可选参数。访问控制列表，默认为全部允许。</li>
  * </ul>
+ * 
+ * ACL规则格式：
+ * <strong>pattern</strong> <i>spaces</i> <strong>roles</strong> <i>spaces</i> <strong>forward_path</strong><br />
+ * <strong>pattern:</strong> *|<i>path_pattern</i><br />
+ * &nbsp;&nbsp;*表示全部；path_pattern中可使用通配符(*)表示任意某一路径名或文件名<br />
+ * <strong>roles:</strong> (+|-)<i>role_name</i><br />
+ * &nbsp;&nbsp;+表示允许访问；-表示拒绝访问；默认为+<br />
+ * &nbsp;&nbsp;设置多个角色用|分隔<br />
+ * <strong>forward_path:</strong> (F|R)<i>path</i><br />
+ * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br /><br />
+ * 
+ * 满足pattern的第一条规则决定可访问与否。
  * </p>
  * 
  * @author ren
@@ -44,45 +57,85 @@ import com.changev.tutor.model.UserRole;
  */
 public class AuthFilter implements Filter {
 
-	static final String USER_ROLES = "userRoles";
-	static final String LOGIN_PAGE_PATH = "loginPagePath";
-	static final String EXCLUDE_PATHS = "excludePaths";
-
 	private static final Logger logger = Logger.getLogger(AuthFilter.class);
 
-	List<UserRole> userRoles;
-	String loginPagePath;
-	List<String> excludePaths;
+	static final String ACL = "ACL";
+
+	static final String ACL_PAT = "^\\s*([^\\s]+)\\s*([^\\s]*)\\s*([FR]?)([^\\s]*)\\s*$";
+
+	static AccessControlRule parseAcl(String str) throws ParseException {
+		if (logger.isTraceEnabled())
+			logger.trace("[parseAcl] called");
+
+		AccessControlRule item = null, head = null;
+		// parse
+		Matcher matcher = Pattern.compile(ACL_PAT, Pattern.MULTILINE).matcher(
+				str);
+		int end = 0;
+		while (matcher.find()) {
+			end = matcher.end();
+			if (item == null)
+				item = head = new AccessControlRule();
+			else
+				item = item.next = new AccessControlRule();
+			// get options
+			String sPat = matcher.group(1);
+			String sRoles = StringUtils.defaultString(matcher.group(2), "*");
+			String sForward = StringUtils.defaultString(matcher.group(3), "F");
+			String sPath = matcher.group(4);
+			// set rule
+			item.pattern = Pattern.compile(sPat);
+			item.pattern = "*".equals(sPat) ? null : Pattern.compile(Pattern
+					.quote(sPat).replace("*", "\\E[^/]*\\Q")
+					.replace("\\Q\\E", ""));
+			if (!"*".equals(sRoles)) {
+				for (String roleName : StringUtils.split(sRoles, '|')) {
+					if (roleName.startsWith("-")) {
+						item.denyRoles = (UserRole[]) ArrayUtils.add(
+								item.denyRoles,
+								UserRole.valueOf(roleName.substring(1)));
+					} else {
+						if (roleName.startsWith("+"))
+							roleName = roleName.substring(1);
+						item.acceptRoles = (UserRole[]) ArrayUtils.add(
+								item.acceptRoles, UserRole.valueOf(roleName));
+					}
+				}
+			}
+			item.forward = "F".equals(sForward);
+			item.path = sPath;
+
+			if (logger.isDebugEnabled())
+				logger.debug("[parseAcl] add rule: " + item);
+		}
+		// check format
+		while (end < str.length()) {
+			if (!Character.isWhitespace(str.charAt(end)))
+				throw new ParseException(str, end);
+			end++;
+		}
+		return head;
+	}
+
+	Map<String, AccessControlRule> ruleMap;
+	AccessControlRule acl;
 
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		if (logger.isTraceEnabled())
 			logger.trace("[init] called");
-		ServletContext context = config.getServletContext();
 
-		String userRoles = config.getInitParameter(USER_ROLES);
-		String loginPagePath = config.getInitParameter(LOGIN_PAGE_PATH);
-		String excludePaths = config.getInitParameter(EXCLUDE_PATHS);
-		if (StringUtils.isEmpty(userRoles)
-				|| StringUtils.isEmpty(loginPagePath))
-			throw new ServletException(
-					"parameter userRoles and loginPagePath is required");
-
-		this.userRoles = new ArrayList<UserRole>();
-		for (String s : StringUtils.split(userRoles, ',')) {
-			if (!(s = s.trim()).isEmpty())
-				this.userRoles.add(UserRole.valueOf(s));
-		}
-
-		this.loginPagePath = context.getContextPath() + loginPagePath;
-
-		this.excludePaths = Collections.emptyList();
-		if (StringUtils.isNotEmpty(excludePaths)) {
-			this.excludePaths = new ArrayList<String>();
-			for (String s : StringUtils.split(excludePaths, ',')) {
-				if (!(s = s.trim()).isEmpty())
-					this.excludePaths.add(context.getContextPath() + s);
+		String sAcl = config.getInitParameter(ACL);
+		if (StringUtils.isNotBlank(sAcl)) {
+			try {
+				acl = parseAcl(sAcl);
+			} catch (ParseException e) {
+				throw new ServletException(e);
 			}
+		}
+		if (acl != null) {
+			ruleMap = Collections
+					.synchronizedMap(new HashMap<String, AccessControlRule>());
 		}
 	}
 
@@ -99,31 +152,106 @@ public class AuthFilter implements Filter {
 			logger.trace("[doFilter] called");
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
-		// check if logged in
-		String uri = request.getRequestURI();
-		if (logger.isDebugEnabled())
-			logger.debug("[doFilter] check uri " + uri);
-		if (excludePaths.contains(uri)) {
-			if (logger.isDebugEnabled())
-				logger.debug("[doFilter] skip login");
-		} else {
-			SessionContainer container = SessionContainer.get(request, false);
-			if (container == null || container.getLoginUser() == null) {
-				if (logger.isDebugEnabled())
-					logger.debug("[doFilter] user not logged in. goto "
-							+ loginPagePath);
-				// TODO save request info
-				response.sendRedirect(loginPagePath);
-				return;
+		// get request path
+		String reqPath = request.getRequestURI().substring(
+				request.getContextPath().length());
+		// get user role
+		UserRole role = UserRole.None;
+		SessionContainer sess = SessionContainer.get(request, false);
+		if (sess != null && sess.getLoginUser() != null)
+			role = sess.getLoginUser().getRole();
+		if (logger.isDebugEnabled()) {
+			logger.debug("[doFilter] reqPath = " + reqPath);
+			logger.debug("[doFilter] role = " + role);
+		}
+		// check with ACL
+		if (acl != null) {
+			AccessControlRule item;
+			if (ruleMap.containsKey(reqPath)) {
+				item = ruleMap.get(reqPath);
+			} else {
+				item = acl;
+				while (item != null && !item.match(reqPath))
+					item = item.next;
+				ruleMap.put(reqPath, item);
 			}
-			if (!userRoles.contains(container.getLoginUser().getRole())) {
+			if (item != null && !item.accept(role)) {
 				if (logger.isDebugEnabled())
-					logger.debug("[doFilter] user not in role. send code 403.");
-				response.sendError(HttpServletResponse.SC_FORBIDDEN);
+					logger.debug("[doFilter] denied rule: " + item);
+				if (item.forward)
+					request.getRequestDispatcher(item.path).forward(req, resp);
+				else
+					response.sendRedirect(request.getContextPath() + item.path);
 				return;
 			}
 		}
+		// accept
+		if (logger.isDebugEnabled())
+			logger.debug("[doFilter] accepted.");
 		chain.doFilter(req, resp);
+	}
+
+	/**
+	 * <p>
+	 * 访问控制规则。
+	 * </p>
+	 * 
+	 * @author ren
+	 * 
+	 */
+	static class AccessControlRule {
+
+		Pattern pattern;
+		UserRole[] acceptRoles;
+		UserRole[] denyRoles;
+		boolean forward;
+		String path;
+		AccessControlRule next;
+
+		public boolean match(String path) {
+			return pattern == null || pattern.matcher(path).find();
+		}
+
+		public boolean accept(UserRole role) {
+			if (acceptRoles != null && denyRoles != null)
+				return ArrayUtils.contains(acceptRoles, role)
+						&& !ArrayUtils.contains(denyRoles, role);
+			if (acceptRoles != null)
+				return ArrayUtils.contains(acceptRoles, role);
+			if (denyRoles != null)
+				return !ArrayUtils.contains(denyRoles, role);
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			// pattern
+			if (pattern == null)
+				sb.append('*');
+			else
+				sb.append(pattern.pattern());
+			sb.append(' ');
+			// roles
+			if (acceptRoles == null && denyRoles == null) {
+				sb.append('*').append(' ');
+			} else {
+				if (acceptRoles != null) {
+					for (UserRole role : acceptRoles)
+						sb.append('+').append(role.name()).append('|');
+				}
+				if (denyRoles != null) {
+					for (UserRole role : denyRoles)
+						sb.append('-').append(role.name()).append('|');
+				}
+				sb.setCharAt(sb.length() - 1, ' ');
+			}
+			// forward path
+			if (StringUtils.isNotEmpty(path))
+				sb.append(forward ? 'F' : 'R').append(' ').append(path);
+			return sb.toString();
+		}
+
 	}
 
 }
