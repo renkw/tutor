@@ -1,32 +1,76 @@
-<table border="0" width="100%" cellspacing="3" cellpadding="2" class="bmargin10">
+<table border="0" width="100%" cellspacing="0" cellpadding="0" class="bmargin10">
 <tbody>
 	<tr>
-		<td rowspan="2" class="ui-widget-content border2 border-bottom-only logow">LOGO</td>
-		<td colspan="4" class="s12 ui-helper-clearfix">
+		<td rowspan="2" width="250">
+			<img src="${request.contextPath}/images/logo.png" width="250" height="80" />
+		</td>
+		<td width="5"></td>
+		<td class="s12">
 			<div class="ui-state-highlight pad2 float-left">
 				<span class="ui-icon ui-icon-comment float-left"></span>
 				<span class="tmargin2 float-left">Messages</span>
 			</div>
 			<div class="float-right">
+			<#if request.requestURI?contains("/back/")>
+				<a href="${request.contextPath}/back/login.html">登录</a> |
+				<a href="${request.contextPath}/back/register.html">注册</a> |
+				<a href="${request.contextPath}/back/tools.html">工具</a> |
+				<a href="${request.contextPath}/back/help.html">帮助</a>
+			<#elseif request.requestURI?contains("/manage/")>
+				<a href="${request.contextPath}/manage/login.html">登录</a>
+			<#else>
 				<a href="${request.contextPath}/front/login.html">登录</a> |
 				<a href="${request.contextPath}/front/register.html">注册</a> |
 				<a href="${request.contextPath}/front/tools.html">工具</a> |
 				<a href="${request.contextPath}/front/help.html">帮助</a>
+			</#if>
 			</div>
+			<span class="clear-both"></span>
 		</td>
 	</tr>
 	<tr>
-		<td width="100" class="ui-state-hover border2 ui-corner-top border-bottom-only center s12">
-			<a href="#" style="text-decoration:none">链接一</a>
+		<td width="5"></td>
+		<td valign="bottom">
+			<#if request.requestURI?contains("/back/")>
+				<@menu items={
+					"/back/member.html"			: "我的主页", 
+					"/back/questionList.html"	: "提问列表",
+					"/back/modifyMember.html"	: "修改资料"
+				} />
+			<#elseif request.requestURI?contains("/manage/")>
+			<#else>
+				<@menu items={
+					"/home.html"				: "首页"
+				} />
+			</#if>
+			<div class="ui-widget-content ui-corner-all search">
+				<span class="ui-icon ui-icon-search" title="搜索"></span>
+				<input type="text" name="s" value="搜索" />
+			</div>
+			<span class="clear-both"></span>
 		</td>
-		<td width="100" class="ui-widget-content border2 ui-corner-top border-bottom-only center s12">
-			<a href="#" style="text-decoration:none">链接二</a>
-		</td>
-		<td width="100" class="ui-widget-content border2 ui-corner-top border-bottom-only center s12">
-			<a href="#" style="text-decoration:none">链接三</a>
-		</td>
-		<td class="ui-widget-content border2 border-bottom-only right s14">
-			搜索
+	</tr>
+	<tr>
+		<td colspan="3" class="ui-widget-content border2 border-bottom-only">
+			<div class="nav">
+				<span class="icon-label">
+					<a href="${request.contextPath}/home.html" title="首页" class="pointer">
+						<span class="ui-icon ui-icon-home lmargin5"></span>
+					</a>&nbsp;
+				</span>
+				<#if Request.navigation??>
+				<#list Request.navigation as node>
+				<span class="icon-label">
+					<span class="ui-icon ui-icon-carat-1-e"></span>
+					<#if node_has_next>
+					<a href="${request.contextPath + node.linkUrl}" title="${node.description}">${node.label}</a>
+					<#else>
+					<a href="#" title="${node.description}">${node.label}</a>
+					</#if>
+				</span>
+				</#list>
+				</#if>
+			</div>
 		</td>
 	</tr>
 </tbody>

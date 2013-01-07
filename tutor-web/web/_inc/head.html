@@ -3,8 +3,6 @@
 <script type="text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <style type="text/css">
 <!--
-BODY { padding: 0; margin: 5px; font: 12px sans-serif; color: black; }
-.logow { width: 120px; }
 .center { text-align: center !important; }
 .left { text-align: left !important; }
 .right { text-align: right !important; }
@@ -20,15 +18,16 @@ BODY { padding: 0; margin: 5px; font: 12px sans-serif; color: black; }
 .s20, .sb20 { font-size: 20px !important; }
 .s24, .sb24 { font-size: 24px !important; }
 .sb10, .sb12, .sb14, .sb18, .sb20, .sb24 { font-weight: bold !important; }
-.lighter { color: silver; }
-.darker { color: dimgray; }
-.nice { color: chocolate; }
-.sweet { color: hotpink; }
-.cool { color: midnightblue; }
-.sacred { color: gold; }
-.strange { color: darkred; }
-.required { color: red; }
-.optional { color: skyblue; }
+.lighter { color: silver !important; }
+.darker { color: dimgray !important; }
+.nice { color: chocolate !important; }
+.sweet { color: hotpink !important; }
+.cool { color: midnightblue !important; }
+.sacred { color: gold !important; }
+.strange { color: darkred !important; }
+.fresh { color: darkgreen !important; }
+.required { color: red !important; }
+.optional { color: skyblue !important; }
 .noborder-left, .noborder-lr, .noborder-tl, .noborder-bl, .border-top-only, .border-right-only, .border-bottom-only { border-left-width: 0 !important; }
 .noborder-top, .noborder-tb, .noborder-tl, .noborder-tr, .border-left-only, .border-right-only, .border-bottom-only { border-top-width: 0 !important; }
 .noborder-right, .noborder-lr, .noborder-tr, .noborder-br, .border-left-only, .border-top-only, .border-bottom-only { border-right-width: 0 !important; }
@@ -99,23 +98,36 @@ BODY { padding: 0; margin: 5px; font: 12px sans-serif; color: black; }
 .blue-button { border: 1px solid darkblue; }
 .gray-button, .gray-button a { background-color: lightgray; color: gray; text-decoration: none; }
 .gray-button { border: 1px solid gray; }
-.icon-label { position: relative; padding-left: 18px; }
-.icon-label .ui-icon { position: absolute; top: 0%; left: 0%; }
+.icon-label, .icon-label-ml { position: relative; padding-left: 18px; }
+.icon-label .ui-icon { position: absolute; top: 50%; left: 0%; margin-top: -8px; }
+.icon-label-ml .ui-icon { position: absolute; top: 0%; left: 0%; margin-top: .2em; }
+BODY, TH, TD, DIV, SPAN, P, LI { font: 12px sans-serif; color: black; }
+BODY { padding: 0; margin: 5px; }
+.menu { margin: 0 2px 2px 0; padding: 10px 20px; float: left; text-align: center; border-bottom-width: 2px; }
+.search { position: relative; padding: 2px; float: right; }
+.search .ui-icon { position: absolute; top: 50%; left: 0%; margin-top: -8px; }
+.search INPUT { margin-left: 16px; width: 200px; height: 16px; border-width: 0; color: silver; }
+.nav { margin: 2px 0px; padding: 4px 0px; background-color: #e0eeee; }
+.nav A { text-decoration: none; color: #00699C; }
+.nav A:hover { color: #ee9a49; }
 .pagebar { padding: 5px; font: 12px sans-serif; }
-.pagebar a { text-align: center; text-decoration: none; padding: 2px 5px; float: left; }
-.pagebar a:hover { text-decoration: underline; color: darkred; }
+.pagebar A { text-align: center; text-decoration: none; padding: 2px 5px; float: left; }
+.pagebar A:hover { text-decoration: underline; color: darkred; }
 .pagebar .ui-icon { margin: -2px 0px; cursor: pointer; }
 .pagebar .ui-state-active { margin-top: -1px; }
 .odd { background-color: #fffef9; border-top: 1px dashed darkcyan; border-bottom: 1px dashed darkcyan; }
 .even { background-color: #f6f5ec; }
-.vodd { background-color: #fffef9; border-left: 1px dashed darkcyan; border-right: 1px dashed darkcyan; }
-.veven { background-color: #f6f5ec; }
 .语文, .数学, .英语 { background-repeat: no-repeat; background-position: 0 -3px; height: 20px; padding: 6px 0 0 52px; font-size: 12px; }
 .语文 { background-image: url(${request.contextPath}/images/chinese.png); }
 .数学 { background-image: url(${request.contextPath}/images/math.png); }
 .英语 { background-image: url(${request.contextPath}/images/english.png); }
 -->
 </style>
+<!--[if IE 6]>
+<style type="text/css">
+DIV.icon-label .ui-icon, DIV.icon-label-ml .ui-icon { margin-left: -10px; }
+</style>
+<![endif]-->
 <script type="text/javascript">
 <!--
 function go2(path) {
@@ -136,6 +148,21 @@ function addq(/*...*/) {
 		s = (s == "" ? "?" : "&") + encodeURIComponent(arguments[i]) + "=" + encodeURIComponent(arguments[i + 1]);
 	location.search = s;
 }
+
+$(function() {
+	$(".search INPUT").bind({
+		"focus": function() {
+			if (this.value == "搜索")
+				this.value = "";
+			this.style.color = "black";
+		},
+		"blur": function() {
+			if (this.value == "")
+				this.value = "搜索";
+			this.style.color = "silver";
+		}
+	});
+});
 // -->
 </script>
 <#include "/_inc/macro.html">

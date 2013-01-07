@@ -45,6 +45,63 @@
 	
 	<!-- Gson -->
 	<bean class="com.google.gson.Gson" />
+	
+	<!-- NavigationNode -->
+	<bean class="com.changev.tutor.web.util.NavigationNode"
+		p:linkUrl="/home.html"
+		p:label="主页"
+		p:description="主页"
+	>
+		<property name="childNodes">
+		<util:list>
+			<bean class="com.changev.tutor.web.util.NavigationNode"
+				p:linkUrl="/front/login.html"
+				p:label="用户登录"
+				p:description="用户登录"
+			/>
+			<bean class="com.changev.tutor.web.util.NavigationNode"
+				p:linkUrl="/front/register.html"
+				p:label="用户注册"
+				p:description="用户注册"
+			/>
+			<bean class="com.changev.tutor.web.util.NavigationNode"
+				p:linkUrl="/back/login.html"
+				p:label="用户登录"
+				p:description="用户登录"
+			/>
+			<bean class="com.changev.tutor.web.util.NavigationNode"
+				p:linkUrl="/back/register.html"
+				p:label="用户注册"
+				p:description="用户注册"
+			/>
+			<bean class="com.changev.tutor.web.util.NavigationNode"
+				p:linkUrl="/back/member.html"
+				p:label="我的主页"
+				p:description="我的主页"
+			>
+				<property name="childNodes">
+				<util:list>
+					<bean class="com.changev.tutor.web.util.NavigationNode"
+						p:linkUrl="/back/questionList.html"
+						p:label="提问列表"
+						p:description="提问列表"
+					>
+						<property name="childNodes">
+						<util:list>
+							<bean class="com.changev.tutor.web.util.NavigationNode"
+								p:linkUrl="/back/questionDetail.html"
+								p:label="解答提问"
+								p:description="解答提问"
+							/>
+						</util:list>
+						</property>
+					</bean>
+				</util:list>
+				</property>
+			</bean>
+		</util:list>
+		</property>
+	</bean>
 
 	<!-- ####################################### -->
 	<!-- ##     APPLICATION CONFIGURATION     ## -->

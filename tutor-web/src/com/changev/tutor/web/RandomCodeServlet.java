@@ -1,5 +1,5 @@
 /*
- * File   CheckCodeServlet.java
+ * File   RandomCodeServlet.java
  * Create 2013/01/02
  * Copyright (c) change-v.com 2012 
  */
@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -40,9 +41,12 @@ import org.apache.commons.lang.math.RandomUtils;
  * @author ren
  * 
  */
-public class CheckCodeServlet extends HttpServlet {
+public class RandomCodeServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 8117031543160270324L;
+
+	private static final Logger logger = Logger
+			.getLogger(RandomCodeServlet.class);
 
 	static final Color[] BG = { new Color(0x0FFF0F5), new Color(0x0E6E6FA),
 			new Color(0x0B0C4DE), new Color(0x0E0FFFF), new Color(0x0F0FFF0),
@@ -59,8 +63,12 @@ public class CheckCodeServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		if (logger.isTraceEnabled())
+			logger.trace("[doGet] called");
 		SessionContainer sess = SessionContainer.get(req);
 		String code = RandomStringUtils.random(length, chars);
+		if (logger.isDebugEnabled())
+			logger.debug("[doGet] code = " + code);
 		sess.setCheckCode(code);
 		BufferedImage img = createImage(code);
 		resp.setHeader("Pragma", "no-cache");

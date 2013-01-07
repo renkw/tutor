@@ -40,6 +40,9 @@ public final class Tutor {
 	/** 在HttpSession中的SessionContainer实例键 */
 	public static final String KEY_SESSION_CONTAINER = "com.changev.tutor.KEY_SESSION_CONTAINER";
 
+	/** 默认的字符编码 */
+	public static final String DEFAULT_ENCODING = "UTF-8";
+
 	/** 默认的Log4j配置文件路径 */
 	public static final String DEFAULT_LOG4J_CONFIG_PATH = "//META-INF/com.changev.tutor.log4j.xml";
 

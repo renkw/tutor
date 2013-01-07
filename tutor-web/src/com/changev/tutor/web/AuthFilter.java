@@ -6,6 +6,8 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.changev.tutor.Tutor;
 import com.changev.tutor.model.UserRole;
 
 /**
@@ -39,15 +42,16 @@ import com.changev.tutor.model.UserRole;
  * <li><strong>ACL</strong> - 可选参数。访问控制列表，默认为全部允许。</li>
  * </ul>
  * 
- * ACL规则格式：
- * <strong>pattern</strong> <i>spaces</i> <strong>roles</strong> <i>spaces</i> <strong>forward_path</strong><br />
+ * ACL规则格式： <strong>pattern</strong> <i>spaces</i> <strong>roles</strong>
+ * <i>spaces</i> <strong>forward_path</strong><br />
  * <strong>pattern:</strong> *|<i>path_pattern</i><br />
  * &nbsp;&nbsp;*表示全部；path_pattern中可使用通配符(*)表示任意某一路径名或文件名<br />
  * <strong>roles:</strong> (+|-)<i>role_name</i><br />
  * &nbsp;&nbsp;+表示允许访问；-表示拒绝访问；默认为+<br />
  * &nbsp;&nbsp;设置多个角色用|分隔<br />
  * <strong>forward_path:</strong> (F|R)<i>path</i><br />
- * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br /><br />
+ * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br />
+ * <br />
  * 
  * 满足pattern的第一条规则决定可访问与否。
  * </p>
@@ -59,8 +63,16 @@ public class AuthFilter implements Filter {
 
 	private static final Logger logger = Logger.getLogger(AuthFilter.class);
 
-	static final String ACL = "ACL";
+	/** 允许访问 */
+	public static final int ACCEPTED = 0;
 
+	/** 不允许访问 */
+	public static final int NOT_ACCEPTED = 1;
+
+	/** 拒绝访问 */
+	public static final int DENIED = 2;
+
+	static final String ACL = "ACL";
 	static final String ACL_PAT = "^\\s*([^\\s]+)\\s*([^\\s]*)\\s*([FR]?)([^\\s]*)\\s*$";
 
 	static AccessControlRule parseAcl(String str) throws ParseException {
@@ -175,13 +187,17 @@ public class AuthFilter implements Filter {
 					item = item.next;
 				ruleMap.put(reqPath, item);
 			}
-			if (item != null && !item.accept(role)) {
+			int reason;
+			if (item != null && (reason = item.accept(role)) != ACCEPTED) {
 				if (logger.isDebugEnabled())
-					logger.debug("[doFilter] denied rule: " + item);
+					logger.debug("[doFilter] failed rule: " + item);
+				// goto login page
+				String path = getForwardPath(item.path, reason,
+						request.getRequestURI(), request.getQueryString());
 				if (item.forward)
-					request.getRequestDispatcher(item.path).forward(req, resp);
+					request.getRequestDispatcher(path).forward(req, resp);
 				else
-					response.sendRedirect(request.getContextPath() + item.path);
+					response.sendRedirect(request.getContextPath() + path);
 				return;
 			}
 		}
@@ -189,6 +205,13 @@ public class AuthFilter implements Filter {
 		if (logger.isDebugEnabled())
 			logger.debug("[doFilter] accepted.");
 		chain.doFilter(req, resp);
+	}
+
+	private String getForwardPath(String path, int reason, String uri,
+			String qstr) throws UnsupportedEncodingException {
+		String url = StringUtils.isEmpty(qstr) ? uri : uri + "?" + qstr;
+		return path.replace("{reason}", Integer.toString(reason)).replace(
+				"{url}", URLEncoder.encode(url, Tutor.DEFAULT_ENCODING));
 	}
 
 	/**
@@ -212,15 +235,12 @@ public class AuthFilter implements Filter {
 			return pattern == null || pattern.matcher(path).find();
 		}
 
-		public boolean accept(UserRole role) {
-			if (acceptRoles != null && denyRoles != null)
-				return ArrayUtils.contains(acceptRoles, role)
-						&& !ArrayUtils.contains(denyRoles, role);
-			if (acceptRoles != null)
-				return ArrayUtils.contains(acceptRoles, role);
-			if (denyRoles != null)
-				return !ArrayUtils.contains(denyRoles, role);
-			return true;
+		public int accept(UserRole role) {
+			if (acceptRoles != null && !ArrayUtils.contains(acceptRoles, role))
+				return NOT_ACCEPTED;
+			if (denyRoles != null && ArrayUtils.contains(denyRoles, role))
+				return DENIED;
+			return ACCEPTED;
 		}
 
 		@Override

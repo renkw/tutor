@@ -48,9 +48,9 @@
 			</th>
 			<td class="left s14">
 				<input type="text" id="checkCode" name="checkCode" value="" size="10" maxlength="4" />
-				<img src="${request.contextPath}/check_code/${Tutor.timestamp()?c}.gif" alt="验证码" title="单击更换图片"
+				<img src="${request.contextPath}/random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
 					align="absmiddle" class="pointer"
-					onclick="this.src='${request.contextPath}/check_code/'+new Date().getTime()+'.gif'" />
+					onclick="this.src='${request.contextPath}/random.gif?t='+new Date().getTime()" />
 				<@errmsg name="checkCode" />
 			</td>
 			<td class="ui-widget-content border-right-only left s12">

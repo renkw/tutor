@@ -8,7 +8,7 @@
 <script type="text/javascript">
 <!--
 $(function() {
-	var offset = 160;
+	var offset = 200;
 	$("#listTable").height($(document).height() - offset).show()
 	$(window).resize(function() {
 		$("#listTable").hide();
@@ -37,7 +37,7 @@ $(function() {
 			<thead>
 				<tr>
 					<td colspan="2" nowrap="nowrap" class="ui-widget-header ui-corner-top noborder-bottom s12 ui-helper-clearfix">
-						<div class="logow float-left">&nbsp;</div>
+						<div class="float-left" style="width:140px">&nbsp;</div>
 						<div class="alpha75 margin5 float-left">
 							<a href="#">最近一周</a> |
 							<a href="#">最近一个月</a> |
@@ -50,14 +50,14 @@ $(function() {
 			</thead>
 			<tbody>
 				<tr>
-					<th nowrap="nowrap" align="right" valign="top" class="ui-widget-header ui-corner-bl noborder-tr logow lpad5 s14">
-						<div class="ui-state-active ui-corner-left noborder-right pad5" style="width:111px">
+					<th nowrap="nowrap" align="right" valign="top" class="ui-widget-header ui-corner-bl noborder-tr s14">
+						<div class="ui-state-active ui-corner-left noborder-right pad5 lmargin10" style="width:121px">
 							<a href="#">指定提问(100)</a>
 						</div>
-						<div class="ui-state-default ui-corner-left pad5" style="width:110px">
+						<div class="ui-state-default ui-corner-left pad5 lmargin10" style="width:120px">
 							<a href="#">公开提问(200)</a>
 						</div>
-						<div class="ui-state-default ui-corner-left pad5" style="width:110px">
+						<div class="ui-state-default ui-corner-left pad5 lmargin10" style="width:120px">
 							<a href="#">已做解答(120)</a>
 						</div>
 					</th>

@@ -73,16 +73,16 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ServiceServlet</servlet-name>
-		<url-pattern>/service/</url-pattern>
+		<url-pattern>/service/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>CheckCodeServlet</servlet-name>
-		<servlet-class>com.changev.tutor.web.CheckCodeServlet</servlet-class>
+		<servlet-name>RandomCodeServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.RandomCodeServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>CheckCodeServlet</servlet-name>
-		<url-pattern>/check_code/</url-pattern>
+		<servlet-name>RandomCodeServlet</servlet-name>
+		<url-pattern>/random.gif</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -109,15 +109,15 @@
 			<!-- 
 			 /front/login.html			*
 			 /front/register.html		*
-			 /front/childList.html		Parent					F/front/login.html
-			 /front/*					Parent|Student			R/front/login.html
-			 /files/*					-None					R/front/login.html
+			 /front/childList.html		Parent					F/front/login.html?url={url}
+			 /front/*					Parent|Student			R/front/login.html?url={url}
+			 /files/*					-None					R/front/login.html?url={url}
 			 /back/login.html			*
 			 /back/register.html		*
-			 /back/teacherList.html		Organization			F/back/login.html
-			 /back/*					Organization|Teacher	R/back/login.html
+			 /back/teacherList.html		Organization			F/back/login.html?url={url}
+			 /back/*					Organization|Teacher	R/back/login.html?url={url}
 			 /manage/login.html			*
-			 /manage/*					Admin					R/manage/login.html
+			 /manage/*					Admin					R/manage/login.html?url={url}
 			  -->
 			</param-value>
 		</init-param>
@@ -140,6 +140,7 @@
 	
 	<welcome-file-list>
 		<welcome-file>home.html</welcome-file>
+		<welcome-file>member.html</welcome-file>
 	</welcome-file-list>
 
 </web-app>

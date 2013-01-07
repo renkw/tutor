@@ -1,5 +1,5 @@
 /*
- * File   UserFileServlet.java
+ * File   FileDownloadServlet.java
  * Create 2013/01/05
  * Copyright (c) change-v.com 2012 
  */

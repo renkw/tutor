@@ -6,8 +6,10 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -22,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.web.util.NavigationNode;
 
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.HttpRequestHashModel;
@@ -66,6 +69,7 @@ import freemarker.template.TemplateModelException;
  * <li><string>{@link HttpServletRequest#getParameter(String) params}</strong> -
  * 请求参数。</li>
  * <li><string>{@link Messages msg}</strong> - 处理消息。</li>
+ * <li><string>{@link NavigationNode navigation}</strong> - 页面位置。</li>
  * </ul>
  * </p>
  * 
@@ -186,9 +190,18 @@ public class ViewServlet extends HttpServlet {
 		if (logger.isTraceEnabled())
 			logger.trace("[renderTemplate] called");
 
+		// find navigation stack
+		String path = req.getServletPath();
+		List<NavigationNode> stack = new ArrayList<NavigationNode>();
+		Tutor.getBeanFactory().getBean(NavigationNode.class)
+				.lookup(path, stack);
+		Collections.reverse(stack);
+		req.setAttribute("navigation", stack);
+
+		// render template
 		try {
 			TemplateModel model = getTemplateModel(req);
-			Template template = config.getTemplate(req.getServletPath());
+			Template template = config.getTemplate(path);
 			resp.setContentType("text/html; charset=" + template.getEncoding());
 			resp.setHeader("Pragma", "no-cache");
 			resp.setHeader("Cache-Control", "no-cache");
