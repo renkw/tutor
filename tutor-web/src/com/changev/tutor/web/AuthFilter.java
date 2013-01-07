@@ -96,11 +96,12 @@ public class AuthFilter implements Filter {
 			String sForward = StringUtils.defaultString(matcher.group(3), "F");
 			String sPath = matcher.group(4);
 			// set rule
-			item.pattern = Pattern.compile(sPat);
 			item.pattern = "*".equals(sPat) ? null : Pattern.compile(Pattern
 					.quote(sPat).replace("*", "\\E[^/]*\\Q")
 					.replace("\\Q\\E", ""));
-			if (!"*".equals(sRoles)) {
+			if ("-*".equals(sRoles)) {
+				item.denyRoles = UserRole.values();
+			} else if (!"*".equals(sRoles)) {
 				for (String roleName : StringUtils.split(sRoles, '|')) {
 					if (roleName.startsWith("-")) {
 						item.denyRoles = (UserRole[]) ArrayUtils.add(

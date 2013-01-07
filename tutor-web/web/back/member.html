@@ -8,10 +8,10 @@
 </head>
 <body>
 <#include "/_inc/bar.html">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table border="0" cellspacing="5" cellpadding="0">
 <tbody>
 	<tr>
-		<td width="99%" align="left" valign="top">
+		<td align="left" valign="top">
 			<table border="0" cellspacing="0" cellpadding="5">
 			<tbody>
 				<tr>
@@ -25,36 +25,84 @@
 				</tr>
 				<tr>
 					<td colspan="2" class="ui-widget-content ui-corner-bottom">
-						<table border="0" cellspacing="0" cellpadding="5">
+						<table width="100%" border="0" cellspacing="0" cellpadding="5">
 						<tbody>
 							<tr>
-								<td align="left" valign="middle" class="ui-widget-content border-right-only sb12">名称</td>
+								<th width="30" align="right" valign="middle" class="ui-widget-content border-right-only">邮箱</th>
+								<td align="left" valign="middle" class="ui-widget-content noborder s12">aa***@sina.com</td>
+								<td rowspan="5" align="right" valign="top">
+									<img src="../images/school.jpg" />
+								</td>
+							</tr>
+							<tr>
+								<th align="right" valign="middle" class="ui-widget-content border-right-only">密码</th>
+								<td align="left" valign="middle" class="ui-widget-content noborder s12">
+									<a href="resetPassword.html" class="danger">更换密码</a>
+								</td>
+							</tr>
+							<tr>
+								<th align="right" valign="middle" class="ui-widget-content border-right-only">名称</th>
 								<td align="left" valign="middle" class="ui-widget-content noborder s12">XXXXX</td>
-								<td>&nbsp;</td>
 							</tr>
 							<tr>
-								<td align="left" valign="middle" class="ui-widget-content border-right-only sb12">地区</td>
-								<td align="left" valign="middle" class="ui-widget-content noborder s12">北京 海淀区</td>
-								<td>&nbsp;</td>
+								<th align="right" valign="middle" class="ui-widget-content border-right-only">地区</th>
+								<td align="left" valign="middle" class="ui-widget-content noborder">北京 海淀区</td>
 							</tr>
 							<tr>
-								<td align="left" valign="middle" class="ui-widget-content border-right-only sb12">积分</td>
-								<td align="left" valign="middle" class="ui-widget-content noborder s12">100</td>
-								<td>&nbsp;</td>
+								<th align="right" valign="middle" class="ui-widget-content border-right-only">积分</th>
+								<td align="left" valign="middle" class="ui-widget-content noborder">100</td>
 							</tr>
 						</tbody>
 						</table>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">&nbsp;</td>
+					<td colspan="2" style="height:5px"></td>
 				</tr>
+				<tr>
+					<th width="120" align="left" valign="bottom" class="ui-widget-header ui-corner-top s14">
+						未读消息
+					</th>
+					<th align="right" valign="bottom" class="ui-widget-content border-bottom-only">
+						<a href="messageBox.html"><span class="ui-icon ui-icon-extlink pointer float-right" title="更多"></span></a>
+						<span class="clear-right"></span>
+					</th>
+				</tr>
+				<tr>
+					<td colspan="2" class="ui-widget-content ui-corner-bottom">
+						<table width="100%" border="0" cellspacing="0" cellpadding="5">
+						<tbody>
+							<tr>
+								<th align="left" nowrap="nowrap">发送者</th>
+								<th width="90%" align="left" nowrap="nowrap">标题</th>
+								<th align="left" nowrap="nowrap">发送时间</th>
+							</tr>
+							<tr>
+								<td class="odd" nowrap="nowrap">张XX</td>
+								<td class="odd">咨询？？</td>
+								<td class="odd" nowrap="nowrap">01/07 17:29</td>
+							</tr>
+							<tr>
+								<td class="even" nowrap="nowrap">张XX</td>
+								<td class="even">咨询？？</td>
+								<td class="even" nowrap="nowrap">01/07 17:29</td>
+							</tr>
+						</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</td>
+		<td align="left" valign="top">
+			<table border="0" cellspacing="0" cellpadding="5">
+			<tbody>
 				<tr>
 					<th align="left" valign="bottom" class="ui-widget-header ui-corner-top s14">
 						教师列表
 					</th>
 					<th align="right" valign="bottom" class="ui-widget-content border-bottom-only">
-						<a href="modifyTeacher.html"><span class="ui-icon ui-icon-plus pointer float-right" title="添加"></span></a>
+						<a href="teacherList.html"><span class="ui-icon ui-icon-pencil pointer float-right" title="管理"></span></a>
 						<span class="clear-right"></span>
 					</th>
 				</tr>
@@ -158,9 +206,6 @@
 						</tbody>
 						</table>
 					</td>
-				</tr>
-				<tr>
-					<td colspan="2">&nbsp;</td>
 				</tr>
 				<tr>
 					<th align="left" valign="bottom" class="ui-widget-header ui-corner-top s14">
@@ -275,7 +320,6 @@
 			</tbody>
 			</table>
 		</td>
-		<td width="300" align="left" valign="top"><#include "/_inc/ad.html"></td>
 	</tr>
 </tbody>
 </table>

@@ -8,7 +8,121 @@
 </head>
 <body>
 <#include "/_inc/bar.html">
-
+<table border="0" cellspacing="0" cellpadding="5">
+<thead>
+	<tr>
+		<th colspan="2" align="left" class="ui-widget-content ui-corner-top">
+			<span class="icon-label">
+				<span class="ui-icon ui-icon-pencil"></span>编辑资料
+			</span>
+		</th>
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">姓名</th>
+		<td class="ui-widget-content border-right-only">
+			<input type="text" name="realName" value="${params.realName!}" />
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">性别</th>
+		<td class="ui-widget-content border-right-only">
+			<input type="radio" name="gender" id="genderMale" value="Male" /><label for="genderMale">男</label>
+			<input type="radio" name="gender" id="genderFemale" value="Female" /><label for="genderFemale">女</label>
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">地区</th>
+		<td class="ui-widget-content border-right-only">
+			<select name="province">
+				<option valie="北京">北京</option>
+				<option valie="上海">上海</option>
+				<option valie="广州">广州</option>
+				<option valie="深圳">深圳</option>
+			</select>
+			<select name="city">
+				<option valie="北京">北京</option>
+				<option valie="上海">上海</option>
+				<option valie="广州">广州</option>
+				<option valie="深圳">深圳</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">分机号</th>
+		<td class="ui-widget-content border-right-only">
+			<input type="text" name="telExt" value="${params.telExt!}" />
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content noborder-tr sb12">手机号</th>
+		<td class="ui-widget-content noborder-tl">
+			<input type="text" name="cellphoneNo" value="${params.cellphoneNo!}" />
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">学科</th>
+		<td class="ui-widget-content border-right-only">
+			<input type="checkbox" name="subject" id="subject语文" value="语文" /><label for="subject语文">语文</label>
+			<input type="checkbox" name="subject" id="subject数学" value="数学" /><label for="subject数学">数学</label>
+			<input type="checkbox" name="subject" id="subject英语" value="英语" /><label for="subject英语">英语</label>
+		</td>
+	</tr>
+	<tr>
+		<th class="ui-widget-content border-left-only sb12">年级</th>
+		<td class="ui-widget-content border-right-only">
+			<input type="checkbox" name="grade" id="grade小学" value="小学" /><label for="grade小学">小学</label>
+			<select name="gradeLevelFrom">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+				<option value="4">四年级</option>
+			</select>
+			～
+			<select name="gradeLevelTo">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+				<option value="4">四年级</option>
+			</select>
+			<br />
+			<input type="checkbox" name="grade" id="grade初中" value="初中" /><label for="grade初中">初中</label>
+			<select name="gradeLevelFrom">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+			</select>
+			～
+			<select name="gradeLevelTo">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+			</select>
+			<br />
+			<input type="checkbox" name="grade" id="grade高中" value="高中" /><label for="grade高中">高中</label>
+			<select name="gradeLevelFrom">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+			</select>
+			～
+			<select name="gradeLevelTo">
+				<option value="1">一年级</option>
+				<option value="2">二年级</option>
+				<option value="3">三年级</option>
+			</select>
+		</td>
+	</tr>
+</tbody>
+<tfoot>
+	<tr>
+		<td colspan="2" align="center" class="ui-widget-content ui-corner-bottom">
+			<input type="submit" name="modify" value="修改" class="green-button small-button ui-corner-all" />
+		</td>
+	</tr>
+</tfoot>
+</table>
 <#include "/_inc/foot.html">
 </body>
 </html>

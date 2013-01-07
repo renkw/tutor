@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>教师列表</title>
+<#include "/_inc/head.html">
+<style type="text/css">
+<!--
+#teacherTable TD { cursor: pointer; }
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function() {
+	$("#teacherTable tbody td").css("font-weight", "normal").hover(function() {
+		$("td", this.parentNode).toggleClass("ui-state-hover");
+	}).click(function() {
+		$("input:checkbox", this.parentNode).click();
+	});
+	$("#teacherTable input:checkbox").click(function(evt) {
+		evt.stopPropagation();
+		var self = this;
+		$("#teacherTable input:checkbox:checked").each(function() {
+			if (this != self) {
+				this.checked = false;
+				$(this).closest("tr").children().removeClass("ui-state-active");
+			}
+		});
+		$(this).closest("tr").children().addClass("ui-state-active");
+		teacherInfo.location.search = "?tid=" + this.value;
+	});
+});
+//-->
+</script>
+</head>
+<body>
+<#include "/_inc/bar.html">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+	<tr>
+		<td width="99%" align="left" valign="top">
+			<table id="teacherTable" border="0" cellspacing="0" cellpadding="5" class="rmargin10 float-left">
+			<thead>
+				<tr>
+					<th class="ui-widget-header ui-corner-tl noborder-right">&nbsp;</th>
+					<th class="ui-widget-header noborder-lr">姓名</th>
+					<th class="ui-widget-header noborder-lr">性别</th>
+					<th class="ui-widget-header noborder-lr">地区</th>
+					<th class="ui-widget-header noborder-lr">学科</th>
+					<th class="ui-widget-header noborder-lr">年级</th>
+					<th class="ui-widget-header noborder-lr">分机号</th>
+					<th class="ui-widget-header noborder-lr">手机号</th>
+					<th class="ui-widget-header ui-corner-tr noborder-left">邮箱地址</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content border-left-only"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content noborder">XXX</td>
+					<td class="ui-widget-content noborder">女</td>
+					<td class="ui-widget-content noborder">北京 海淀区</td>
+					<td class="ui-widget-content noborder">数学</td>
+					<td class="ui-widget-content noborder">小学 一～四年级</td>
+					<td class="ui-widget-content noborder">1000</td>
+					<td class="ui-widget-content noborder">1310000000</td>
+					<td class="ui-widget-content border-right-only">aa*****@sina.com</td>
+				</tr>
+				<tr>
+					<td class="ui-widget-content ui-corner-bl noborder-tr"><input type="checkbox" value="1" /></td>
+					<td class="ui-widget-content border-bottom-only">XXX</td>
+					<td class="ui-widget-content border-bottom-only">女</td>
+					<td class="ui-widget-content border-bottom-only">北京 海淀区</td>
+					<td class="ui-widget-content border-bottom-only">数学</td>
+					<td class="ui-widget-content border-bottom-only">小学 一～四年级</td>
+					<td class="ui-widget-content border-bottom-only">1000</td>
+					<td class="ui-widget-content border-bottom-only">1310000000</td>
+					<td class="ui-widget-content ui-corner-br noborder-tl">aa*****@sina.com</td>
+				</tr>
+			</tbody>
+			</table>
+			<iframe name="teacherInfo" src="modifyTeacher.html" width="320" height="420" 
+				frameborder="0" scrolling="no" marginwidth="0" marginheight="0" class="float-left"></iframe>
+			<span class="clear-left"></span>
+		</td>
+		<td width="300" align="left" valign="top"><#include "/_inc/ad.html"></td>
+	</tr>
+</tbody>
+</table>
+<#include "/_inc/foot.html">
+</body>
+</html>

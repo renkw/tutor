@@ -96,6 +96,21 @@
 						</util:list>
 						</property>
 					</bean>
+					<bean class="com.changev.tutor.web.util.NavigationNode"
+						p:linkUrl="/back/modifyMember.html"
+						p:label="修改资料"
+						p:description="修改资料"
+					/>
+					<bean class="com.changev.tutor.web.util.NavigationNode"
+						p:linkUrl="/back/teacherList.html"
+						p:label="教师列表"
+						p:description="教师列表"
+					/>
+					<bean class="com.changev.tutor.web.util.NavigationNode"
+						p:linkUrl="/back/resetPassword.html"
+						p:label="重置密码"
+						p:description="重置密码"
+					/>
 				</util:list>
 				</property>
 			</bean>
