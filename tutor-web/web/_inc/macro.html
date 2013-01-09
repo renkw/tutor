@@ -1,8 +1,8 @@
 <#-- 输出一般消息 -->
 <#macro infomsg name>
 <#if msg.messages[name]??>
-<div class="ui-state-default icon-label s12">
-	<div class="ui-icon ui-icon-comment"></div>${msg.messages[name]}
+<div class="ui-state-default">
+	<div class="ui-icon ui-icon-comment float-left"></div>${msg.messages[name]}
 </div>
 </#if>
 </#macro>
@@ -10,8 +10,8 @@
 <#-- 输出警告消息 -->
 <#macro warnmsg name>
 <#if msg.warnings[name]??>
-<div class="ui-state-highlight icon-label s12">
-	<div class="ui-icon ui-icon-alert"></div>${msg.warnings[name]}
+<div class="ui-state-highlight">
+	<div class="ui-icon ui-icon-alert float-left"></div>${msg.warnings[name]}
 </div>
 </#if>
 </#macro>
@@ -19,8 +19,8 @@
 <#-- 输出错误消息 -->
 <#macro errmsg name>
 <#if msg.errors[name]??>
-<div class="ui-state-error icon-label s12">
-	<div class="ui-icon ui-icon-close"></div>${msg.errors[name]}
+<div class="ui-state-error">
+	<div class="ui-icon ui-icon-close float-left"></div>${msg.errors[name]}
 </div>
 </#if>
 </#macro>
@@ -54,15 +54,18 @@
 </#if>
 </#macro>
 
-<!-- 输出菜单 -->
-<#macro menu items>
-<#list items?keys as key>
-	<#if request.requestURI==request.contextPath+key>
-	<div class="ui-state-hover ui-corner-top border-bottom-only menu">
-	<#else>
-	<div class="ui-state-default ui-corner-top border-bottom-only menu">
-	</#if>
-		<a href="${request.contextPath+key}" style="text-decoration:none">${items[key]}</a>
-	</div>
-</#list>
+<#-- 联系方式 -->
+<#macro contactUs>
+<div class="box-subtitle ui-widget-content">
+	<div class="ui-icon ui-icon-contact float-left"></div>联系我们
+</div>
+<div class="box-content ui-widget-content">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tbody>
+		<tr><th align="left">Email</th><td align="left">&nbsp;&nbsp;<a href="mailto:aaa@bbb.com">aaa@bbb.com</a></td></tr>
+		<tr><th align="left">电话</th><td align="left">&nbsp;&nbsp;000-000000-00</td></tr>
+		<tr><th align="left">地址</th><td align="left">&nbsp;&nbsp;XXXXXX</td></tr>
+	</tbody>
+	</table>
+</div>
 </#macro>
