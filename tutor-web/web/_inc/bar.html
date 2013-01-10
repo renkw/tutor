@@ -1,8 +1,8 @@
 <thead>
 	<tr>
 		<th rowspan="2" width="250" height="80" align="left" valign="top">
-			<a href="${request.contextPath}/home.html">
-				<img src="${request.contextPath}/images/logo.png" border="0" width="250" height="80" alt="LOGO" title="" />
+			<a href="${pathrel}/home.html">
+				<img src="${pathrel}/images/logo.png" border="0" width="250" height="80" alt="LOGO" title="" />
 			</a>
 		</th>
 		<th width="750" align="left" valign="top">
@@ -15,19 +15,19 @@
 				<input type="text" id="search" name="s" value="搜索" />
 			</form>
 			<div class="float-right" style="margin-top:2px">
-				<a href="#">登录</a> |
-				<a href="#">注册</a> |
-				<a href="#">工具</a> |
-				<a href="#">帮助</a>&nbsp;&nbsp;
+				<a href="${pathrel}/public/login.html">登录</a> |
+				<a href="${pathrel}/public/register.html">注册</a> |
+				<a href="${pathrel}/mobile/home.html">手机版</a> |
+				<a href="${pathrel}/public/help.html">帮助</a>&nbsp;&nbsp;
 			</div>
 		</th>
 	</tr>
 	<tr>
 		<th align="left" valign="bottom">
 			<div class="menubar">
-				<a href="#" class="ui-corner-top active">我的主页</a>
-				<a href="#" class="ui-corner-top">提问列表</a>
-				<a href="#" class="ui-corner-top">修改资料</a>
+				<a href="${pathrel}/back/member.html" class="ui-corner-top active">我的主页</a>
+				<a href="${pathrel}/back/questionList.html" class="ui-corner-top">提问列表</a>
+				<a href="${pathrel}/back/modifyMember.html" class="ui-corner-top">修改资料</a>
 			</div>
 		</th>
 	</tr>

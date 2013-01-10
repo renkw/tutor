@@ -1,3 +1,4 @@
+<#assign pathrel=request.contextPath>
 <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/redmond/jquery-ui.css" />
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
@@ -21,12 +22,12 @@
 .danger { color: red !important; }
 .required { color: red !important; }
 .optional { color: skyblue !important; }
+.noborder { border-width: 0 !important; }
 .float-left { float: left; }
 .float-right { float: right; }
 .clear-left { clear: left; }
 .clear-right { clear: right; }
 .clear-both { clear: both; }
-.noborder { border-width: 0; }
 .pointer { cursor: pointer; }
 .alpha { opacity: 0.0; filter: Alpha(opacity=0); }
 .alpha25 { opacity: 0.25; filter: Alpha(opacity=25); }
@@ -70,9 +71,9 @@ BODY { margin: 2px; padding: 0; overflow: auto; }
 .odd { background-color: #fffef9; }
 .even { background-color: #f6f5ec; border-top: 1px dashed darkcyan; border-bottom: 1px dashed darkcyan; }
 .语文, .数学, .英语 { background-repeat: no-repeat; background-position: 0 -3px; height: 20px; padding: 6px 0 0 52px; font-size: 12px; }
-.语文 { background-image: url(${request.contextPath}/images/chinese.png); }
-.数学 { background-image: url(${request.contextPath}/images/math.png); }
-.英语 { background-image: url(${request.contextPath}/images/english.png); }
+.语文 { background-image: url(${pathrel}/images/chinese.png); }
+.数学 { background-image: url(${pathrel}/images/math.png); }
+.英语 { background-image: url(${pathrel}/images/english.png); }
 -->
 </style>
 <script type="text/javascript">

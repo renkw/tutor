@@ -16,25 +16,30 @@
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
 				<div class="box-subtitle ui-widget-content">
-					<div class="ui-icon ui-icon-help float-left"></div>不能登录
+					<div class="ui-icon ui-icon-help float-left"></div>需要帮助
 				</div>
 				<div class="box-content ui-widget-content">
 					<a href="#">忘记密码</a><br />
-					<a href="#">注册新用户</a><br />
+					<a href="#">注册辅导机构</a><br />
 				</div>
-				<@contactUs />
+				<div class="box-subtitle ui-widget-content">
+					<div class="ui-icon ui-icon-contact float-left"></div>联系我们
+				</div>
+				<div class="box-content ui-widget-content">
+					<@contactus />
+				</div>
 			</div>
 		</td>
 		<td align="left" valign="top">
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="${request.contextPath}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">用户登录</a>
 				</div>
 				<div class="box-content ui-widget-content">
-					<form method="post" action="${request.contextPath}/front/login.html"><center>
+					<form method="post" action="${pathrel}/public/login.html">
 						<table border="0" cellspacing="1" cellpadding="5">
 						<tbody>
 							<tr>
@@ -45,7 +50,7 @@
 									<input type="text" id="email" name="email" value="${params.email!}" size="30" />
 									<@errmsg name="email" />
 								</td>
-								<td align="left" class="alpha25">登录用户名由6-10位英文字母、数字、下划线（_）组成。</td>
+								<td align="left" class="alpha25">请输入登录邮箱地址。</td>
 							</tr>
 							<tr>
 								<th align="left" class="ui-widget-header noborder">
@@ -55,7 +60,7 @@
 									<input type="password" id="password" name="password" value="" size="30" maxlength="10" />
 									<@errmsg name="password" />
 								</td>
-								<td align="left" class="alpha25">登录密码由6-10位英文字母、数字、下划线（_）组成。</td>
+								<td align="left" class="alpha25">请输入登录密码。</td>
 							</tr>
 							<tr>
 								<th align="left" class="ui-widget-header noborder">
@@ -63,22 +68,24 @@
 								</th>
 								<td align="left">
 									<input type="text" id="checkCode" name="checkCode" value="" size="10" maxlength="4" />
-									<img src="${request.contextPath}/random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
+									<img src="${pathrel}/random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
 										align="absmiddle" class="pointer"
-										onclick="this.src='${request.contextPath}/random.gif?t='+new Date().getTime()" />
+										onclick="this.src='${pathrel}/random.gif?t='+new Date().getTime()" />
 									<@errmsg name="checkCode" />
 								</td>
 								<td align="left" class="alpha25">请输入图片中的文字。</td>
 							</tr>
 							<tr>
-								<td align="center" colspan="3">
+								<th>&nbsp;</th>
+								<td colspan="2" align="left">
 									<br />
 									<input type="submit" name="login" value="登录" class="green-button small-button ui-corner-all" />
+									<input type="submit" name="register" value="注册" class="green-button small-button ui-corner-all" />
 								</td>
 							</tr>
 						</tbody>
 						</table>
-					</center></form>
+					</form>
 				</div>
 			</div>
 		</td>
