@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>完成注册</title>
+<#include "/_inc/head.html">
+</head>
+<body>
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
+<#include "/_inc/bar.html">
+<tbody>
+	<tr>
+		<td height="99%" align="left" valign="top">
+			<!-- REPLACE HERE　WITH　ASSISTANT -->
+			<div class="box-assist ui-widget-content ui-corner-all">
+				<div class="box-title ui-state-default ui-corner-top">
+					<div class="ui-icon ui-icon-pin-s float-left"></div>补充个人资料
+				</div>
+				<div class="box-subtitle ui-widget-content">
+					<div class="ui-icon ui-icon-bookmark float-left"></div>其他
+				</div>
+				<div class="box-content ui-widget-content">
+					<a href="#">登录</a><br />
+					<a href="#">注册辅导机构</a><br />
+				</div>
+				<div class="box-subtitle ui-widget-content">
+					<div class="ui-icon ui-icon-contact float-left"></div>联系我们
+				</div>
+				<div class="box-content ui-widget-content">
+					<@contactus />
+				</div>
+			</div>
+		</td>
+		<td align="left" valign="top">
+			<!-- REPLACE HERE WITH CONTENT -->
+			<form method="post">
+				<div class="box-body ui-widget-content ui-corner-all">
+					<div class="box-title navbar ui-state-default ui-corner-top">
+						<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+						<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+						<a href="#" class="nav-link float-left">完成注册</a>
+					</div>
+					<div class="box-subtitle ui-widget-content">学生资料</div>
+					<div class="box-content ui-widget-content">
+						<table border="0" cellspacing="1" cellpadding="5">
+						<tbody>
+							<tr>
+								<th width="80" align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
+								<td width="300" align="left">
+									<input type="text" name="realName" value="${params.realName!}" size="30" />
+									<@errmsg name="realName" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生真实姓名。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">性别</th>
+								<td align="left">
+									<label><input type="radio" name="gender" value="Male" />男</label>
+									<label><input type="radio" name="gender" value="Female" />女</label>
+									<@errmsg name="gender" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生性别。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">生日</th>
+								<td align="left">
+									<input type="text" name="birthdayYear" value="${params.birthdayYear!}" size="4" />年
+									<input type="text" name="birthdayMonth" value="${params.birthdayMonth!}" size="2" />月
+									<input type="text" name="birthdayDate" value="${params.birthdayDate!}" size="2" />日
+									<@errmsg name="birthday" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生生日。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
+								<td align="left">
+									<select name="province">
+										<option value="北京">北京</option>
+										<option value="上海">上海</option>
+										<option value="广州">广州</option>
+										<option value="深圳">深圳</option>
+									</select>
+									<select name="city">
+										<option value="北京">北京</option>
+										<option value="上海">上海</option>
+										<option value="广州">广州</option>
+										<option value="深圳">深圳</option>
+									</select>
+								</td>
+								<td align="left">
+									<div class="alpha25">学生所在地区。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">学校</th>
+								<td align="left">
+									<input type="text" name="school" value="${params.school!}" />
+									<@errmsg name="school" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生就读学校名。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
+								<td align="left">
+									<label><input type="radio" name="grade" value="小学" />小学</label>
+									<label><input type="radio" name="grade" value="初中" />初中</label>
+									<label><input type="radio" name="grade" value="初中" />高中</label>
+									<select name="gradeLevel">
+										<option value="1">一年级</option>
+										<option value="2">二年级</option>
+										<option value="3">三年级</option>
+										<option value="4">四年级</option>
+										<option value="5">五年级</option>
+										<option value="6">六年级</option>
+									</select>
+									<@errmsg name="grade" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生年级。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">兴趣爱好</th>
+								<td align="left">
+									<input type="text" name="hobby" value="${params.hobby!}" />
+									<@errmsg name="hobby" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生兴趣爱好。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">个人网页</th>
+								<td align="left">
+									<input type="text" name="webpage" value="${params.webpage!}" />
+									<@errmsg name="webpage" />
+								</td>
+								<td align="left">
+									<div class="alpha25">个人网页。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">个人描述</th>
+								<td align="left">
+									<textarea name="description" rows="5" cols="30">${params.description!}</textarea>
+									<@errmsg name="description" />
+								</td>
+								<td align="left">
+									<div class="alpha25">学生个人描述。</div>
+								</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>
+					<div class="box-subtitle ui-widget-content">联系人资料</div>
+					<div class="box-content ui-widget-content">
+						<table border="0" cellspacing="1" cellpadding="5">
+						<tbody>
+							<tr>
+								<th width="80" align="center" class="ui-widget-header noborder">姓名</th>
+								<td width="300" align="left">
+									<input type="text" name="contactName" value="${params.contactName!}" />
+									<@errmsg name="contactName" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人姓名。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">地址</th>
+								<td align="left">
+									〒<input type="text" name="zipcode" value="${params.zipcode!}" size="7" />
+									<input type="text" name="address" value="${params.address!}" />
+									<@errmsg name="address" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人邮编和地址。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">固定电话</th>
+								<td align="left">
+									<input type="text" name="telNo" value="${params.telNo!}" />
+									<@errmsg name="telNo" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人固定电话。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">移动电话</th>
+								<td align="left">
+									<input type="text" name="cellphoneNo" value="${params.cellphoneNo!}" />
+									<@errmsg name="cellphoneNo" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人移动电话。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">传真</th>
+								<td align="left">
+									<input type="text" name="faxNo" value="${params.faxNo!}" />
+									<@errmsg name="faxNo" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人移动电话。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">QQ</th>
+								<td align="left">
+									<input type="text" name="qqId" value="${params.qqId!}" />
+									<@errmsg name="qqId" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人QQ号码。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">Email</th>
+								<td align="left">
+									<input type="text" name="mailAddress" value="${params.mailAddress!}" />
+									<@errmsg name="mailAddress" />
+								</td>
+								<td align="left">
+									<div class="alpha25">联系人Email。</div>
+								</td>
+							</tr>
+						</tbody>
+						</table>
+					</div>
+					<div class="box-subtitle ui-widget-content">隐私设置</div>
+					<div class="box-content ui-widget-content">
+						<table border="0" cellspacing="1" cellpadding="5">
+						<tbody>
+							<tr>
+								<th width="80" align="center" class="ui-widget-header noborder">学生资料</th>
+								<td width="300" align="left">
+									<label><input type="radio" name="openInfo" value="None" />不公开</label>
+									<label><input type="radio" name="openInfo" value="ContacterOnly" />只对联系人公开</label>
+									<label><input type="radio" name="openInfo" value="Public" />全部公开</label>
+								</td>
+								<td align="left">
+									<div class="alpha25">设置公开学生信息。</div>
+								</td>
+							</tr>
+							<tr>
+								<th align="center" class="ui-widget-header noborder">联系资料</th>
+								<td align="left">
+									<label><input type="radio" name="openInfo" value="None" />不公开</label>
+									<label><input type="radio" name="openInfo" value="ContacterOnly" />只对联系人公开</label>
+									<label><input type="radio" name="openInfo" value="Public" />全部公开</label>
+								</td>
+								<td align="left">
+									<div class="alpha25">设置公开联系信息。</div>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>&nbsp;</th>
+								<td colspan="2" align="left">
+									<br />
+									<input type="submit" name="register" value="完成注册" class="green-button small-button ui-corner-all" />
+								</td>
+							</tr>
+						</tfoot>
+						</table>
+					</div>
+				</div>
+			</form>
+		</td>
+	</tr>
+</tbody>
+<#include "/_inc/foot.html">
+</table>
+</body>
+</html>
