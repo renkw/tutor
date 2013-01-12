@@ -6,10 +6,11 @@
 package com.changev.tutor.model;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>
- * 学生模型。
+ * 学生。
  * </p>
  * 
  * @author ren
@@ -19,42 +20,45 @@ public class StudentModel extends UserModel {
 
 	private static final long serialVersionUID = 7524370787816259509L;
 
-	private String realName;
+	private String facePicture;
 	private Boolean male;
 	private Date birthday;
-	private String schoolName;
+	private String school;
 	private String grade;
 	private Integer level;
 	private String hobby;
-	private String description;
+	private Map<String, String> defaultServicer;
 
-	public StudentModel() {
+	public void clone(StudentModel another) {
+		super.clone(another);
+		this.setFacePicture(another.getFacePicture());
+		this.setMale(another.getMale());
+		this.setBirthday(another.getBirthday());
+		this.setSchool(another.getSchool());
+		this.setGrade(another.getGrade());
+		this.setLevel(another.getLevel());
+		this.setHobby(another.getHobby());
+		this.setDefaultServicer(another.getDefaultServicer());
 	}
 
-	public StudentModel(StudentModel copy) {
-		super(copy);
-		this.setRealName(copy.getRealName());
-		this.setMale(copy.getMale());
-		this.setBirthday(copy.getBirthday());
-		this.setSchoolName(copy.getSchoolName());
-		this.setGrade(copy.getGrade());
-		this.setHobby(copy.getHobby());
-		this.setDescription(copy.getDescription());
-	}
-
-	/**
-	 * @return the realName
-	 */
-	public String getRealName() {
-		return realName;
+	@Override
+	public StudentModel clone() {
+		return (StudentModel) super.clone();
 	}
 
 	/**
-	 * @param realName
-	 *            the realName to set
+	 * @return the facePicture
 	 */
-	public void setRealName(String realName) {
-		this.realName = realName;
+	public String getFacePicture() {
+		return facePicture;
+	}
+
+	/**
+	 * @param facePicture
+	 *            the facePicture to set
+	 */
+	public void setFacePicture(String facePicture) {
+		this.facePicture = facePicture;
 	}
 
 	/**
@@ -88,18 +92,18 @@ public class StudentModel extends UserModel {
 	}
 
 	/**
-	 * @return the schoolName
+	 * @return the school
 	 */
-	public String getSchoolName() {
-		return schoolName;
+	public String getSchool() {
+		return school;
 	}
 
 	/**
-	 * @param schoolName
-	 *            the schoolName to set
+	 * @param school
+	 *            the school to set
 	 */
-	public void setSchoolName(String schoolName) {
-		this.schoolName = schoolName;
+	public void setSchool(String school) {
+		this.school = school;
 	}
 
 	/**
@@ -148,18 +152,18 @@ public class StudentModel extends UserModel {
 	}
 
 	/**
-	 * @return the description
+	 * @return the defaultServicer
 	 */
-	public String getDescription() {
-		return description;
+	public Map<String, String> getDefaultServicer() {
+		return defaultServicer;
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @param defaultServicer
+	 *            the defaultServicer to set
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDefaultServicer(Map<String, String> defaultServicer) {
+		this.defaultServicer = defaultServicer;
 	}
 
 }

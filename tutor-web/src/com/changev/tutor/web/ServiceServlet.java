@@ -208,14 +208,14 @@ public class ServiceServlet extends HttpServlet {
 			try {
 				if (userModel != null) {
 					authLogger.info(MessageFormat.format(
-							Tutor.AUTH_LOGIN_FORMAT, userModel.getUsername(),
+							Tutor.AUTH_LOGIN_FORMAT, userModel.getEmail(),
 							serviceName));
 				}
 				runService(service, userModel, req, resp);
 			} finally {
 				if (userModel != null) {
 					authLogger.info(MessageFormat.format(
-							Tutor.AUTH_LOGOUT_FORMAT, userModel.getUsername(),
+							Tutor.AUTH_LOGOUT_FORMAT, userModel.getEmail(),
 							serviceName));
 				}
 			}

@@ -10,6 +10,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
+import com.db4o.config.annotations.Indexed;
+
 /**
  * <p>
  * 定义公共模型属性。
@@ -23,16 +25,14 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4390399593602862270L;
 
 	private Date createDateTime;
+	@Indexed
 	private Date updateDateTime;
 	private Boolean deleted;
 
-	public AbstractModel() {
-	}
-
-	public AbstractModel(AbstractModel copy) {
-		this.setCreateDateTime(copy.getCreateDateTime());
-		this.setUpdateDateTime(copy.getUpdateDateTime());
-		this.setDeleted(copy.getDeleted());
+	public void clone(AbstractModel another) {
+		this.setCreateDateTime(another.getCreateDateTime());
+		this.setUpdateDateTime(another.getUpdateDateTime());
+		this.setDeleted(another.getDeleted());
 	}
 
 	@Override

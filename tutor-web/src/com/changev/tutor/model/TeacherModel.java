@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 教师模型。
+ * 教师。
  * </p>
  * 
  * @author ren
@@ -19,39 +19,35 @@ public class TeacherModel extends UserModel {
 
 	private static final long serialVersionUID = -5724580114977645750L;
 
-	private String realName;
+	// basic
 	private Boolean male;
 	private Date birthday;
 	private String subject;
+	private String grade;
+	private Integer gradeLevelFrom;
+	private Integer gradeLevelTo;
+	private String education;
+	private Integer teachYears;
 	private Integer score;
-	private String description;
+	private String homepage;
 
-	public TeacherModel() {
+	public void clone(TeacherModel another) {
+		super.clone(another);
+		this.setMale(getMale());
+		this.setBirthday(getBirthday());
+		this.setSubject(getSubject());
+		this.setGrade(getGrade());
+		this.setGradeLevelFrom(getGradeLevelFrom());
+		this.setGradeLevelTo(getGradeLevelTo());
+		this.setEducation(getEducation());
+		this.setTeachYears(getTeachYears());
+		this.setScore(getScore());
+		this.setHomepage(getHomepage());
 	}
 
-	public TeacherModel(TeacherModel copy) {
-		super(copy);
-		this.setRealName(copy.getRealName());
-		this.setMale(copy.getMale());
-		this.setBirthday(copy.getBirthday());
-		this.setSubject(copy.getSubject());
-		this.setScore(copy.getScore());
-		this.setDescription(copy.getDescription());
-	}
-
-	/**
-	 * @return the realName
-	 */
-	public String getRealName() {
-		return realName;
-	}
-
-	/**
-	 * @param realName
-	 *            the realName to set
-	 */
-	public void setRealName(String realName) {
-		this.realName = realName;
+	@Override
+	public TeacherModel clone() {
+		return (TeacherModel) super.clone();
 	}
 
 	/**
@@ -100,6 +96,81 @@ public class TeacherModel extends UserModel {
 	}
 
 	/**
+	 * @return the grade
+	 */
+	public String getGrade() {
+		return grade;
+	}
+
+	/**
+	 * @param grade
+	 *            the grade to set
+	 */
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+
+	/**
+	 * @return the gradeLevelFrom
+	 */
+	public Integer getGradeLevelFrom() {
+		return gradeLevelFrom;
+	}
+
+	/**
+	 * @param gradeLevelFrom
+	 *            the gradeLevelFrom to set
+	 */
+	public void setGradeLevelFrom(Integer gradeLevelFrom) {
+		this.gradeLevelFrom = gradeLevelFrom;
+	}
+
+	/**
+	 * @return the gradeLevelTo
+	 */
+	public Integer getGradeLevelTo() {
+		return gradeLevelTo;
+	}
+
+	/**
+	 * @param gradeLevelTo
+	 *            the gradeLevelTo to set
+	 */
+	public void setGradeLevelTo(Integer gradeLevelTo) {
+		this.gradeLevelTo = gradeLevelTo;
+	}
+
+	/**
+	 * @return the education
+	 */
+	public String getEducation() {
+		return education;
+	}
+
+	/**
+	 * @param education
+	 *            the education to set
+	 */
+	public void setEducation(String education) {
+		this.education = education;
+	}
+
+	/**
+	 * @return the teachYears
+	 */
+	public Integer getTeachYears() {
+		return teachYears;
+	}
+
+	/**
+	 * @param teachYears
+	 *            the teachYears to set
+	 */
+	public void setTeachYears(Integer teachYears) {
+		this.teachYears = teachYears;
+	}
+
+	/**
 	 * @return the score
 	 */
 	public Integer getScore() {
@@ -115,18 +186,18 @@ public class TeacherModel extends UserModel {
 	}
 
 	/**
-	 * @return the description
+	 * @return the homepage
 	 */
-	public String getDescription() {
-		return description;
+	public String getHomepage() {
+		return homepage;
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @param homepage
+	 *            the homepage to set
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setHomepage(String homepage) {
+		this.homepage = homepage;
 	}
 
 }

@@ -11,7 +11,7 @@ import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
- * 用户模型。
+ * 用户。
  * </p>
  * 
  * @author ren
@@ -22,78 +22,32 @@ public class UserModel extends AbstractModel {
 	private static final long serialVersionUID = -360438261627805753L;
 
 	@Indexed
-	private String username;
-	private String password;
-	private String tel;
 	private String email;
+	private String password;
+	private String name;
 	private UserRole role;
-	private Date loginDateTime;
+	private UserState state;
+	private Date lastLoginDateTime;
 	private String secureCode;
-	private UserModel parentUser;
+	private UserModel parent;
+	private UserContactModel contact;
 
-	public UserModel() {
-	}
-
-	public UserModel(UserModel copy) {
-		super(copy);
-		this.setUsername(copy.getUsername());
-		this.setPassword(copy.getPassword());
-		this.setTel(copy.getTel());
-		this.setEmail(copy.getEmail());
-		this.setRole(copy.getRole());
-		this.setLoginDateTime(copy.getLoginDateTime());
-		this.setSecureCode(copy.getSecureCode());
-		this.setParentUser(copy.getParentUser());
+	public void clone(UserModel another) {
+		super.clone(another);
+		this.setEmail(another.getEmail());
+		this.setPassword(another.getPassword());
+		this.setName(another.getName());
+		this.setRole(another.getRole());
+		this.setState(another.getState());
+		this.setLastLoginDateTime(another.getLastLoginDateTime());
+		this.setSecureCode(another.getSecureCode());
+		this.setParent(another.getParent());
+		this.setContact(another.getContact());
 	}
 
 	@Override
 	public UserModel clone() {
 		return (UserModel) super.clone();
-	}
-
-	/**
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
-	}
-
-	/**
-	 * @param username
-	 *            the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * @param password
-	 *            the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @return the tel
-	 */
-	public String getTel() {
-		return tel;
-	}
-
-	/**
-	 * @param tel
-	 *            the tel to set
-	 */
-	public void setTel(String tel) {
-		this.tel = tel;
 	}
 
 	/**
@@ -112,6 +66,36 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param password
+	 *            the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
 	 * @return the role
 	 */
 	public UserRole getRole() {
@@ -127,18 +111,33 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the loginDateTime
+	 * @return the state
 	 */
-	public Date getLoginDateTime() {
-		return loginDateTime;
+	public UserState getState() {
+		return state;
 	}
 
 	/**
-	 * @param loginDateTime
-	 *            the loginDateTime to set
+	 * @param state
+	 *            the state to set
 	 */
-	public void setLoginDateTime(Date loginDateTime) {
-		this.loginDateTime = loginDateTime;
+	public void setState(UserState state) {
+		this.state = state;
+	}
+
+	/**
+	 * @return the lastLoginDateTime
+	 */
+	public Date getLastLoginDateTime() {
+		return lastLoginDateTime;
+	}
+
+	/**
+	 * @param lastLoginDateTime
+	 *            the lastLoginDateTime to set
+	 */
+	public void setLastLoginDateTime(Date lastLoginDateTime) {
+		this.lastLoginDateTime = lastLoginDateTime;
 	}
 
 	/**
@@ -157,18 +156,33 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the parentUser
+	 * @return the parent
 	 */
-	public UserModel getParentUser() {
-		return parentUser;
+	public UserModel getParent() {
+		return parent;
 	}
 
 	/**
-	 * @param parentUser
-	 *            the parentUser to set
+	 * @param parent
+	 *            the parent to set
 	 */
-	public void setParentUser(UserModel parentUser) {
-		this.parentUser = parentUser;
+	public void setParent(UserModel parent) {
+		this.parent = parent;
+	}
+
+	/**
+	 * @return the contact
+	 */
+	public UserContactModel getContact() {
+		return contact;
+	}
+
+	/**
+	 * @param contact
+	 *            the contact to set
+	 */
+	public void setContact(UserContactModel contact) {
+		this.contact = contact;
 	}
 
 }

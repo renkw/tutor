@@ -24,10 +24,6 @@
 		p:timer-ref="timer"
 		p:period="3600000"
 	>
-		<property name="task">
-			<!-- clean invalid db4o sessions -->
-			<bean class="com.changev.tutor.util.Db4oCleanTask" />
-		</property>
 	</bean>
 	
 	<!-- Freemarker -->
@@ -45,97 +41,13 @@
 	
 	<!-- Gson -->
 	<bean class="com.google.gson.Gson" />
-	
-	<!-- NavigationNode -->
-	<bean class="com.changev.tutor.web.util.NavigationNode"
-		p:linkUrl="/home.html"
-		p:label="主页"
-		p:description="主页"
-	>
-		<property name="childNodes">
-		<util:list>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/front/login.html"
-				p:label="用户登录"
-				p:description="用户登录"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/front/register.html"
-				p:label="用户注册"
-				p:description="用户注册"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/login.html"
-				p:label="用户登录"
-				p:description="用户登录"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/register.html"
-				p:label="用户注册"
-				p:description="用户注册"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/member.html"
-				p:label="我的主页"
-				p:description="我的主页"
-			>
-				<property name="childNodes">
-				<util:list>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/questionList.html"
-						p:label="提问列表"
-						p:description="提问列表"
-					>
-						<property name="childNodes">
-						<util:list>
-							<bean class="com.changev.tutor.web.util.NavigationNode"
-								p:linkUrl="/back/questionDetail.html"
-								p:label="解答提问"
-								p:description="解答提问"
-							/>
-						</util:list>
-						</property>
-					</bean>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/modifyMember.html"
-						p:label="修改资料"
-						p:description="修改资料"
-					/>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/teacherList.html"
-						p:label="教师列表"
-						p:description="教师列表"
-					/>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/resetPassword.html"
-						p:label="重置密码"
-						p:description="重置密码"
-					/>
-				</util:list>
-				</property>
-			</bean>
-		</util:list>
-		</property>
-	</bean>
 
 	<!-- ####################################### -->
 	<!-- ##     APPLICATION CONFIGURATION     ## -->
 	<!-- ####################################### -->
 	
 	<!-- Views -->
-	<bean id="front.sampleView" class="com.changev.tutor.web.front.SampleView" />
-	
-	<bean id="front.registerView" class="com.changev.tutor.web.front.RegisterView"
-		p:successPage="/front/login.html"
-	/>
-	
-	<bean id="front.loginView" class="com.changev.tutor.web.front.LoginView"
-		p:successPage="/front/sample.html"
-	/>
-	
-	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 
 	<!-- Services -->
-	<bean id="app.testService" class="com.changev.tutor.web.service.TestService" />
 
 </beans>

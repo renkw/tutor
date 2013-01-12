@@ -3,16 +3,11 @@
  */
 package com.changev.tutor;
 
-import java.lang.management.ManagementFactory;
 import java.security.Key;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -68,10 +63,13 @@ public final class Tutor {
 	public static final String AUTH_LOGGER_NAME = "com.changev.tutor.AUTH";
 
 	/** 用户登录日志消息 */
-	public static final String AUTH_LOGIN_FORMAT = "[LOGIN ] {0}@{1}";
+	public static final String AUTH_LOGIN_FORMAT = "[LOGIN] {0} : {1}";
 
 	/** 用户退出日志消息 */
-	public static final String AUTH_LOGOUT_FORMAT = "[LOGIN ] {0}@{1}";
+	public static final String AUTH_LOGOUT_FORMAT = "[LOGOUT] {0} : {1}";
+
+	/** 性能日志名 */
+	public static final String PERFORMANCE_LOGGER_NAME = "com.changev.tutor.PERFORMANCE";
 
 	/** 实例原型（在Freemarker中使用） */
 	public static final Tutor SINGLETON = new Tutor();
@@ -138,7 +136,7 @@ public final class Tutor {
 	}
 
 	private static ExtObjectContainer topContainer;
-	private static Map<Long, ObjectContainer> localContainers = new HashMap<Long, ObjectContainer>();
+	private static ThreadLocal<ObjectContainer> localContainer = new ThreadLocal<ObjectContainer>();
 
 	/**
 	 * @return the topContainer
@@ -163,42 +161,24 @@ public final class Tutor {
 	 * @return
 	 */
 	public static ObjectContainer getCurrentContainer() {
-		ObjectContainer objc;
-		Long tid = Thread.currentThread().getId();
-		synchronized (localContainers) {
-			objc = localContainers.get(tid);
-			if (objc == null) {
-				objc = topContainer.openSession();
-				localContainers.put(tid, objc);
-			}
+		ObjectContainer objc = localContainer.get();
+		if (objc == null) {
+			objc = topContainer.openSession();
+			localContainer.set(objc);
 		}
 		return objc;
 	}
 
 	/**
 	 * <p>
-	 * 结束并删除已结束线程的ObjectContainer实例。
+	 * 关闭并移除当前线程关联的ObjectContainer实例。
 	 * </p>
 	 */
-	public static void cleanLocalContainers() {
-		if (localContainers.isEmpty())
-			return;
-
-		long[] tids = ManagementFactory.getThreadMXBean().getAllThreadIds();
-		Arrays.sort(tids);
-		synchronized (localContainers) {
-			Iterator<Map.Entry<Long, ObjectContainer>> iter = localContainers
-					.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry<Long, ObjectContainer> entry = iter.next();
-				ExtObjectContainer objc = entry.getValue().ext();
-				if (objc.isClosed()
-						|| Arrays.binarySearch(tids, entry.getKey()) < 0) {
-					iter.remove();
-					if (!objc.isClosed())
-						objc.close();
-				}
-			}
+	public static void closeCurrentContainer() {
+		ObjectContainer objc = localContainer.get();
+		if (objc != null) {
+			objc.close();
+			localContainer.remove();
 		}
 	}
 

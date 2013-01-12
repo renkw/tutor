@@ -3,7 +3,7 @@
  * Create 2012/12/28
  * Copyright (c) change-v.com 2012 
  */
-package com.changev.tutor.web.front;
+package com.changev.tutor.web.pub;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,15 +68,15 @@ public class LoginView implements View {
 			logger.trace("[login] called");
 
 		// TODO validate code
-		String username = request.getParameter("username");
+		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[login] username = " + username);
+			logger.debug("[login] email = " + email);
 			logger.debug("[login] password = " + password);
 		}
 		// validation
-		if (Validator.required(username)) {
-			Messages.addError(request, "username", "请输入用户名");
+		if (Validator.required(email)) {
+			Messages.addError(request, "email", "请输入登录邮箱");
 		}
 		if (Validator.required(password)) {
 			Messages.addError(request, "password", "请输入密码");
@@ -88,11 +88,13 @@ public class LoginView implements View {
 
 			ObjectContainer objc = Tutor.getCurrentContainer();
 			UserModel user = new UserModel();
-			user.setUsername(username);
+			user.setEmail(email);
 			// TODO encrypt password
 			user.setPassword(password);
 			user.setDeleted(Boolean.FALSE);
 			ObjectSet<UserModel> userSet = objc.queryByExample(user);
+			System.out.println("------------------------------"
+					+ userSet.size());
 			if (!userSet.isEmpty()) {
 				// reset session
 				HttpSession session = request.getSession(false);

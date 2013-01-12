@@ -8,6 +8,8 @@ package com.changev.tutor.web;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -41,7 +43,8 @@ import com.db4o.cs.Db4oClientServer;
  * @author ren
  * 
  */
-public class ContextListener implements ServletContextListener {
+public class ContextListener implements ServletContextListener,
+		ServletRequestListener {
 
 	static final String LOG4J_CONFIG_PATH = "log4jConfigPath";
 	static final String BEAN_CONFIG_PATH = "beanConfigPath";
@@ -122,6 +125,16 @@ public class ContextListener implements ServletContextListener {
 			while (!objc.close())
 				;
 		}
+	}
+
+	@Override
+	public void requestInitialized(ServletRequestEvent event) {
+	}
+
+	@Override
+	public void requestDestroyed(ServletRequestEvent event) {
+		// close current container
+		Tutor.closeCurrentContainer();
 	}
 
 }
