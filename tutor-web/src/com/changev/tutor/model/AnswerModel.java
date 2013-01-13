@@ -7,6 +7,8 @@ package com.changev.tutor.model;
 
 import java.util.Date;
 
+import com.db4o.config.annotations.Indexed;
+
 /**
  * <p>
  * 提问解答。
@@ -20,23 +22,22 @@ public class AnswerModel extends AbstractModel {
 	private static final long serialVersionUID = 8353464399050892383L;
 
 	private Date answerDateTime;
+	@Indexed
 	private UserModel answerer;
 	private OrganizationModel organization;
-	private String question;
+	@Indexed
+	private QuestionModel question;
+	private String inquery;
 	private String answer;
-	private String province;
-	private String city;
-	private String district;
 
 	public void clone(AnswerModel another) {
 		super.clone(another);
 		this.setAnswerDateTime(getAnswerDateTime());
 		this.setAnswerer(another.getAnswerer());
 		this.setOrganization(another.getOrganization());
+		this.setQuestion(another.getQuestion());
+		this.setInquery(another.getInquery());
 		this.setAnswer(another.getAnswer());
-		this.setProvince(another.getProvince());
-		this.setCity(another.getCity());
-		this.setDistrict(another.getDistrict());
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class AnswerModel extends AbstractModel {
 	/**
 	 * @return the question
 	 */
-	public String getQuestion() {
+	public QuestionModel getQuestion() {
 		return question;
 	}
 
@@ -100,8 +101,23 @@ public class AnswerModel extends AbstractModel {
 	 * @param question
 	 *            the question to set
 	 */
-	public void setQuestion(String question) {
+	public void setQuestion(QuestionModel question) {
 		this.question = question;
+	}
+
+	/**
+	 * @return the inquery
+	 */
+	public String getInquery() {
+		return inquery;
+	}
+
+	/**
+	 * @param inquery
+	 *            the inquery to set
+	 */
+	public void setInquery(String inquery) {
+		this.inquery = inquery;
 	}
 
 	/**
@@ -117,51 +133,6 @@ public class AnswerModel extends AbstractModel {
 	 */
 	public void setAnswer(String answer) {
 		this.answer = answer;
-	}
-
-	/**
-	 * @return the province
-	 */
-	public String getProvince() {
-		return province;
-	}
-
-	/**
-	 * @param province
-	 *            the province to set
-	 */
-	public void setProvince(String province) {
-		this.province = province;
-	}
-
-	/**
-	 * @return the city
-	 */
-	public String getCity() {
-		return city;
-	}
-
-	/**
-	 * @param city
-	 *            the city to set
-	 */
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	/**
-	 * @return the district
-	 */
-	public String getDistrict() {
-		return district;
-	}
-
-	/**
-	 * @param district
-	 *            the district to set
-	 */
-	public void setDistrict(String district) {
-		this.district = district;
 	}
 
 }

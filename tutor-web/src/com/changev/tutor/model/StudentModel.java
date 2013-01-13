@@ -8,6 +8,8 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.Map;
 
+import com.db4o.config.annotations.Indexed;
+
 /**
  * <p>
  * 学生。
@@ -25,9 +27,11 @@ public class StudentModel extends UserModel {
 	private Date birthday;
 	private String school;
 	private String grade;
-	private Integer level;
+	private Byte gradeLevel;
 	private String hobby;
 	private Map<String, String> defaultServicer;
+	@Indexed
+	private ParentModel parent;
 
 	public void clone(StudentModel another) {
 		super.clone(another);
@@ -36,9 +40,10 @@ public class StudentModel extends UserModel {
 		this.setBirthday(another.getBirthday());
 		this.setSchool(another.getSchool());
 		this.setGrade(another.getGrade());
-		this.setLevel(another.getLevel());
+		this.setGradeLevel(another.getGradeLevel());
 		this.setHobby(another.getHobby());
 		this.setDefaultServicer(another.getDefaultServicer());
+		this.setParent(another.getParent());
 	}
 
 	@Override
@@ -122,18 +127,18 @@ public class StudentModel extends UserModel {
 	}
 
 	/**
-	 * @return the level
+	 * @return the gradeLevel
 	 */
-	public Integer getLevel() {
-		return level;
+	public Byte getGradeLevel() {
+		return gradeLevel;
 	}
 
 	/**
-	 * @param level
-	 *            the level to set
+	 * @param gradeLevel
+	 *            the gradeLevel to set
 	 */
-	public void setLevel(Integer level) {
-		this.level = level;
+	public void setGradeLevel(Byte gradeLevel) {
+		this.gradeLevel = gradeLevel;
 	}
 
 	/**
@@ -164,6 +169,21 @@ public class StudentModel extends UserModel {
 	 */
 	public void setDefaultServicer(Map<String, String> defaultServicer) {
 		this.defaultServicer = defaultServicer;
+	}
+
+	/**
+	 * @return the parent
+	 */
+	public ParentModel getParent() {
+		return parent;
+	}
+
+	/**
+	 * @param parent
+	 *            the parent to set
+	 */
+	public void setParent(ParentModel parent) {
+		this.parent = parent;
 	}
 
 }

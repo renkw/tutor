@@ -18,10 +18,8 @@ public class UserContactModel extends AbstractModel {
 	private static final long serialVersionUID = -8284576676920188592L;
 
 	private String name;
-	private String province;
-	private String city;
-	private String district;
-	private String address;
+	private String address1;
+	private String address2;
 	private String postcode;
 	private String telephone;
 	private String cellphone;
@@ -35,10 +33,8 @@ public class UserContactModel extends AbstractModel {
 	public void clone(UserContactModel another) {
 		super.clone(another);
 		this.setName(another.getName());
-		this.setProvince(another.getProvince());
-		this.setCity(another.getCity());
-		this.setDistrict(another.getDistrict());
-		this.setAddress(another.getAddress());
+		this.setAddress1(another.getAddress1());
+		this.setAddress2(another.getAddress2());
 		this.setPostcode(another.getPostcode());
 		this.setTelephone(another.getTelephone());
 		this.setCellphone(another.getCellphone());
@@ -71,63 +67,33 @@ public class UserContactModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the province
+	 * @return the address1
 	 */
-	public String getProvince() {
-		return province;
+	public String getAddress1() {
+		return address1;
 	}
 
 	/**
-	 * @param province
-	 *            the province to set
+	 * @param address1
+	 *            the address1 to set
 	 */
-	public void setProvince(String province) {
-		this.province = province;
+	public void setAddress1(String address1) {
+		this.address1 = address1;
 	}
 
 	/**
-	 * @return the city
+	 * @return the address2
 	 */
-	public String getCity() {
-		return city;
+	public String getAddress2() {
+		return address2;
 	}
 
 	/**
-	 * @param city
-	 *            the city to set
+	 * @param address2
+	 *            the address2 to set
 	 */
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	/**
-	 * @return the district
-	 */
-	public String getDistrict() {
-		return district;
-	}
-
-	/**
-	 * @param district
-	 *            the district to set
-	 */
-	public void setDistrict(String district) {
-		this.district = district;
-	}
-
-	/**
-	 * @return the address
-	 */
-	public String getAddress() {
-		return address;
-	}
-
-	/**
-	 * @param address
-	 *            the address to set
-	 */
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAddress2(String address2) {
+		this.address2 = address2;
 	}
 
 	/**
@@ -243,7 +209,8 @@ public class UserContactModel extends AbstractModel {
 	}
 
 	/**
-	 * @param posX the posX to set
+	 * @param posX
+	 *            the posX to set
 	 */
 	public void setPosX(Double posX) {
 		this.posX = posX;
@@ -257,7 +224,8 @@ public class UserContactModel extends AbstractModel {
 	}
 
 	/**
-	 * @param posY the posY to set
+	 * @param posY
+	 *            the posY to set
 	 */
 	public void setPosY(Double posY) {
 		this.posY = posY;

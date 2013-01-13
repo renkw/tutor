@@ -28,7 +28,7 @@ public class SampleView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
-		ObjectContainer objc = Tutor.getCurrentContainer();
+		ObjectContainer objc = Tutor.getRootContainer();
 		ObjectSet<SimpleBean> set = objc.query(SimpleBean.class);
 		if (set.isEmpty()) {
 			objc.store(new SimpleBean("Foo", 0, 0));

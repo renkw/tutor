@@ -30,14 +30,14 @@ public class Db4oBackupTask extends TimerTask {
 
 	@Override
 	public void run() {
-		if (Tutor.getTopContainer() != null && StringUtils.isNotEmpty(filepath)) {
+		if (Tutor.getRootContainer() != null && StringUtils.isNotEmpty(filepath)) {
 			int i = filepath.lastIndexOf('.');
 			String path = (i != -1 ? filepath.substring(0, i) : filepath) + "_"
 					+ new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			if (i != -1)
 				path += filepath.substring(i);
 			logger.info("[run] backup data file to " + path);
-			Tutor.getTopContainer().backup(path);
+			Tutor.getRootContainer().backup(path);
 		}
 	}
 

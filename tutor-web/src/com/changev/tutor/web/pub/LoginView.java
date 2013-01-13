@@ -86,7 +86,7 @@ public class LoginView implements View {
 			if (logger.isDebugEnabled())
 				logger.debug("[login] validation passed");
 
-			ObjectContainer objc = Tutor.getCurrentContainer();
+			ObjectContainer objc = Tutor.getRootContainer();
 			UserModel user = new UserModel();
 			user.setEmail(email);
 			// TODO encrypt password

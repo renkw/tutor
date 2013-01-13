@@ -35,9 +35,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.beans.factory.BeanFactory;
 
+import com.changev.tutor.Callback;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
+import com.changev.tutor.util.Db4oExecutor;
+import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.google.gson.Gson;
 
@@ -161,8 +164,9 @@ public class ServiceServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[doPost] called");
 
@@ -172,7 +176,7 @@ public class ServiceServlet extends HttpServlet {
 			NDC.push(udid);
 
 		try {
-			String serviceName = getServiceName(req.getPathInfo());
+			final String serviceName = getServiceName(req.getPathInfo());
 			if (logger.isDebugEnabled())
 				logger.debug("[doPost] serviceName = " + serviceName);
 
@@ -197,7 +201,15 @@ public class ServiceServlet extends HttpServlet {
 				if (logger.isDebugEnabled())
 					logger.debug("[doPost] public service");
 			} else {
-				userModel = getUserModel(serviceName, req, resp);
+				userModel = Db4oExecutor
+						.querySafe(new Callback<ObjectContainer>() {
+							@Override
+							public Object callback(ObjectContainer objc)
+									throws Throwable {
+								return getUserModel(objc, serviceName, req,
+										resp);
+							}
+						});
 				if (logger.isDebugEnabled())
 					logger.debug("[doPost] userModel = " + userModel);
 				if (userModel == null)
@@ -250,7 +262,7 @@ public class ServiceServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected UserModel getUserModel(String serviceName,
+	protected UserModel getUserModel(ObjectContainer objc, String serviceName,
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		if (logger.isDebugEnabled())
@@ -312,8 +324,8 @@ public class ServiceServlet extends HttpServlet {
 			return null;
 		}
 
-		ObjectSet<UserModel> userSet = Tutor.getCurrentContainer()
-				.queryByExample(ModelFactory.getUserExample(info.username));
+		ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
+				.getUserExample(info.username));
 		if (!userSet.hasNext()) {
 			// user not exists. send 401
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

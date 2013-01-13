@@ -8,6 +8,8 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.List;
 
+import com.db4o.config.annotations.Indexed;
+
 /**
  * <p>
  * 提问。
@@ -20,20 +22,23 @@ public class QuestionModel extends AbstractModel {
 
 	private static final long serialVersionUID = -1143983407388574974L;
 
+	@Indexed
 	private UserModel questioner;
 	private StudentModel student;
 	private String province;
 	private String city;
 	private String district;
 	private String subject;
+	private String grade;
+	private Integer gradeLevel;
 	private String title;
+	@Indexed
 	private UserModel specifiedAnswerer;
 	private Date questionDateTime;
 	private Date questionExpiration;
 	private Date finalAnswerDateTime;
 	private UserModel finalAnswerer;
 	private List<String> uploadPictures;
-	private List<AnswerModel> answers;
 
 	public void clone(QuestionModel another) {
 		super.clone(another);
@@ -43,6 +48,8 @@ public class QuestionModel extends AbstractModel {
 		this.setCity(another.getCity());
 		this.setDistrict(another.getDistrict());
 		this.setSubject(another.getSubject());
+		this.setGrade(another.getGrade());
+		this.setGradeLevel(another.getGradeLevel());
 		this.setTitle(another.getTitle());
 		this.setSpecifiedAnswerer(another.getSpecifiedAnswerer());
 		this.setQuestionDateTime(another.getQuestionDateTime());
@@ -144,6 +151,36 @@ public class QuestionModel extends AbstractModel {
 	 */
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	/**
+	 * @return the grade
+	 */
+	public String getGrade() {
+		return grade;
+	}
+
+	/**
+	 * @param grade
+	 *            the grade to set
+	 */
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+
+	/**
+	 * @return the gradeLevel
+	 */
+	public Integer getGradeLevel() {
+		return gradeLevel;
+	}
+
+	/**
+	 * @param gradeLevel
+	 *            the gradeLevel to set
+	 */
+	public void setGradeLevel(Integer gradeLevel) {
+		this.gradeLevel = gradeLevel;
 	}
 
 	/**
@@ -249,21 +286,6 @@ public class QuestionModel extends AbstractModel {
 	 */
 	public void setUploadPictures(List<String> uploadPictures) {
 		this.uploadPictures = uploadPictures;
-	}
-
-	/**
-	 * @return the answers
-	 */
-	public List<AnswerModel> getAnswers() {
-		return answers;
-	}
-
-	/**
-	 * @param answers
-	 *            the answers to set
-	 */
-	public void setAnswers(List<AnswerModel> answers) {
-		this.answers = answers;
 	}
 
 }

@@ -68,11 +68,31 @@ public final class SessionContainer implements Serializable {
 		return get(request, true);
 	}
 
+	private long loginUserId;
 	private UserModel loginUser;
 	private Messages sessionMessage = new Messages();
 	private String checkCode;
 
 	private SessionContainer() {
+	}
+
+	public void destroy() {
+
+	}
+
+	/**
+	 * @return the loginUserId
+	 */
+	public long getLoginUserId() {
+		return loginUserId;
+	}
+
+	/**
+	 * @param loginUserId
+	 *            the loginUserId to set
+	 */
+	public void setLoginUserId(long loginUserId) {
+		this.loginUserId = loginUserId;
 	}
 
 	/**
@@ -113,7 +133,8 @@ public final class SessionContainer implements Serializable {
 	}
 
 	/**
-	 * @param checkCode the checkCode to set
+	 * @param checkCode
+	 *            the checkCode to set
 	 */
 	public void setCheckCode(String checkCode) {
 		this.checkCode = checkCode;

@@ -32,6 +32,13 @@
 		<param-name>beanConfigPath</param-name>
 		<param-value>//META-INF/com.changev.tutor.beans.xml</param-value>
 	</context-param>
+	<context-param>
+		<description> 
+		 Db4o configuration file path, used in Context Listener 
+		</description>
+		<param-name>db4oConfigPath</param-name>
+		<param-value>//META-INF/com.changev.tutor.db4o-embed.properties</param-value>
+	</context-param>
 	 -->
 
 	<!-- Servlets -->

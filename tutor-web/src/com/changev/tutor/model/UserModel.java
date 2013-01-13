@@ -25,24 +25,35 @@ public class UserModel extends AbstractModel {
 	private String email;
 	private String password;
 	private String name;
+	@Indexed
+	private String province;
+	@Indexed
+	private String city;
+	@Indexed
+	private String district;
 	private UserRole role;
 	private UserState state;
 	private Date lastLoginDateTime;
 	private String secureCode;
-	private UserModel parent;
 	private UserContactModel contact;
+	private UserPrivacy accountPrivacy;
+	private UserPrivacy contactPrivacy;
 
 	public void clone(UserModel another) {
 		super.clone(another);
 		this.setEmail(another.getEmail());
 		this.setPassword(another.getPassword());
 		this.setName(another.getName());
+		this.setProvince(another.getProvince());
+		this.setCity(another.getCity());
+		this.setDistrict(another.getDistrict());
 		this.setRole(another.getRole());
 		this.setState(another.getState());
 		this.setLastLoginDateTime(another.getLastLoginDateTime());
 		this.setSecureCode(another.getSecureCode());
-		this.setParent(another.getParent());
 		this.setContact(another.getContact());
+		this.setAccountPrivacy(another.getAccountPrivacy());
+		this.setContactPrivacy(another.getContactPrivacy());
 	}
 
 	@Override
@@ -93,6 +104,51 @@ public class UserModel extends AbstractModel {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return the province
+	 */
+	public String getProvince() {
+		return province;
+	}
+
+	/**
+	 * @param province
+	 *            the province to set
+	 */
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * @param city
+	 *            the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the district
+	 */
+	public String getDistrict() {
+		return district;
+	}
+
+	/**
+	 * @param district
+	 *            the district to set
+	 */
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 
 	/**
@@ -156,21 +212,6 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the parent
-	 */
-	public UserModel getParent() {
-		return parent;
-	}
-
-	/**
-	 * @param parent
-	 *            the parent to set
-	 */
-	public void setParent(UserModel parent) {
-		this.parent = parent;
-	}
-
-	/**
 	 * @return the contact
 	 */
 	public UserContactModel getContact() {
@@ -183,6 +224,36 @@ public class UserModel extends AbstractModel {
 	 */
 	public void setContact(UserContactModel contact) {
 		this.contact = contact;
+	}
+
+	/**
+	 * @return the accountPrivacy
+	 */
+	public UserPrivacy getAccountPrivacy() {
+		return accountPrivacy;
+	}
+
+	/**
+	 * @param accountPrivacy
+	 *            the accountPrivacy to set
+	 */
+	public void setAccountPrivacy(UserPrivacy accountPrivacy) {
+		this.accountPrivacy = accountPrivacy;
+	}
+
+	/**
+	 * @return the contactPrivacy
+	 */
+	public UserPrivacy getContactPrivacy() {
+		return contactPrivacy;
+	}
+
+	/**
+	 * @param contactPrivacy
+	 *            the contactPrivacy to set
+	 */
+	public void setContactPrivacy(UserPrivacy contactPrivacy) {
+		this.contactPrivacy = contactPrivacy;
 	}
 
 }

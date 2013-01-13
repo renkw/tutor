@@ -6,6 +6,9 @@
 package com.changev.tutor.model;
 
 import java.util.Date;
+import java.util.List;
+
+import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
@@ -19,17 +22,20 @@ public class TeacherModel extends UserModel {
 
 	private static final long serialVersionUID = -5724580114977645750L;
 
-	// basic
 	private Boolean male;
 	private Date birthday;
+	@Indexed
 	private String subject;
 	private String grade;
-	private Integer gradeLevelFrom;
-	private Integer gradeLevelTo;
+	private Byte gradeLevelFrom;
+	private Byte gradeLevelTo;
 	private String education;
-	private Integer teachYears;
+	private Byte teachYears;
+	private List<String> speciality;
 	private Integer score;
 	private String homepage;
+	@Indexed
+	private OrganizationModel organization;
 
 	public void clone(TeacherModel another) {
 		super.clone(another);
@@ -41,8 +47,10 @@ public class TeacherModel extends UserModel {
 		this.setGradeLevelTo(getGradeLevelTo());
 		this.setEducation(getEducation());
 		this.setTeachYears(getTeachYears());
+		this.setSpeciality(another.getSpeciality());
 		this.setScore(getScore());
 		this.setHomepage(getHomepage());
+		this.setOrganization(another.getOrganization());
 	}
 
 	@Override
@@ -113,7 +121,7 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the gradeLevelFrom
 	 */
-	public Integer getGradeLevelFrom() {
+	public Byte getGradeLevelFrom() {
 		return gradeLevelFrom;
 	}
 
@@ -121,14 +129,14 @@ public class TeacherModel extends UserModel {
 	 * @param gradeLevelFrom
 	 *            the gradeLevelFrom to set
 	 */
-	public void setGradeLevelFrom(Integer gradeLevelFrom) {
+	public void setGradeLevelFrom(Byte gradeLevelFrom) {
 		this.gradeLevelFrom = gradeLevelFrom;
 	}
 
 	/**
 	 * @return the gradeLevelTo
 	 */
-	public Integer getGradeLevelTo() {
+	public Byte getGradeLevelTo() {
 		return gradeLevelTo;
 	}
 
@@ -136,7 +144,7 @@ public class TeacherModel extends UserModel {
 	 * @param gradeLevelTo
 	 *            the gradeLevelTo to set
 	 */
-	public void setGradeLevelTo(Integer gradeLevelTo) {
+	public void setGradeLevelTo(Byte gradeLevelTo) {
 		this.gradeLevelTo = gradeLevelTo;
 	}
 
@@ -158,7 +166,7 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the teachYears
 	 */
-	public Integer getTeachYears() {
+	public Byte getTeachYears() {
 		return teachYears;
 	}
 
@@ -166,8 +174,23 @@ public class TeacherModel extends UserModel {
 	 * @param teachYears
 	 *            the teachYears to set
 	 */
-	public void setTeachYears(Integer teachYears) {
+	public void setTeachYears(Byte teachYears) {
 		this.teachYears = teachYears;
+	}
+
+	/**
+	 * @return the speciality
+	 */
+	public List<String> getSpeciality() {
+		return speciality;
+	}
+
+	/**
+	 * @param speciality
+	 *            the speciality to set
+	 */
+	public void setSpeciality(List<String> speciality) {
+		this.speciality = speciality;
 	}
 
 	/**
@@ -198,6 +221,21 @@ public class TeacherModel extends UserModel {
 	 */
 	public void setHomepage(String homepage) {
 		this.homepage = homepage;
+	}
+
+	/**
+	 * @return the organization
+	 */
+	public OrganizationModel getOrganization() {
+		return organization;
+	}
+
+	/**
+	 * @param organization
+	 *            the organization to set
+	 */
+	public void setOrganization(OrganizationModel organization) {
+		this.organization = organization;
 	}
 
 }

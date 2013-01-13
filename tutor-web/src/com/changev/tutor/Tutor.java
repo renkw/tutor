@@ -16,7 +16,6 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
-import com.db4o.ObjectContainer;
 import com.db4o.ext.ExtObjectContainer;
 
 /**
@@ -44,11 +43,11 @@ public final class Tutor {
 	/** 默认的Spring配置文件路径 */
 	public static final String DEFAULT_BEAN_CONFIG_PATH = "//META-INF/com.changev.tutor.beans.xml";
 
+	/** 默认的db4o配置文件路径 */
+	public static final String DEFAULT_DB4O_CONFIG_PATH = "//META-INF/com.changev.tutor.db4o-embed.properties";
+
 	/** 默认的上传文件目录 */
 	public static final String DEFAULT_UPLOAD_PATH = "//../upload/";
-
-	/** 默认的db4o数据文件 */
-	public static final String DEFAULT_DATAFILE_PATH = "//../data/runtime";
 
 	/** 默认的日期格式 */
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -135,51 +134,21 @@ public final class Tutor {
 		Tutor.beanFactory = beanFactory;
 	}
 
-	private static ExtObjectContainer topContainer;
-	private static ThreadLocal<ObjectContainer> localContainer = new ThreadLocal<ObjectContainer>();
+	private static ExtObjectContainer rootContainer;
 
 	/**
-	 * @return the topContainer
+	 * @return the rootContainer
 	 */
-	public static ExtObjectContainer getTopContainer() {
-		return topContainer;
+	public static ExtObjectContainer getRootContainer() {
+		return rootContainer;
 	}
 
 	/**
-	 * @param topContainer
-	 *            the topContainer to set
+	 * @param rootContainer
+	 *            the rootContainer to set
 	 */
-	public static void setTopContainer(ExtObjectContainer topContainer) {
-		Tutor.topContainer = topContainer;
-	}
-
-	/**
-	 * <p>
-	 * 取得当前线程关联的ObjectContainer实例。
-	 * </p>
-	 * 
-	 * @return
-	 */
-	public static ObjectContainer getCurrentContainer() {
-		ObjectContainer objc = localContainer.get();
-		if (objc == null) {
-			objc = topContainer.openSession();
-			localContainer.set(objc);
-		}
-		return objc;
-	}
-
-	/**
-	 * <p>
-	 * 关闭并移除当前线程关联的ObjectContainer实例。
-	 * </p>
-	 */
-	public static void closeCurrentContainer() {
-		ObjectContainer objc = localContainer.get();
-		if (objc != null) {
-			objc.close();
-			localContainer.remove();
-		}
+	public static void setRootContainer(ExtObjectContainer rootContainer) {
+		Tutor.rootContainer = rootContainer;
 	}
 
 	/**
@@ -191,7 +160,7 @@ public final class Tutor {
 	 * @return
 	 */
 	public static long id(Object obj) {
-		return topContainer.getID(obj);
+		return rootContainer.getID(obj);
 	}
 
 	/**
