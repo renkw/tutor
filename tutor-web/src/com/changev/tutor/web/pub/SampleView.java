@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.changev.tutor.Tutor;
 import com.changev.tutor.web.View;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -25,10 +24,10 @@ public class SampleView implements View {
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
-		ObjectContainer objc = Tutor.getRootContainer();
 		ObjectSet<SimpleBean> set = objc.query(SimpleBean.class);
 		if (set.isEmpty()) {
 			objc.store(new SimpleBean("Foo", 0, 0));
@@ -52,7 +51,8 @@ public class SampleView implements View {
 
 	@Override
 	public void postRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 	}

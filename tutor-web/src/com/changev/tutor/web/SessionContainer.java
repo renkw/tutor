@@ -88,14 +88,6 @@ public final class SessionContainer implements Serializable {
 	}
 
 	/**
-	 * @param loginUserId
-	 *            the loginUserId to set
-	 */
-	public void setLoginUserId(long loginUserId) {
-		this.loginUserId = loginUserId;
-	}
-
-	/**
 	 * @return the loginUser
 	 */
 	public UserModel getLoginUser() {
@@ -106,7 +98,8 @@ public final class SessionContainer implements Serializable {
 	 * @param loginUser
 	 *            the loginUser to set
 	 */
-	public void setLoginUser(UserModel loginUser) {
+	public void setLoginUser(long loginUserId, UserModel loginUser) {
+		this.loginUserId = loginUserId;
 		this.loginUser = loginUser;
 	}
 

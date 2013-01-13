@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.changev.tutor.Tutor;
 import com.changev.tutor.web.View;
+import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Constraint;
 import com.db4o.query.Query;
@@ -37,23 +37,26 @@ public class DataView implements View {
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("search")))
-			return search(request, response);
+			return search(request, response, objc);
 		return true;
 	}
 
 	@Override
 	public void postRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 	}
 
 	protected boolean search(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[search] called");
 
@@ -94,7 +97,7 @@ public class DataView implements View {
 			}
 		} while ((type = type.getSuperclass()) != Object.class);
 		// make query
-		Query query = Tutor.getCurrentContainer().query();
+		Query query = objc.query();
 		Constraint con = query.constrain(type);
 		if (deleted != null)
 			con = query.descend("deleted").constrain(deleted).equal();

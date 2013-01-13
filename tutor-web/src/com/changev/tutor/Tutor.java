@@ -16,7 +16,6 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
-import com.db4o.ObjectContainer;
 import com.db4o.ext.ExtObjectContainer;
 
 /**
@@ -136,7 +135,6 @@ public final class Tutor {
 	}
 
 	private static ExtObjectContainer rootContainer;
-	private static ThreadLocal<ObjectContainer> currentContainer;
 
 	/**
 	 * @return the rootContainer
@@ -151,42 +149,6 @@ public final class Tutor {
 	 */
 	public static void setRootContainer(ExtObjectContainer rootContainer) {
 		Tutor.rootContainer = rootContainer;
-	}
-
-	/**
-	 * <p>
-	 * 取得当前线程绑定的db4o会话。
-	 * </p>
-	 * 
-	 * @return
-	 */
-	public static ObjectContainer getCurrentContainer() {
-		ObjectContainer objc = currentContainer.get();
-		if (objc == null) {
-			objc = rootContainer.openSession();
-			currentContainer.set(objc);
-		}
-		return objc;
-	}
-
-	/**
-	 * <p>
-	 * 关闭当前线程绑定的db4o会话。
-	 * </p>
-	 * 
-	 * @param commit
-	 *            提交或者回滚
-	 */
-	public static void closeCurrentContainer(boolean commit) {
-		ObjectContainer objc = currentContainer.get();
-		if (objc != null) {
-			if (commit)
-				objc.commit();
-			else
-				objc.rollback();
-			objc.close();
-			currentContainer.remove();
-		}
 	}
 
 	/**

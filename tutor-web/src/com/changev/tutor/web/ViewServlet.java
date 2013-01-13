@@ -6,10 +6,8 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -24,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.changev.tutor.Tutor;
-import com.changev.tutor.web.util.NavigationNode;
+import com.db4o.ObjectContainer;
 
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.HttpRequestHashModel;
@@ -120,12 +118,17 @@ public class ViewServlet extends HttpServlet {
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[doRender] called");
-		if (!preRender(req, resp))
-			return;
+		ObjectContainer objc = Tutor.getRootContainer().openSession();
 		try {
-			renderTemplate(req, resp);
+			if (!preRender(req, resp, objc))
+				return;
+			try {
+				renderTemplate(req, resp);
+			} finally {
+				postRender(req, resp, objc);
+			}
 		} finally {
-			postRender(req, resp);
+			objc.close();
 		}
 	}
 
@@ -140,7 +143,8 @@ public class ViewServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected boolean preRender(HttpServletRequest req, HttpServletResponse resp)
+	protected boolean preRender(HttpServletRequest req,
+			HttpServletResponse resp, ObjectContainer objc)
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
@@ -151,7 +155,7 @@ public class ViewServlet extends HttpServlet {
 			View view = (View) beanFactory.getBean(name);
 			if (view != null) {
 				try {
-					return view.preRender(req, resp);
+					return view.preRender(req, resp, objc);
 				} catch (RuntimeException e) {
 					throw e;
 				} catch (ServletException e) {
@@ -189,19 +193,10 @@ public class ViewServlet extends HttpServlet {
 			HttpServletResponse resp) throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[renderTemplate] called");
-
-		// find navigation stack
-		String path = req.getServletPath();
-		List<NavigationNode> stack = new ArrayList<NavigationNode>();
-		Tutor.getBeanFactory().getBean(NavigationNode.class)
-				.lookup(path, stack);
-		Collections.reverse(stack);
-		req.setAttribute("navigation", stack);
-
 		// render template
 		try {
 			TemplateModel model = getTemplateModel(req);
-			Template template = config.getTemplate(path);
+			Template template = config.getTemplate(req.getServletPath());
 			resp.setContentType("text/html; charset=" + template.getEncoding());
 			resp.setHeader("Pragma", "no-cache");
 			resp.setHeader("Cache-Control", "no-cache");
@@ -221,8 +216,8 @@ public class ViewServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void postRender(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void postRender(HttpServletRequest req, HttpServletResponse resp,
+			ObjectContainer objc) throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 
@@ -232,7 +227,7 @@ public class ViewServlet extends HttpServlet {
 			View view = (View) beanFactory.getBean(name);
 			if (view != null) {
 				try {
-					view.postRender(req, resp);
+					view.postRender(req, resp, objc);
 				} catch (RuntimeException e) {
 					throw e;
 				} catch (ServletException e) {

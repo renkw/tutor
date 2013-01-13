@@ -5,6 +5,8 @@
  */
 package com.changev.tutor.web.pub;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.changev.tutor.Tutor;
+import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.util.Validator;
 import com.changev.tutor.web.Messages;
@@ -33,21 +35,23 @@ public class LoginView implements View {
 
 	private static final Logger logger = Logger.getLogger(LoginView.class);
 
-	private String successPage;
+	private Map<String, String> successPages;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("login")))
-			return login(request, response);
+			return login(request, response, objc);
 		return true;
 	}
 
 	@Override
 	public void postRender(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 	}
@@ -63,67 +67,66 @@ public class LoginView implements View {
 	 * @throws Throwable
 	 */
 	protected boolean login(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
+			HttpServletResponse response, ObjectContainer objc)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[login] called");
 
-		// TODO validate code
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
+		String checkCode = request.getParameter("checkCode");
 		if (logger.isDebugEnabled()) {
 			logger.debug("[login] email = " + email);
 			logger.debug("[login] password = " + password);
+			logger.debug("[login] checkCode = " + checkCode);
 		}
 		// validation
-		if (Validator.required(email)) {
+		if (Validator.required(email))
 			Messages.addError(request, "email", "请输入登录邮箱");
-		}
-		if (Validator.required(password)) {
+		if (Validator.required(password))
 			Messages.addError(request, "password", "请输入密码");
-		}
+		SessionContainer container = SessionContainer.get(request);
+		if (container == null
+				|| !StringUtils.equals(container.getCheckCode(), checkCode))
+			Messages.addError(request, "checkCode", "验证码错误");
 		// do login
 		if (!Messages.hasErrors(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[login] validation passed");
-
-			ObjectContainer objc = Tutor.getRootContainer();
-			UserModel user = new UserModel();
-			user.setEmail(email);
-			// TODO encrypt password
-			user.setPassword(password);
-			user.setDeleted(Boolean.FALSE);
-			ObjectSet<UserModel> userSet = objc.queryByExample(user);
-			System.out.println("------------------------------"
-					+ userSet.size());
-			if (!userSet.isEmpty()) {
+			ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
+					.getUserExample(email, password));
+			if (userSet.hasNext()) {
 				// reset session
 				HttpSession session = request.getSession(false);
 				if (session != null)
 					session.invalidate();
-				user = userSet.next();
-				SessionContainer.get(request, true).setLoginUser(user);
-				// TODO
+				UserModel user = userSet.next();
+				SessionContainer.get(request, true).setLoginUser(
+						objc.ext().getID(user), user);
+				String successPage = successPages.get(user.getRole().name());
 				if (logger.isDebugEnabled())
 					logger.debug("[login] login successed. goto " + successPage);
 				response.sendRedirect(request.getContextPath() + successPage);
+				return false;
 			}
+			Messages.addError(request, "email", "用户不存在或密码错误");
 		}
 		return true;
 	}
 
 	/**
-	 * @return the successPage
+	 * @return the successPages
 	 */
-	public String getSuccessPage() {
-		return successPage;
+	public Map<String, String> getSuccessPages() {
+		return successPages;
 	}
 
 	/**
-	 * @param successPage
-	 *            the successPage to set
+	 * @param successPages
+	 *            the successPages to set
 	 */
-	public void setSuccessPage(String successPage) {
-		this.successPage = successPage;
+	public void setSuccessPages(Map<String, String> successPages) {
+		this.successPages = successPages;
 	}
 
 }

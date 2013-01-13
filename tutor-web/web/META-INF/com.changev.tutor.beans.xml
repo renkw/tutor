@@ -47,6 +47,15 @@
 	<!-- ####################################### -->
 	
 	<!-- Views -->
+	<bean id="public.loginView" class="com.changev.tutor.web.pub.LoginView">
+		<property name="successPages"><util:map>
+			<entry key="Parent" value="/front/member.html" />
+			<entry key="Student" value="/front/member.html" />
+			<entry key="Teacher" value="/back/member.html" />
+			<entry key="Organization" value="/back/member.html" />
+			<entry key="Admin" value="/manage/member.html" />
+		</util:map></property>
+	</bean>
 
 	<!-- Services -->
 
