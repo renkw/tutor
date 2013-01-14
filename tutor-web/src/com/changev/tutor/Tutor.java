@@ -7,15 +7,23 @@ import java.security.Key;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
+import com.db4o.ObjectContainer;
 import com.db4o.ext.ExtObjectContainer;
 
 /**
@@ -135,6 +143,7 @@ public final class Tutor {
 	}
 
 	private static ExtObjectContainer rootContainer;
+	private static ThreadLocal<ObjectContainerWrapper> currentContainer = new ThreadLocal<ObjectContainerWrapper>();
 
 	/**
 	 * @return the rootContainer
@@ -149,6 +158,70 @@ public final class Tutor {
 	 */
 	public static void setRootContainer(ExtObjectContainer rootContainer) {
 		Tutor.rootContainer = rootContainer;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前线程关联的ObjectContainer实例。
+	 * </p>
+	 * 
+	 * @return
+	 * @see ObjectContainerWrapper
+	 */
+	public static ObjectContainer getCurrentContainer() {
+		ObjectContainerWrapper objc = currentContainer.get();
+		if (objc == null) {
+			objc = new ObjectContainerWrapper();
+			currentContainer.set(objc);
+		}
+		return objc;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前线程关联的ExtObjectContainer实例。
+	 * </p>
+	 * 
+	 * @return
+	 * @see ObjectContainerWrapper
+	 */
+	public static ExtObjectContainer getCurrentContainerExt() {
+		return getCurrentContainer().ext();
+	}
+
+	/**
+	 * <p>
+	 * 提交当前事务。
+	 * </p>
+	 */
+	public static void commitCurrent() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.commit();
+	}
+
+	/**
+	 * <p>
+	 * 回滚当前事务。
+	 * </p>
+	 */
+	public static void rollbackCurrent() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.rollback();
+	}
+
+	/**
+	 * <p>
+	 * 关闭当前线程关联的ObjectContainer实例。
+	 * </p>
+	 * 
+	 * @see ObjectContainerWrapper
+	 */
+	public static void closeCurrentContainer() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.close();
 	}
 
 	/**
@@ -172,6 +245,92 @@ public final class Tutor {
 	 */
 	public static long timestamp() {
 		return System.currentTimeMillis();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentCalendar() {
+		return Calendar.getInstance();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象，时间部分为00:00:00.000。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentDateCalendar() {
+		Calendar cal = currentCalendar();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象，日期部分为0001/01/01。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentTimeCalendar() {
+		Calendar cal = currentCalendar();
+		cal.set(1, 0, 1);
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar emptyCalendar() {
+		Calendar cal = currentCalendar();
+		cal.clear();
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日期和时间对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentDateTime() {
+		return currentCalendar().getTime();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日期对象，时间部分为00:00:00.000。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentDate() {
+		return currentDateCalendar().getTime();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前时间对象，日期部分为0001/01/01。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentTime() {
+		return currentTimeCalendar().getTime();
 	}
 
 	/**
@@ -364,7 +523,7 @@ public final class Tutor {
 	 * 
 	 * @param obj
 	 * @param clsname
-	 * @return 当指定类型为原始类型而且对象为null，返回false。<br />
+	 * @return 当指定类型为原始类型而且对象为null，返回false。<br>
 	 *         当指定类型非原始类型而且对象为null，返回true。
 	 * @throws ClassNotFoundException
 	 */
@@ -431,6 +590,93 @@ public final class Tutor {
 		if (obj instanceof Date)
 			return ((Date) obj).getTime();
 		return Double.parseDouble(obj.toString());
+	}
+
+	/**
+	 * <p>
+	 * 用数组元素填充List。
+	 * </p>
+	 * 
+	 * @param ea
+	 * @return
+	 */
+	public static <T> List<T> toList(T... ea) {
+		if (ea == null || ea.length == 0)
+			return Collections.emptyList();
+		List<T> list = new ArrayList<T>(ea.length);
+		for (int i = 0; i < ea.length; i++)
+			list.add(ea[i]);
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * 用数组元素填充Map。
+	 * </p>
+	 * 
+	 * <p>
+	 * 奇数位元素为键，偶数位元素为值。 如果数组长度为奇数，最后一个键对应的值为null。
+	 * </p>
+	 * 
+	 * @param kv
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static <K, V> Map<K, V> toMap(Object... kv) {
+		if (kv == null || kv.length == 0)
+			return Collections.emptyMap();
+		Map map = new HashMap((kv.length + 1) / 2);
+		int i = 1;
+		do {
+			map.put(kv[i - 1], i < kv.length ? kv[i] : null);
+			i += 2;
+		} while (i < kv.length);
+		return map;
+	}
+
+	/**
+	 * <p>
+	 * 从十六制数字串转换为比特数组。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static byte[] fromHex(String s) {
+		byte[] bytes = new byte[(s.length() + 1) / 2];
+		// TODO
+		return bytes;
+	}
+
+	/**
+	 * <p>
+	 * 从比特数组转换为十六制数字串。
+	 * </p>
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	public static String toHex(byte[] bytes) {
+		char[] chars = new char[bytes.length * 2];
+		for (int i = 0; i < bytes.length; i++) {
+			int v = bytes[i] & 0x0F;
+			chars[i * 2] = (char) (v + (v < 10 ? '0' : 'a' - 10));
+			v = (bytes[i] >>> 4) & 0x0F;
+			chars[i * 2 + 1] = (char) (v + (v < 10 ? '0' : 'a' - 10));
+		}
+		return new String(chars);
+	}
+
+	/**
+	 * <p>
+	 * 生成随机十六制数字串。
+	 * </p>
+	 * 
+	 * @param len
+	 * @return
+	 */
+	public static String randomHex(int len) {
+		return RandomStringUtils.random(len, "0123456789abcdef");
 	}
 
 }

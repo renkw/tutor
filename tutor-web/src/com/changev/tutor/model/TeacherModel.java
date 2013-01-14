@@ -8,6 +8,8 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.List;
 
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableArrayList;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -37,20 +39,10 @@ public class TeacherModel extends UserModel {
 	@Indexed
 	private OrganizationModel organization;
 
-	public void clone(TeacherModel another) {
-		super.clone(another);
-		this.setMale(getMale());
-		this.setBirthday(getBirthday());
-		this.setSubject(getSubject());
-		this.setGrade(getGrade());
-		this.setGradeLevelFrom(getGradeLevelFrom());
-		this.setGradeLevelTo(getGradeLevelTo());
-		this.setEducation(getEducation());
-		this.setTeachYears(getTeachYears());
-		this.setSpeciality(another.getSpeciality());
-		this.setScore(getScore());
-		this.setHomepage(getHomepage());
-		this.setOrganization(another.getOrganization());
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Teacher);
 	}
 
 	@Override
@@ -62,6 +54,7 @@ public class TeacherModel extends UserModel {
 	 * @return the male
 	 */
 	public Boolean getMale() {
+		beforeGet();
 		return male;
 	}
 
@@ -70,6 +63,7 @@ public class TeacherModel extends UserModel {
 	 *            the male to set
 	 */
 	public void setMale(Boolean male) {
+		beforeSet();
 		this.male = male;
 	}
 
@@ -77,6 +71,7 @@ public class TeacherModel extends UserModel {
 	 * @return the birthday
 	 */
 	public Date getBirthday() {
+		beforeGet();
 		return birthday;
 	}
 
@@ -85,6 +80,7 @@ public class TeacherModel extends UserModel {
 	 *            the birthday to set
 	 */
 	public void setBirthday(Date birthday) {
+		beforeSet();
 		this.birthday = birthday;
 	}
 
@@ -92,6 +88,7 @@ public class TeacherModel extends UserModel {
 	 * @return the subject
 	 */
 	public String getSubject() {
+		beforeGet();
 		return subject;
 	}
 
@@ -100,6 +97,7 @@ public class TeacherModel extends UserModel {
 	 *            the subject to set
 	 */
 	public void setSubject(String subject) {
+		beforeSet();
 		this.subject = subject;
 	}
 
@@ -107,6 +105,7 @@ public class TeacherModel extends UserModel {
 	 * @return the grade
 	 */
 	public String getGrade() {
+		beforeGet();
 		return grade;
 	}
 
@@ -115,6 +114,7 @@ public class TeacherModel extends UserModel {
 	 *            the grade to set
 	 */
 	public void setGrade(String grade) {
+		beforeSet();
 		this.grade = grade;
 	}
 
@@ -122,6 +122,7 @@ public class TeacherModel extends UserModel {
 	 * @return the gradeLevelFrom
 	 */
 	public Byte getGradeLevelFrom() {
+		beforeGet();
 		return gradeLevelFrom;
 	}
 
@@ -130,6 +131,7 @@ public class TeacherModel extends UserModel {
 	 *            the gradeLevelFrom to set
 	 */
 	public void setGradeLevelFrom(Byte gradeLevelFrom) {
+		beforeSet();
 		this.gradeLevelFrom = gradeLevelFrom;
 	}
 
@@ -137,6 +139,7 @@ public class TeacherModel extends UserModel {
 	 * @return the gradeLevelTo
 	 */
 	public Byte getGradeLevelTo() {
+		beforeGet();
 		return gradeLevelTo;
 	}
 
@@ -145,6 +148,7 @@ public class TeacherModel extends UserModel {
 	 *            the gradeLevelTo to set
 	 */
 	public void setGradeLevelTo(Byte gradeLevelTo) {
+		beforeSet();
 		this.gradeLevelTo = gradeLevelTo;
 	}
 
@@ -152,6 +156,7 @@ public class TeacherModel extends UserModel {
 	 * @return the education
 	 */
 	public String getEducation() {
+		beforeGet();
 		return education;
 	}
 
@@ -160,6 +165,7 @@ public class TeacherModel extends UserModel {
 	 *            the education to set
 	 */
 	public void setEducation(String education) {
+		beforeSet();
 		this.education = education;
 	}
 
@@ -167,6 +173,7 @@ public class TeacherModel extends UserModel {
 	 * @return the teachYears
 	 */
 	public Byte getTeachYears() {
+		beforeGet();
 		return teachYears;
 	}
 
@@ -175,6 +182,7 @@ public class TeacherModel extends UserModel {
 	 *            the teachYears to set
 	 */
 	public void setTeachYears(Byte teachYears) {
+		beforeSet();
 		this.teachYears = teachYears;
 	}
 
@@ -182,21 +190,27 @@ public class TeacherModel extends UserModel {
 	 * @return the speciality
 	 */
 	public List<String> getSpeciality() {
+		beforeGet();
 		return speciality;
 	}
 
 	/**
-	 * @param speciality
-	 *            the speciality to set
+	 * @return the speciality
 	 */
-	public void setSpeciality(List<String> speciality) {
-		this.speciality = speciality;
+	public List<String> getSpecialityFor() {
+		beforeGet();
+		if (speciality == null) {
+			beforeSet();
+			speciality = new ActivatableArrayList<String>();
+		}
+		return speciality;
 	}
 
 	/**
 	 * @return the score
 	 */
 	public Integer getScore() {
+		beforeGet();
 		return score;
 	}
 
@@ -205,6 +219,7 @@ public class TeacherModel extends UserModel {
 	 *            the score to set
 	 */
 	public void setScore(Integer score) {
+		beforeSet();
 		this.score = score;
 	}
 
@@ -212,6 +227,7 @@ public class TeacherModel extends UserModel {
 	 * @return the homepage
 	 */
 	public String getHomepage() {
+		beforeGet();
 		return homepage;
 	}
 
@@ -220,6 +236,7 @@ public class TeacherModel extends UserModel {
 	 *            the homepage to set
 	 */
 	public void setHomepage(String homepage) {
+		beforeSet();
 		this.homepage = homepage;
 	}
 
@@ -227,6 +244,7 @@ public class TeacherModel extends UserModel {
 	 * @return the organization
 	 */
 	public OrganizationModel getOrganization() {
+		beforeGet();
 		return organization;
 	}
 
@@ -235,6 +253,7 @@ public class TeacherModel extends UserModel {
 	 *            the organization to set
 	 */
 	public void setOrganization(OrganizationModel organization) {
+		beforeSet();
 		this.organization = organization;
 	}
 

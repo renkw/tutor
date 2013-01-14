@@ -48,6 +48,28 @@
 	
 	<!-- Views -->
 	<bean id="public.loginView" class="com.changev.tutor.web.pub.LoginView">
+		<property name="loginValidator">
+			<bean class="com.changev.tutor.web.util.ParamValidators">
+				<property name="validators"><util:list>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
+						<property name="args"><util:map>
+							<entry key="name" value="email" />
+							<entry key="pattern" value="[^@\s]+@\S+" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamRequiredValidator"
+						p:name="password"
+						p:message="请输入登录密码。"
+					/>
+					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
+						p:name="checkCode"
+						p:message="验证码不正确。"
+					/>
+				</util:list></property>
+			</bean>
+		</property>
+		<property name="failMessage" value="用户不存在或密码错误。" />
 		<property name="successPages"><util:map>
 			<entry key="Parent" value="/front/member.html" />
 			<entry key="Student" value="/front/member.html" />
@@ -56,6 +78,36 @@
 			<entry key="Admin" value="/manage/member.html" />
 		</util:map></property>
 	</bean>
+	
+	<bean id="public.registerView" class="com.changev.tutor.web.pub.RegisterView">
+		<property name="registerAccountValidator">
+			<bean class="com.changev.tutor.web.util.ParamValidators">
+				<property name="validators"><util:list>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
+						<property name="args"><util:map>
+							<entry key="name" value="email" />
+							<entry key="pattern" value="[^@\s]+@\S+" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录密码。;equals:登录密码和确认密码不一致。" />
+						<property name="args"><util:map>
+							<entry key="name" value="password" />
+							<entry key="anotherName" value="confirmPassword" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
+						p:name="checkCode"
+						p:message="验证码不正确。"
+					/>
+				</util:list></property>
+			</bean>
+		</property>
+		<property name="registerRequiredPage" value="/public/registerComplete.html" />
+	</bean>
+	
+	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 
 	<!-- Services -->
 

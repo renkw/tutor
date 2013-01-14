@@ -8,6 +8,8 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.Map;
 
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableHashMap;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -33,17 +35,10 @@ public class StudentModel extends UserModel {
 	@Indexed
 	private ParentModel parent;
 
-	public void clone(StudentModel another) {
-		super.clone(another);
-		this.setFacePicture(another.getFacePicture());
-		this.setMale(another.getMale());
-		this.setBirthday(another.getBirthday());
-		this.setSchool(another.getSchool());
-		this.setGrade(another.getGrade());
-		this.setGradeLevel(another.getGradeLevel());
-		this.setHobby(another.getHobby());
-		this.setDefaultServicer(another.getDefaultServicer());
-		this.setParent(another.getParent());
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Student);
 	}
 
 	@Override
@@ -55,6 +50,7 @@ public class StudentModel extends UserModel {
 	 * @return the facePicture
 	 */
 	public String getFacePicture() {
+		beforeGet();
 		return facePicture;
 	}
 
@@ -63,6 +59,7 @@ public class StudentModel extends UserModel {
 	 *            the facePicture to set
 	 */
 	public void setFacePicture(String facePicture) {
+		beforeSet();
 		this.facePicture = facePicture;
 	}
 
@@ -70,6 +67,7 @@ public class StudentModel extends UserModel {
 	 * @return the male
 	 */
 	public Boolean getMale() {
+		beforeGet();
 		return male;
 	}
 
@@ -78,6 +76,7 @@ public class StudentModel extends UserModel {
 	 *            the male to set
 	 */
 	public void setMale(Boolean male) {
+		beforeSet();
 		this.male = male;
 	}
 
@@ -85,6 +84,7 @@ public class StudentModel extends UserModel {
 	 * @return the birthday
 	 */
 	public Date getBirthday() {
+		beforeGet();
 		return birthday;
 	}
 
@@ -93,6 +93,7 @@ public class StudentModel extends UserModel {
 	 *            the birthday to set
 	 */
 	public void setBirthday(Date birthday) {
+		beforeSet();
 		this.birthday = birthday;
 	}
 
@@ -100,6 +101,7 @@ public class StudentModel extends UserModel {
 	 * @return the school
 	 */
 	public String getSchool() {
+		beforeGet();
 		return school;
 	}
 
@@ -108,6 +110,7 @@ public class StudentModel extends UserModel {
 	 *            the school to set
 	 */
 	public void setSchool(String school) {
+		beforeSet();
 		this.school = school;
 	}
 
@@ -115,6 +118,7 @@ public class StudentModel extends UserModel {
 	 * @return the grade
 	 */
 	public String getGrade() {
+		beforeGet();
 		return grade;
 	}
 
@@ -123,6 +127,7 @@ public class StudentModel extends UserModel {
 	 *            the grade to set
 	 */
 	public void setGrade(String grade) {
+		beforeSet();
 		this.grade = grade;
 	}
 
@@ -130,6 +135,7 @@ public class StudentModel extends UserModel {
 	 * @return the gradeLevel
 	 */
 	public Byte getGradeLevel() {
+		beforeGet();
 		return gradeLevel;
 	}
 
@@ -138,6 +144,7 @@ public class StudentModel extends UserModel {
 	 *            the gradeLevel to set
 	 */
 	public void setGradeLevel(Byte gradeLevel) {
+		beforeSet();
 		this.gradeLevel = gradeLevel;
 	}
 
@@ -145,6 +152,7 @@ public class StudentModel extends UserModel {
 	 * @return the hobby
 	 */
 	public String getHobby() {
+		beforeGet();
 		return hobby;
 	}
 
@@ -153,6 +161,7 @@ public class StudentModel extends UserModel {
 	 *            the hobby to set
 	 */
 	public void setHobby(String hobby) {
+		beforeSet();
 		this.hobby = hobby;
 	}
 
@@ -160,21 +169,27 @@ public class StudentModel extends UserModel {
 	 * @return the defaultServicer
 	 */
 	public Map<String, String> getDefaultServicer() {
+		beforeGet();
 		return defaultServicer;
 	}
 
 	/**
-	 * @param defaultServicer
-	 *            the defaultServicer to set
+	 * @return the defaultServicer
 	 */
-	public void setDefaultServicer(Map<String, String> defaultServicer) {
-		this.defaultServicer = defaultServicer;
+	public Map<String, String> getDefaultServicerFor() {
+		beforeGet();
+		if (defaultServicer == null) {
+			beforeSet();
+			defaultServicer = new ActivatableHashMap<String, String>();
+		}
+		return defaultServicer;
 	}
 
 	/**
 	 * @return the parent
 	 */
 	public ParentModel getParent() {
+		beforeGet();
 		return parent;
 	}
 
@@ -183,6 +198,7 @@ public class StudentModel extends UserModel {
 	 *            the parent to set
 	 */
 	public void setParent(ParentModel parent) {
+		beforeSet();
 		this.parent = parent;
 	}
 

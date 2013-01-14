@@ -6,6 +6,7 @@
 package com.changev.tutor.web;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -68,39 +69,68 @@ public final class SessionContainer implements Serializable {
 		return get(request, true);
 	}
 
-	private long loginUserId;
-	private UserModel loginUser;
+	private Long loginUserId;
+	private Date loginDateTime;
 	private Messages sessionMessage = new Messages();
 	private String checkCode;
+
+	private transient UserModel loginUser;
 
 	private SessionContainer() {
 	}
 
-	public void destroy() {
+	/**
+	 * <p>
+	 * 执行用户登录操作。
+	 * </p>
+	 * 
+	 * @param loginUser
+	 */
+	public void login(long loginUserId) {
+		this.loginUserId = loginUserId;
+		this.loginDateTime = Tutor.currentDateTime();
+		this.loginUser = null;
+	}
 
+	/**
+	 * <p>
+	 * 执行用户退出登录操作。
+	 * </p>
+	 */
+	public void logout() {
+		// execute logout
+		UserModel user = getLoginUser();
+		if (user != null) {
+			user.setLastLoginDateTime(loginDateTime);
+			Tutor.getCurrentContainer().store(user);
+			Tutor.commitCurrent();
+			this.loginUserId = null;
+			this.loginDateTime = null;
+			this.loginUser = null;
+		}
 	}
 
 	/**
 	 * @return the loginUserId
 	 */
-	public long getLoginUserId() {
+	public Long getLoginUserId() {
 		return loginUserId;
+	}
+
+	/**
+	 * @return the loginDateTime
+	 */
+	public Date getLoginDateTime() {
+		return loginDateTime;
 	}
 
 	/**
 	 * @return the loginUser
 	 */
 	public UserModel getLoginUser() {
+		if (loginUser == null && loginUserId != null)
+			loginUser = Tutor.getCurrentContainerExt().getByID(loginUserId);
 		return loginUser;
-	}
-
-	/**
-	 * @param loginUser
-	 *            the loginUser to set
-	 */
-	public void setLoginUser(long loginUserId, UserModel loginUser) {
-		this.loginUserId = loginUserId;
-		this.loginUser = loginUser;
 	}
 
 	/**
@@ -122,7 +152,9 @@ public final class SessionContainer implements Serializable {
 	 * @return the checkCode
 	 */
 	public String getCheckCode() {
-		return checkCode;
+		String code = checkCode;
+		checkCode = null;
+		return code;
 	}
 
 	/**

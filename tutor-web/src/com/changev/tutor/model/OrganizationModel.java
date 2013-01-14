@@ -7,6 +7,9 @@ package com.changev.tutor.model;
 
 import java.util.List;
 
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableArrayList;
+
 /**
  * <p>
  * 辅导机构。
@@ -26,14 +29,10 @@ public class OrganizationModel extends UserModel {
 	private Integer score;
 	private Integer accountLevel;
 
-	public void clone(OrganizationModel another) {
-		super.clone(another);
-		this.setLogoPicture(another.getLogoPicture());
-		this.setSubjects(another.getSubjects());
-		this.setTeacherCount(another.getTeacherCount());
-		this.setHomepage(another.getHomepage());
-		this.setScore(another.getScore());
-		this.setAccountLevel(another.getAccountLevel());
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Organization);
 	}
 
 	@Override
@@ -45,6 +44,7 @@ public class OrganizationModel extends UserModel {
 	 * @return the logoPicture
 	 */
 	public String getLogoPicture() {
+		beforeGet();
 		return logoPicture;
 	}
 
@@ -53,6 +53,7 @@ public class OrganizationModel extends UserModel {
 	 *            the logoPicture to set
 	 */
 	public void setLogoPicture(String logoPicture) {
+		beforeSet();
 		this.logoPicture = logoPicture;
 	}
 
@@ -60,21 +61,27 @@ public class OrganizationModel extends UserModel {
 	 * @return the subjects
 	 */
 	public List<String> getSubjects() {
+		beforeGet();
 		return subjects;
 	}
 
 	/**
-	 * @param subjects
-	 *            the subjects to set
+	 * @return the subjects
 	 */
-	public void setSubjects(List<String> subjects) {
-		this.subjects = subjects;
+	public List<String> getSubjectsFor() {
+		beforeGet();
+		if (subjects == null) {
+			beforeSet();
+			subjects = new ActivatableArrayList<String>();
+		}
+		return subjects;
 	}
 
 	/**
 	 * @return the teacherCount
 	 */
 	public Integer getTeacherCount() {
+		beforeGet();
 		return teacherCount;
 	}
 
@@ -83,6 +90,7 @@ public class OrganizationModel extends UserModel {
 	 *            the teacherCount to set
 	 */
 	public void setTeacherCount(Integer teacherCount) {
+		beforeSet();
 		this.teacherCount = teacherCount;
 	}
 
@@ -90,6 +98,7 @@ public class OrganizationModel extends UserModel {
 	 * @return the homepage
 	 */
 	public String getHomepage() {
+		beforeGet();
 		return homepage;
 	}
 
@@ -98,6 +107,7 @@ public class OrganizationModel extends UserModel {
 	 *            the homepage to set
 	 */
 	public void setHomepage(String homepage) {
+		beforeSet();
 		this.homepage = homepage;
 	}
 
@@ -105,6 +115,7 @@ public class OrganizationModel extends UserModel {
 	 * @return the score
 	 */
 	public Integer getScore() {
+		beforeGet();
 		return score;
 	}
 
@@ -113,6 +124,7 @@ public class OrganizationModel extends UserModel {
 	 *            the score to set
 	 */
 	public void setScore(Integer score) {
+		beforeSet();
 		this.score = score;
 	}
 
@@ -120,6 +132,7 @@ public class OrganizationModel extends UserModel {
 	 * @return the accountLevel
 	 */
 	public Integer getAccountLevel() {
+		beforeGet();
 		return accountLevel;
 	}
 
@@ -128,6 +141,7 @@ public class OrganizationModel extends UserModel {
 	 *            the accountLevel to set
 	 */
 	public void setAccountLevel(Integer accountLevel) {
+		beforeSet();
 		this.accountLevel = accountLevel;
 	}
 

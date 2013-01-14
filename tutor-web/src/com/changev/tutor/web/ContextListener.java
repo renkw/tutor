@@ -33,11 +33,11 @@ import com.db4o.ObjectContainer;
  * <p>
  * 上下文设定参数：
  * <ul>
- * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br />
+ * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br>
  * 默认为{@link Tutor#DEFAULT_LOG4J_CONFIG_PATH DEFAULT_LOG4J_CONFIG_PATH}。</li>
- * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br />
+ * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br>
  * 默认为{@link Tutor#DEFAULT_BEAN_CONFIG_PATH DEFAULT_BEAN_CONFIG_PATH}。</li>
- * <li><strong>db4oConfigPath</strong> - 可选参数。Db4o配置文件路径。<br />
+ * <li><strong>db4oConfigPath</strong> - 可选参数。Db4o配置文件路径。<br>
  * 默认为{@link Tutor#DEFAULT_DB4O_CONFIG_PATH DEFAULT_DB4O_CONFIG_PATH}。</li>
  * </ul>
  * </p>
@@ -129,11 +129,13 @@ public class ContextListener implements ServletContextListener,
 	@Override
 	public void sessionDestroyed(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
-		// destroy session container
-		SessionContainer sess = (SessionContainer) session
+		// logout
+		SessionContainer container = (SessionContainer) session
 				.getAttribute(Tutor.KEY_SESSION_CONTAINER);
-		if (sess != null)
-			sess.destroy();
+		if (container != null)
+			container.logout();
+		// close current object container
+		Tutor.closeCurrentContainer();
 	}
 
 }

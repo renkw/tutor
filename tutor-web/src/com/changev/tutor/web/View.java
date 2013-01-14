@@ -8,8 +8,6 @@ package com.changev.tutor.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.db4o.ObjectContainer;
-
 /**
  * <p>
  * 页面视图接口。
@@ -34,8 +32,8 @@ public interface View {
 	 * @return true表示可以继续执行模板输出。
 	 * @throws Throwable
 	 */
-	boolean preRender(HttpServletRequest request, HttpServletResponse response,
-			ObjectContainer objc) throws Throwable;
+	boolean preRender(HttpServletRequest request, HttpServletResponse response)
+			throws Throwable;
 
 	/**
 	 * <p>
@@ -46,7 +44,7 @@ public interface View {
 	 * @param response
 	 * @throws Throwable
 	 */
-	void postRender(HttpServletRequest request, HttpServletResponse response,
-			ObjectContainer objc) throws Throwable;
+	void postRender(HttpServletRequest request, HttpServletResponse response)
+			throws Throwable;
 
 }

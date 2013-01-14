@@ -8,6 +8,7 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.List;
 
+import com.db4o.collections.ActivatableArrayList;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -40,24 +41,6 @@ public class QuestionModel extends AbstractModel {
 	private UserModel finalAnswerer;
 	private List<String> uploadPictures;
 
-	public void clone(QuestionModel another) {
-		super.clone(another);
-		this.setQuestioner(another.getQuestioner());
-		this.setStudent(another.getStudent());
-		this.setProvince(another.getProvince());
-		this.setCity(another.getCity());
-		this.setDistrict(another.getDistrict());
-		this.setSubject(another.getSubject());
-		this.setGrade(another.getGrade());
-		this.setGradeLevel(another.getGradeLevel());
-		this.setTitle(another.getTitle());
-		this.setSpecifiedAnswerer(another.getSpecifiedAnswerer());
-		this.setQuestionDateTime(another.getQuestionDateTime());
-		this.setFinalAnswerDateTime(another.getFinalAnswerDateTime());
-		this.setFinalAnswerer(another.getFinalAnswerer());
-		this.setUploadPictures(another.getUploadPictures());
-	}
-
 	@Override
 	public QuestionModel clone() {
 		return (QuestionModel) super.clone();
@@ -67,6 +50,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the questioner
 	 */
 	public UserModel getQuestioner() {
+		beforeGet();
 		return questioner;
 	}
 
@@ -75,6 +59,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the questioner to set
 	 */
 	public void setQuestioner(UserModel questioner) {
+		beforeSet();
 		this.questioner = questioner;
 	}
 
@@ -82,6 +67,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the student
 	 */
 	public StudentModel getStudent() {
+		beforeGet();
 		return student;
 	}
 
@@ -90,6 +76,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the student to set
 	 */
 	public void setStudent(StudentModel student) {
+		beforeSet();
 		this.student = student;
 	}
 
@@ -97,6 +84,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the province
 	 */
 	public String getProvince() {
+		beforeGet();
 		return province;
 	}
 
@@ -105,6 +93,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the province to set
 	 */
 	public void setProvince(String province) {
+		beforeSet();
 		this.province = province;
 	}
 
@@ -112,6 +101,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the city
 	 */
 	public String getCity() {
+		beforeGet();
 		return city;
 	}
 
@@ -120,6 +110,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the city to set
 	 */
 	public void setCity(String city) {
+		beforeSet();
 		this.city = city;
 	}
 
@@ -127,6 +118,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the district
 	 */
 	public String getDistrict() {
+		beforeGet();
 		return district;
 	}
 
@@ -135,6 +127,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the district to set
 	 */
 	public void setDistrict(String district) {
+		beforeSet();
 		this.district = district;
 	}
 
@@ -142,6 +135,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the subject
 	 */
 	public String getSubject() {
+		beforeGet();
 		return subject;
 	}
 
@@ -150,6 +144,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the subject to set
 	 */
 	public void setSubject(String subject) {
+		beforeSet();
 		this.subject = subject;
 	}
 
@@ -157,6 +152,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the grade
 	 */
 	public String getGrade() {
+		beforeGet();
 		return grade;
 	}
 
@@ -165,6 +161,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the grade to set
 	 */
 	public void setGrade(String grade) {
+		beforeSet();
 		this.grade = grade;
 	}
 
@@ -172,6 +169,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the gradeLevel
 	 */
 	public Integer getGradeLevel() {
+		beforeGet();
 		return gradeLevel;
 	}
 
@@ -180,6 +178,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the gradeLevel to set
 	 */
 	public void setGradeLevel(Integer gradeLevel) {
+		beforeSet();
 		this.gradeLevel = gradeLevel;
 	}
 
@@ -187,6 +186,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the title
 	 */
 	public String getTitle() {
+		beforeGet();
 		return title;
 	}
 
@@ -195,6 +195,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the title to set
 	 */
 	public void setTitle(String title) {
+		beforeSet();
 		this.title = title;
 	}
 
@@ -202,6 +203,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the specifiedAnswerer
 	 */
 	public UserModel getSpecifiedAnswerer() {
+		beforeGet();
 		return specifiedAnswerer;
 	}
 
@@ -210,6 +212,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the specifiedAnswerer to set
 	 */
 	public void setSpecifiedAnswerer(UserModel specifiedAnswerer) {
+		beforeSet();
 		this.specifiedAnswerer = specifiedAnswerer;
 	}
 
@@ -217,6 +220,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the questionDateTime
 	 */
 	public Date getQuestionDateTime() {
+		beforeGet();
 		return questionDateTime;
 	}
 
@@ -225,6 +229,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the questionDateTime to set
 	 */
 	public void setQuestionDateTime(Date questionDateTime) {
+		beforeSet();
 		this.questionDateTime = questionDateTime;
 	}
 
@@ -232,6 +237,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the questionExpiration
 	 */
 	public Date getQuestionExpiration() {
+		beforeGet();
 		return questionExpiration;
 	}
 
@@ -240,6 +246,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the questionExpiration to set
 	 */
 	public void setQuestionExpiration(Date questionExpiration) {
+		beforeSet();
 		this.questionExpiration = questionExpiration;
 	}
 
@@ -247,6 +254,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the finalAnswerDateTime
 	 */
 	public Date getFinalAnswerDateTime() {
+		beforeGet();
 		return finalAnswerDateTime;
 	}
 
@@ -255,6 +263,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the finalAnswerDateTime to set
 	 */
 	public void setFinalAnswerDateTime(Date finalAnswerDateTime) {
+		beforeSet();
 		this.finalAnswerDateTime = finalAnswerDateTime;
 	}
 
@@ -262,6 +271,7 @@ public class QuestionModel extends AbstractModel {
 	 * @return the finalAnswerer
 	 */
 	public UserModel getFinalAnswerer() {
+		beforeGet();
 		return finalAnswerer;
 	}
 
@@ -270,6 +280,7 @@ public class QuestionModel extends AbstractModel {
 	 *            the finalAnswerer to set
 	 */
 	public void setFinalAnswerer(UserModel finalAnswerer) {
+		beforeSet();
 		this.finalAnswerer = finalAnswerer;
 	}
 
@@ -277,15 +288,20 @@ public class QuestionModel extends AbstractModel {
 	 * @return the uploadPictures
 	 */
 	public List<String> getUploadPictures() {
+		beforeGet();
 		return uploadPictures;
 	}
 
 	/**
-	 * @param uploadPictures
-	 *            the uploadPictures to set
+	 * @return the uploadPictures
 	 */
-	public void setUploadPictures(List<String> uploadPictures) {
-		this.uploadPictures = uploadPictures;
+	public List<String> getUploadPicturesFor() {
+		beforeGet();
+		if (uploadPictures == null) {
+			beforeSet();
+			uploadPictures = new ActivatableArrayList<String>();
+		}
+		return uploadPictures;
 	}
 
 }

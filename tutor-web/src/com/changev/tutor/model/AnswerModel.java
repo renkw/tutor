@@ -30,16 +30,6 @@ public class AnswerModel extends AbstractModel {
 	private String inquery;
 	private String answer;
 
-	public void clone(AnswerModel another) {
-		super.clone(another);
-		this.setAnswerDateTime(getAnswerDateTime());
-		this.setAnswerer(another.getAnswerer());
-		this.setOrganization(another.getOrganization());
-		this.setQuestion(another.getQuestion());
-		this.setInquery(another.getInquery());
-		this.setAnswer(another.getAnswer());
-	}
-
 	@Override
 	public AnswerModel clone() {
 		return (AnswerModel) super.clone();
@@ -49,6 +39,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the answerDateTime
 	 */
 	public Date getAnswerDateTime() {
+		beforeGet();
 		return answerDateTime;
 	}
 
@@ -57,6 +48,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the answerDateTime to set
 	 */
 	public void setAnswerDateTime(Date answerDateTime) {
+		beforeSet();
 		this.answerDateTime = answerDateTime;
 	}
 
@@ -64,6 +56,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the answerer
 	 */
 	public UserModel getAnswerer() {
+		beforeGet();
 		return answerer;
 	}
 
@@ -72,6 +65,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the answerer to set
 	 */
 	public void setAnswerer(UserModel answerer) {
+		beforeSet();
 		this.answerer = answerer;
 	}
 
@@ -79,6 +73,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the organization
 	 */
 	public OrganizationModel getOrganization() {
+		beforeGet();
 		return organization;
 	}
 
@@ -87,6 +82,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the organization to set
 	 */
 	public void setOrganization(OrganizationModel organization) {
+		beforeSet();
 		this.organization = organization;
 	}
 
@@ -94,6 +90,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the question
 	 */
 	public QuestionModel getQuestion() {
+		beforeGet();
 		return question;
 	}
 
@@ -102,6 +99,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the question to set
 	 */
 	public void setQuestion(QuestionModel question) {
+		beforeSet();
 		this.question = question;
 	}
 
@@ -109,6 +107,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the inquery
 	 */
 	public String getInquery() {
+		beforeGet();
 		return inquery;
 	}
 
@@ -117,6 +116,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the inquery to set
 	 */
 	public void setInquery(String inquery) {
+		beforeSet();
 		this.inquery = inquery;
 	}
 
@@ -124,6 +124,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the answer
 	 */
 	public String getAnswer() {
+		beforeGet();
 		return answer;
 	}
 
@@ -132,6 +133,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the answer to set
 	 */
 	public void setAnswer(String answer) {
+		beforeSet();
 		this.answer = answer;
 	}
 

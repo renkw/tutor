@@ -7,6 +7,7 @@ package com.changev.tutor.model;
 
 import java.util.Date;
 
+import com.db4o.ObjectContainer;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -39,21 +40,18 @@ public class UserModel extends AbstractModel {
 	private UserPrivacy accountPrivacy;
 	private UserPrivacy contactPrivacy;
 
-	public void clone(UserModel another) {
-		super.clone(another);
-		this.setEmail(another.getEmail());
-		this.setPassword(another.getPassword());
-		this.setName(another.getName());
-		this.setProvince(another.getProvince());
-		this.setCity(another.getCity());
-		this.setDistrict(another.getDistrict());
-		this.setRole(another.getRole());
-		this.setState(another.getState());
-		this.setLastLoginDateTime(another.getLastLoginDateTime());
-		this.setSecureCode(another.getSecureCode());
-		this.setContact(another.getContact());
-		this.setAccountPrivacy(another.getAccountPrivacy());
-		this.setContactPrivacy(another.getContactPrivacy());
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setState(UserState.NotActivated);
+		setSecureCode(ModelFactory.generateSecureCode());
+		setAccountPrivacy(UserPrivacy.ContacterOnly);
+		setContactPrivacy(UserPrivacy.ContacterOnly);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
 	}
 
 	@Override
@@ -65,6 +63,7 @@ public class UserModel extends AbstractModel {
 	 * @return the email
 	 */
 	public String getEmail() {
+		beforeGet();
 		return email;
 	}
 
@@ -73,6 +72,7 @@ public class UserModel extends AbstractModel {
 	 *            the email to set
 	 */
 	public void setEmail(String email) {
+		beforeSet();
 		this.email = email;
 	}
 
@@ -80,6 +80,7 @@ public class UserModel extends AbstractModel {
 	 * @return the password
 	 */
 	public String getPassword() {
+		beforeGet();
 		return password;
 	}
 
@@ -88,6 +89,7 @@ public class UserModel extends AbstractModel {
 	 *            the password to set
 	 */
 	public void setPassword(String password) {
+		beforeSet();
 		this.password = password;
 	}
 
@@ -95,6 +97,7 @@ public class UserModel extends AbstractModel {
 	 * @return the name
 	 */
 	public String getName() {
+		beforeGet();
 		return name;
 	}
 
@@ -103,6 +106,7 @@ public class UserModel extends AbstractModel {
 	 *            the name to set
 	 */
 	public void setName(String name) {
+		beforeSet();
 		this.name = name;
 	}
 
@@ -110,6 +114,7 @@ public class UserModel extends AbstractModel {
 	 * @return the province
 	 */
 	public String getProvince() {
+		beforeGet();
 		return province;
 	}
 
@@ -118,6 +123,7 @@ public class UserModel extends AbstractModel {
 	 *            the province to set
 	 */
 	public void setProvince(String province) {
+		beforeSet();
 		this.province = province;
 	}
 
@@ -125,6 +131,7 @@ public class UserModel extends AbstractModel {
 	 * @return the city
 	 */
 	public String getCity() {
+		beforeGet();
 		return city;
 	}
 
@@ -133,6 +140,7 @@ public class UserModel extends AbstractModel {
 	 *            the city to set
 	 */
 	public void setCity(String city) {
+		beforeSet();
 		this.city = city;
 	}
 
@@ -140,6 +148,7 @@ public class UserModel extends AbstractModel {
 	 * @return the district
 	 */
 	public String getDistrict() {
+		beforeGet();
 		return district;
 	}
 
@@ -148,6 +157,7 @@ public class UserModel extends AbstractModel {
 	 *            the district to set
 	 */
 	public void setDistrict(String district) {
+		beforeSet();
 		this.district = district;
 	}
 
@@ -155,6 +165,7 @@ public class UserModel extends AbstractModel {
 	 * @return the role
 	 */
 	public UserRole getRole() {
+		beforeGet();
 		return role;
 	}
 
@@ -163,6 +174,7 @@ public class UserModel extends AbstractModel {
 	 *            the role to set
 	 */
 	public void setRole(UserRole role) {
+		beforeSet();
 		this.role = role;
 	}
 
@@ -170,6 +182,7 @@ public class UserModel extends AbstractModel {
 	 * @return the state
 	 */
 	public UserState getState() {
+		beforeGet();
 		return state;
 	}
 
@@ -178,6 +191,7 @@ public class UserModel extends AbstractModel {
 	 *            the state to set
 	 */
 	public void setState(UserState state) {
+		beforeSet();
 		this.state = state;
 	}
 
@@ -185,6 +199,7 @@ public class UserModel extends AbstractModel {
 	 * @return the lastLoginDateTime
 	 */
 	public Date getLastLoginDateTime() {
+		beforeGet();
 		return lastLoginDateTime;
 	}
 
@@ -193,6 +208,7 @@ public class UserModel extends AbstractModel {
 	 *            the lastLoginDateTime to set
 	 */
 	public void setLastLoginDateTime(Date lastLoginDateTime) {
+		beforeSet();
 		this.lastLoginDateTime = lastLoginDateTime;
 	}
 
@@ -200,6 +216,7 @@ public class UserModel extends AbstractModel {
 	 * @return the secureCode
 	 */
 	public String getSecureCode() {
+		beforeGet();
 		return secureCode;
 	}
 
@@ -208,6 +225,7 @@ public class UserModel extends AbstractModel {
 	 *            the secureCode to set
 	 */
 	public void setSecureCode(String secureCode) {
+		beforeSet();
 		this.secureCode = secureCode;
 	}
 
@@ -215,6 +233,7 @@ public class UserModel extends AbstractModel {
 	 * @return the contact
 	 */
 	public UserContactModel getContact() {
+		beforeGet();
 		return contact;
 	}
 
@@ -223,6 +242,7 @@ public class UserModel extends AbstractModel {
 	 *            the contact to set
 	 */
 	public void setContact(UserContactModel contact) {
+		beforeSet();
 		this.contact = contact;
 	}
 
@@ -230,6 +250,7 @@ public class UserModel extends AbstractModel {
 	 * @return the accountPrivacy
 	 */
 	public UserPrivacy getAccountPrivacy() {
+		beforeGet();
 		return accountPrivacy;
 	}
 
@@ -238,6 +259,7 @@ public class UserModel extends AbstractModel {
 	 *            the accountPrivacy to set
 	 */
 	public void setAccountPrivacy(UserPrivacy accountPrivacy) {
+		beforeSet();
 		this.accountPrivacy = accountPrivacy;
 	}
 
@@ -245,6 +267,7 @@ public class UserModel extends AbstractModel {
 	 * @return the contactPrivacy
 	 */
 	public UserPrivacy getContactPrivacy() {
+		beforeGet();
 		return contactPrivacy;
 	}
 
@@ -253,6 +276,7 @@ public class UserModel extends AbstractModel {
 	 *            the contactPrivacy to set
 	 */
 	public void setContactPrivacy(UserPrivacy contactPrivacy) {
+		beforeSet();
 		this.contactPrivacy = contactPrivacy;
 	}
 

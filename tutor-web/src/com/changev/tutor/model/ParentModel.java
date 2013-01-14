@@ -5,6 +5,8 @@
  */
 package com.changev.tutor.model;
 
+import com.db4o.ObjectContainer;
+
 /**
  * <p>
  * 家长。
@@ -17,8 +19,10 @@ public class ParentModel extends UserModel {
 
 	private static final long serialVersionUID = 5756233700028997499L;
 
-	public void clone(ParentModel another) {
-		super.clone(another);
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Parent);
 	}
 
 	@Override

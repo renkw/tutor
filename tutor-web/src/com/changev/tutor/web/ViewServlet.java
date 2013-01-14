@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.changev.tutor.Tutor;
-import com.db4o.ObjectContainer;
 
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.ext.servlet.HttpRequestHashModel;
@@ -44,7 +43,7 @@ import freemarker.template.TemplateModelException;
  * <p>
  * 处理过程：
  * <ol>
- * <li>根据请求模板名称，转换为spring定义的对象名称。<br />
+ * <li>根据请求模板名称，转换为spring定义的对象名称。<br>
  * 例如模板名称foo/template.html，转换后对象名称为foo.templateView。</li>
  * <li>在BeanFactory中查找对于名称的View实例，如果存在执行前处理。</li>
  * <li>输出模板内容。参考{@link freemarker.ext.servlet.FreemarkerServlet}。</li>
@@ -118,17 +117,12 @@ public class ViewServlet extends HttpServlet {
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[doRender] called");
-		ObjectContainer objc = Tutor.getRootContainer().openSession();
+		if (!preRender(req, resp))
+			return;
 		try {
-			if (!preRender(req, resp, objc))
-				return;
-			try {
-				renderTemplate(req, resp);
-			} finally {
-				postRender(req, resp, objc);
-			}
+			renderTemplate(req, resp);
 		} finally {
-			objc.close();
+			postRender(req, resp);
 		}
 	}
 
@@ -143,8 +137,7 @@ public class ViewServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected boolean preRender(HttpServletRequest req,
-			HttpServletResponse resp, ObjectContainer objc)
+	protected boolean preRender(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
@@ -155,7 +148,7 @@ public class ViewServlet extends HttpServlet {
 			View view = (View) beanFactory.getBean(name);
 			if (view != null) {
 				try {
-					return view.preRender(req, resp, objc);
+					return view.preRender(req, resp);
 				} catch (RuntimeException e) {
 					throw e;
 				} catch (ServletException e) {
@@ -178,9 +171,9 @@ public class ViewServlet extends HttpServlet {
 	 * </p>
 	 * 
 	 * <p>
-	 * 设置HTTP响应头<br />
-	 * Content-Type: text/html; charset=<i>模板编码</i><br />
-	 * Progam: no-cache<br />
+	 * 设置HTTP响应头<br>
+	 * Content-Type: text/html; charset=<i>模板编码</i><br>
+	 * Progam: no-cache<br>
 	 * Cache-Control: no-cache
 	 * </p>
 	 * 
@@ -216,8 +209,8 @@ public class ViewServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void postRender(HttpServletRequest req, HttpServletResponse resp,
-			ObjectContainer objc) throws ServletException, IOException {
+	protected void postRender(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 
@@ -227,7 +220,7 @@ public class ViewServlet extends HttpServlet {
 			View view = (View) beanFactory.getBean(name);
 			if (view != null) {
 				try {
-					view.postRender(req, resp, objc);
+					view.postRender(req, resp);
 				} catch (RuntimeException e) {
 					throw e;
 				} catch (ServletException e) {

@@ -10,6 +10,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
+import com.changev.tutor.Tutor;
+import com.db4o.ObjectContainer;
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
+import com.db4o.ta.Activatable;
+
 /**
  * <p>
  * 定义公共模型属性。
@@ -18,7 +24,8 @@ import java.util.Date;
  * @author ren
  * 
  */
-public abstract class AbstractModel implements Serializable, Cloneable {
+public abstract class AbstractModel implements Serializable, Cloneable,
+		Activatable {
 
 	private static final long serialVersionUID = 4390399593602862270L;
 
@@ -26,16 +33,45 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	private Date updateDateTime;
 	private Boolean deleted;
 
-	public void clone(AbstractModel another) {
-		this.setCreateDateTime(another.getCreateDateTime());
-		this.setUpdateDateTime(another.getUpdateDateTime());
-		this.setDeleted(another.getDeleted());
+	private transient Activator activator;
+
+	@Override
+	public void bind(Activator activator) {
+		this.activator = activator;
+	}
+
+	@Override
+	public void activate(ActivationPurpose purpose) {
+		if (activator != null)
+			activator.activate(purpose);
+	}
+
+	public void objectOnNew(ObjectContainer container) {
+		Date date = Tutor.currentDateTime();
+		setCreateDateTime(date);
+		setUpdateDateTime(date);
+		setDeleted(Boolean.FALSE);
+	}
+
+	public void objectOnUpdate(ObjectContainer container) {
+		setUpdateDateTime(Tutor.currentDateTime());
+	}
+
+	protected void beforeGet() {
+		activate(ActivationPurpose.READ);
+	}
+
+	protected void beforeSet() {
+		activate(ActivationPurpose.WRITE);
 	}
 
 	@Override
 	public AbstractModel clone() {
 		try {
-			return (AbstractModel) super.clone();
+			beforeGet();
+			AbstractModel model = (AbstractModel) super.clone();
+			model.activator = null;
+			return model;
 		} catch (CloneNotSupportedException e) {
 			throw new UnsupportedOperationException(e);
 		}
@@ -44,6 +80,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	@Override
 	public String toString() {
 		try {
+			beforeGet();
 			StringBuilder buf = new StringBuilder(getClass().getSimpleName());
 			buf.append(" {");
 			for (Class<?> cls = getClass(); cls != Object.class; cls = cls
@@ -51,7 +88,8 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 				Field[] flds = cls.getDeclaredFields();
 				boolean comma = false;
 				for (int i = 0; i < flds.length; i++) {
-					if (Modifier.isStatic(flds[i].getModifiers()))
+					if (Modifier.isStatic(flds[i].getModifiers())
+							|| Modifier.isTransient(flds[i].getModifiers()))
 						continue;
 					if (comma)
 						buf.append(", ");
@@ -72,6 +110,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 * @return the createDateTime
 	 */
 	public Date getCreateDateTime() {
+		beforeGet();
 		return createDateTime;
 	}
 
@@ -80,6 +119,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 *            the createDateTime to set
 	 */
 	public void setCreateDateTime(Date createDateTime) {
+		beforeSet();
 		this.createDateTime = createDateTime;
 	}
 
@@ -87,6 +127,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 * @return the updateDateTime
 	 */
 	public Date getUpdateDateTime() {
+		beforeGet();
 		return updateDateTime;
 	}
 
@@ -95,6 +136,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 *            the updateDateTime to set
 	 */
 	public void setUpdateDateTime(Date updateDateTime) {
+		beforeSet();
 		this.updateDateTime = updateDateTime;
 	}
 
@@ -102,6 +144,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 * @return the deleted
 	 */
 	public Boolean getDeleted() {
+		beforeGet();
 		return deleted;
 	}
 
@@ -110,6 +153,7 @@ public abstract class AbstractModel implements Serializable, Cloneable {
 	 *            the deleted to set
 	 */
 	public void setDeleted(Boolean deleted) {
+		beforeSet();
 		this.deleted = deleted;
 	}
 

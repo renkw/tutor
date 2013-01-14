@@ -6,7 +6,6 @@
 package com.changev.tutor.web;
 
 import com.changev.tutor.model.UserModel;
-import com.db4o.ObjectContainer;
 
 /**
  * <p>
@@ -34,7 +33,6 @@ public interface Service<INPUT> {
 	 * @return 处理结果
 	 * @throws Throwable
 	 */
-	Object run(UserModel user, INPUT input, ObjectContainer objc)
-			throws Throwable;
+	Object run(UserModel user, INPUT input) throws Throwable;
 
 }

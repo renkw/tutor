@@ -30,22 +30,6 @@ public class UserContactModel extends AbstractModel {
 	private Double posX;
 	private Double posY;
 
-	public void clone(UserContactModel another) {
-		super.clone(another);
-		this.setName(another.getName());
-		this.setAddress1(another.getAddress1());
-		this.setAddress2(another.getAddress2());
-		this.setPostcode(another.getPostcode());
-		this.setTelephone(another.getTelephone());
-		this.setCellphone(another.getCellphone());
-		this.setFax(another.getFax());
-		this.setQQ(another.getQQ());
-		this.setWeibo(another.getWeibo());
-		this.setMailAddress(another.getMailAddress());
-		this.setPosX(another.getPosX());
-		this.setPosY(another.getPosY());
-	}
-
 	@Override
 	public UserContactModel clone() {
 		return (UserContactModel) super.clone();
@@ -55,6 +39,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the name
 	 */
 	public String getName() {
+		beforeGet();
 		return name;
 	}
 
@@ -63,6 +48,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the name to set
 	 */
 	public void setName(String name) {
+		beforeSet();
 		this.name = name;
 	}
 
@@ -70,6 +56,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the address1
 	 */
 	public String getAddress1() {
+		beforeGet();
 		return address1;
 	}
 
@@ -78,6 +65,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the address1 to set
 	 */
 	public void setAddress1(String address1) {
+		beforeSet();
 		this.address1 = address1;
 	}
 
@@ -85,6 +73,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the address2
 	 */
 	public String getAddress2() {
+		beforeGet();
 		return address2;
 	}
 
@@ -93,6 +82,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the address2 to set
 	 */
 	public void setAddress2(String address2) {
+		beforeSet();
 		this.address2 = address2;
 	}
 
@@ -100,6 +90,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the postcode
 	 */
 	public String getPostcode() {
+		beforeGet();
 		return postcode;
 	}
 
@@ -108,6 +99,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the postcode to set
 	 */
 	public void setPostcode(String postcode) {
+		beforeSet();
 		this.postcode = postcode;
 	}
 
@@ -115,6 +107,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the telephone
 	 */
 	public String getTelephone() {
+		beforeGet();
 		return telephone;
 	}
 
@@ -123,6 +116,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the telephone to set
 	 */
 	public void setTelephone(String telephone) {
+		beforeSet();
 		this.telephone = telephone;
 	}
 
@@ -130,6 +124,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the cellphone
 	 */
 	public String getCellphone() {
+		beforeGet();
 		return cellphone;
 	}
 
@@ -138,6 +133,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the cellphone to set
 	 */
 	public void setCellphone(String cellphone) {
+		beforeSet();
 		this.cellphone = cellphone;
 	}
 
@@ -145,6 +141,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the fax
 	 */
 	public String getFax() {
+		beforeGet();
 		return fax;
 	}
 
@@ -153,6 +150,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the fax to set
 	 */
 	public void setFax(String fax) {
+		beforeSet();
 		this.fax = fax;
 	}
 
@@ -160,6 +158,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the qQ
 	 */
 	public String getQQ() {
+		beforeGet();
 		return QQ;
 	}
 
@@ -168,6 +167,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the qQ to set
 	 */
 	public void setQQ(String qQ) {
+		beforeSet();
 		QQ = qQ;
 	}
 
@@ -175,6 +175,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the weibo
 	 */
 	public String getWeibo() {
+		beforeGet();
 		return weibo;
 	}
 
@@ -183,6 +184,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the weibo to set
 	 */
 	public void setWeibo(String weibo) {
+		beforeSet();
 		this.weibo = weibo;
 	}
 
@@ -190,6 +192,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the mailAddress
 	 */
 	public String getMailAddress() {
+		beforeGet();
 		return mailAddress;
 	}
 
@@ -198,6 +201,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the mailAddress to set
 	 */
 	public void setMailAddress(String mailAddress) {
+		beforeSet();
 		this.mailAddress = mailAddress;
 	}
 
@@ -205,6 +209,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the posX
 	 */
 	public Double getPosX() {
+		beforeGet();
 		return posX;
 	}
 
@@ -213,6 +218,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the posX to set
 	 */
 	public void setPosX(Double posX) {
+		beforeSet();
 		this.posX = posX;
 	}
 
@@ -220,6 +226,7 @@ public class UserContactModel extends AbstractModel {
 	 * @return the posY
 	 */
 	public Double getPosY() {
+		beforeGet();
 		return posY;
 	}
 
@@ -228,6 +235,7 @@ public class UserContactModel extends AbstractModel {
 	 *            the posY to set
 	 */
 	public void setPosY(Double posY) {
+		beforeSet();
 		this.posY = posY;
 	}
 

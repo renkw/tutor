@@ -38,7 +38,6 @@ import org.springframework.beans.factory.BeanFactory;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
-import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.google.gson.Gson;
 
@@ -172,7 +171,6 @@ public class ServiceServlet extends HttpServlet {
 		if (StringUtils.isNotEmpty(udid))
 			NDC.push(udid);
 
-		ObjectContainer objc = null;
 		try {
 			String serviceName = getServiceName(req.getPathInfo());
 			if (logger.isDebugEnabled())
@@ -192,7 +190,6 @@ public class ServiceServlet extends HttpServlet {
 			}
 
 			// login
-			objc = Tutor.getRootContainer().openSession();
 			UserModel userModel;
 			if (publicServices.contains(serviceName)) {
 				// public service
@@ -200,7 +197,7 @@ public class ServiceServlet extends HttpServlet {
 				if (logger.isDebugEnabled())
 					logger.debug("[doPost] public service");
 			} else {
-				userModel = getUserModel(serviceName, req, resp, objc);
+				userModel = getUserModel(serviceName, req, resp);
 				if (logger.isDebugEnabled())
 					logger.debug("[doPost] userModel = " + userModel);
 				if (userModel == null)
@@ -214,7 +211,7 @@ public class ServiceServlet extends HttpServlet {
 							Tutor.AUTH_LOGIN_FORMAT, userModel.getEmail(),
 							serviceName));
 				}
-				runService(service, userModel, req, resp, objc);
+				runService(service, userModel, req, resp);
 			} finally {
 				if (userModel != null) {
 					authLogger.info(MessageFormat.format(
@@ -223,8 +220,6 @@ public class ServiceServlet extends HttpServlet {
 				}
 			}
 		} finally {
-			if (objc != null)
-				objc.close();
 			// remove udid info
 			if (StringUtils.isNotEmpty(udid))
 				NDC.pop();
@@ -256,8 +251,8 @@ public class ServiceServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected UserModel getUserModel(String serviceName,
-			HttpServletRequest request, HttpServletResponse response,
-			ObjectContainer objc) throws ServletException, IOException {
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		if (logger.isDebugEnabled())
 			logger.debug("[getUserModel] called");
 
@@ -317,8 +312,8 @@ public class ServiceServlet extends HttpServlet {
 			return null;
 		}
 
-		ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
-				.getUserExample(info.username));
+		ObjectSet<UserModel> userSet = Tutor.getCurrentContainer()
+				.queryByExample(ModelFactory.getUserExample(info.username));
 		if (!userSet.hasNext()) {
 			// user not exists. send 401
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -363,8 +358,8 @@ public class ServiceServlet extends HttpServlet {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void runService(Service service, UserModel userModel,
-			HttpServletRequest request, HttpServletResponse response,
-			ObjectContainer objc) throws ServletException, IOException {
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[runService] called");
 		// get input parameter
@@ -380,7 +375,7 @@ public class ServiceServlet extends HttpServlet {
 		Object input = readInput(request, inputType);
 		Object result;
 		try {
-			result = service.run(userModel, input, objc);
+			result = service.run(userModel, input);
 		} catch (RuntimeException e) {
 			logger.error("[runService] error occur", e);
 			throw e;

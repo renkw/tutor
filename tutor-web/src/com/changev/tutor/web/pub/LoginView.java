@@ -14,12 +14,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
-import com.changev.tutor.util.Validator;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 
@@ -35,23 +36,23 @@ public class LoginView implements View {
 
 	private static final Logger logger = Logger.getLogger(LoginView.class);
 
+	private ParamValidator loginValidator;
+	private String failMessage;
 	private Map<String, String> successPages;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
-			HttpServletResponse response, ObjectContainer objc)
-			throws Throwable {
+			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("login")))
-			return login(request, response, objc);
+			return login(request, response);
 		return true;
 	}
 
 	@Override
 	public void postRender(HttpServletRequest request,
-			HttpServletResponse response, ObjectContainer objc)
-			throws Throwable {
+			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
 	}
@@ -67,8 +68,7 @@ public class LoginView implements View {
 	 * @throws Throwable
 	 */
 	protected boolean login(HttpServletRequest request,
-			HttpServletResponse response, ObjectContainer objc)
-			throws Throwable {
+			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[login] called");
 
@@ -81,37 +81,61 @@ public class LoginView implements View {
 			logger.debug("[login] checkCode = " + checkCode);
 		}
 		// validation
-		if (Validator.required(email))
-			Messages.addError(request, "email", "请输入登录邮箱");
-		if (Validator.required(password))
-			Messages.addError(request, "password", "请输入密码");
-		SessionContainer container = SessionContainer.get(request);
-		if (container == null
-				|| !StringUtils.equals(container.getCheckCode(), checkCode))
-			Messages.addError(request, "checkCode", "验证码错误");
-		// do login
-		if (!Messages.hasErrors(request)) {
+		if (loginValidator == null || loginValidator.validate(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[login] validation passed");
+
+			ObjectContainer objc = Tutor.getCurrentContainer();
 			ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
-					.getUserExample(email, password));
+					.getUserExample(email,
+							ModelFactory.encryptPassword(password)));
 			if (userSet.hasNext()) {
 				// reset session
 				HttpSession session = request.getSession(false);
 				if (session != null)
 					session.invalidate();
 				UserModel user = userSet.next();
-				SessionContainer.get(request, true).setLoginUser(
-						objc.ext().getID(user), user);
+				SessionContainer.get(request, true).login(
+						objc.ext().getID(user));
 				String successPage = successPages.get(user.getRole().name());
 				if (logger.isDebugEnabled())
 					logger.debug("[login] login successed. goto " + successPage);
 				response.sendRedirect(request.getContextPath() + successPage);
 				return false;
 			}
-			Messages.addError(request, "email", "用户不存在或密码错误");
+			Messages.addError(request, "email", failMessage);
 		}
 		return true;
+	}
+
+	/**
+	 * @return the loginValidator
+	 */
+	public ParamValidator getLoginValidator() {
+		return loginValidator;
+	}
+
+	/**
+	 * @param loginValidator
+	 *            the loginValidator to set
+	 */
+	public void setLoginValidator(ParamValidator loginValidator) {
+		this.loginValidator = loginValidator;
+	}
+
+	/**
+	 * @return the failMessage
+	 */
+	public String getFailMessage() {
+		return failMessage;
+	}
+
+	/**
+	 * @param failMessage
+	 *            the failMessage to set
+	 */
+	public void setFailMessage(String failMessage) {
+		this.failMessage = failMessage;
 	}
 
 	/**

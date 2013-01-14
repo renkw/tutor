@@ -11,8 +11,6 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.lang.RandomStringUtils;
-
 import com.changev.tutor.Tutor;
 
 /**
@@ -24,6 +22,10 @@ import com.changev.tutor.Tutor;
  * 
  */
 public final class ModelFactory {
+
+	public static String getUserSemaphore(String email) {
+		return "com.changev.tutor.model.UserModel:" + email;
+	}
 
 	public static UserModel getUserExample(String email) {
 		UserModel model = new UserModel();
@@ -44,14 +46,14 @@ public final class ModelFactory {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			String s = "\u0162\u1ee7" + password + "\u0236\u2c7a\ua775";
-			return new String(digest.digest(s.getBytes()));
+			return Tutor.toHex(digest.digest(s.getBytes()));
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static String generateSecureCode() {
-		return RandomStringUtils.random(64, "0123456789abcdef");
+		return Tutor.randomHex(128);
 	}
 
 	public static String encryptUserCode(String email, String token) {
@@ -59,7 +61,7 @@ public final class ModelFactory {
 			Cipher cipher = Cipher.getInstance("AES");
 			cipher.init(Cipher.ENCRYPT_MODE, Tutor.AES_KEY);
 			String s = email + "::" + token;
-			return new String(cipher.doFinal(s.getBytes()));
+			return Tutor.toHex(cipher.doFinal(s.getBytes()));
 		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		}
@@ -69,7 +71,7 @@ public final class ModelFactory {
 		try {
 			Cipher cipher = Cipher.getInstance("AES");
 			cipher.init(Cipher.DECRYPT_MODE, Tutor.AES_KEY);
-			String s = new String(cipher.doFinal(code.getBytes()));
+			String s = new String(cipher.doFinal(Tutor.fromHex(code)));
 			int i = s.indexOf("::");
 			return i <= 0 || i >= s.length() - 1 ? null : new String[] {
 					s.substring(0, i), s.substring(i + 2) };
