@@ -29,9 +29,4 @@ public class ParamCheckCodeValidator extends ParamValidator {
 		return addError(StringUtils.isNotEmpty(v) && v.equals(code), msg);
 	}
 
-	@Override
-	protected boolean validate(String v) {
-		return false;
-	}
-
 }

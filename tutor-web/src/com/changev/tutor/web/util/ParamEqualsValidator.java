@@ -33,11 +33,6 @@ public class ParamEqualsValidator extends ParamValidator {
 		return addError(v, msg);
 	}
 
-	@Override
-	protected boolean validate(String v) {
-		return false;
-	}
-
 	/**
 	 * @return 比较的参数名
 	 */

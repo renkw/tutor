@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.UserModel;
+import com.db4o.ext.InvalidIDException;
 
 /**
  * <p>
@@ -74,8 +75,6 @@ public final class SessionContainer implements Serializable {
 	private Messages sessionMessage = new Messages();
 	private String checkCode;
 
-	private transient UserModel loginUser;
-
 	private SessionContainer() {
 	}
 
@@ -89,7 +88,6 @@ public final class SessionContainer implements Serializable {
 	public void login(long loginUserId) {
 		this.loginUserId = loginUserId;
 		this.loginDateTime = Tutor.currentDateTime();
-		this.loginUser = null;
 	}
 
 	/**
@@ -106,7 +104,6 @@ public final class SessionContainer implements Serializable {
 			Tutor.commitCurrent();
 			this.loginUserId = null;
 			this.loginDateTime = null;
-			this.loginUser = null;
 		}
 	}
 
@@ -128,9 +125,15 @@ public final class SessionContainer implements Serializable {
 	 * @return the loginUser
 	 */
 	public UserModel getLoginUser() {
-		if (loginUser == null && loginUserId != null)
-			loginUser = Tutor.getCurrentContainerExt().getByID(loginUserId);
-		return loginUser;
+		if (loginUserId == null)
+			return null;
+		try {
+			return Tutor.getCurrentContainerExt().getByID(loginUserId);
+		} catch (InvalidIDException e) {
+			loginUserId = null;
+			loginDateTime = null;
+			throw e;
+		}
 	}
 
 	/**

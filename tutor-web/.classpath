@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-context-3.2.0.RELEASE.jar" sourcepath="lib/src/spring-context-3.2.0.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/freemarker.jar" sourcepath="lib/src/freemarker-2.3.19-src.zip"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-logging-1.1.1.jar" sourcepath="lib/src/commons-logging-1.1.1-sources.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-expression-3.2.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/spring-expression-3.2.0.RELEASE.jar" sourcepath="lib/src/spring-expression-3.2.0.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/gson-2.2.2.jar" sourcepath="lib/src/gson-2.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-collections-3.2.1.jar" sourcepath="lib/src/commons-collections-3.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang-2.6.jar" sourcepath="lib/src/commons-lang-2.6-sources.jar"/>

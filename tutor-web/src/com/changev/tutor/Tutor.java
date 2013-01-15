@@ -335,6 +335,57 @@ public final class Tutor {
 
 	/**
 	 * <p>
+	 * 生成日期对象。
+	 * </p>
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public static Date date(int year, int month, int date) {
+		Calendar cal = emptyCalendar();
+		cal.set(year, month, date);
+		return cal.getTime();
+	}
+
+	/**
+	 * <p>
+	 * 生成时间对象。
+	 * </p>
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public static Date time(int hour, int minute, int second) {
+		Calendar cal = emptyCalendar();
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+		return cal.getTime();
+	}
+
+	/**
+	 * <p>
+	 * 生成日期时间对象。
+	 * </p>
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public static Date datetime(int year, int month, int date, int hour,
+			int minute, int second) {
+		Calendar cal = emptyCalendar();
+		cal.set(year, month, date, hour, minute, second);
+		return cal.getTime();
+	}
+
+	/**
+	 * <p>
 	 * 格式化日期对象。
 	 * </p>
 	 * 

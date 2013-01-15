@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -91,16 +90,25 @@ public class LoginView implements View {
 							ModelFactory.encryptPassword(password)));
 			if (userSet.hasNext()) {
 				// reset session
-				HttpSession session = request.getSession(false);
-				if (session != null)
-					session.invalidate();
+				request.getSession().invalidate();
 				UserModel user = userSet.next();
 				SessionContainer.get(request, true).login(
 						objc.ext().getID(user));
-				String successPage = successPages.get(user.getRole().name());
-				if (logger.isDebugEnabled())
-					logger.debug("[login] login successed. goto " + successPage);
-				response.sendRedirect(request.getContextPath() + successPage);
+				String pageKey = user.getRole().name() + user.getState().name();
+				String successPage = successPages.get(pageKey);
+				if (StringUtils.isEmpty(successPage))
+					successPage = successPages.get(user.getRole().name());
+				if (StringUtils.isEmpty(successPage)) {
+					logger.error("[login] no avaliable entry page for "
+							+ pageKey);
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				} else {
+					if (logger.isDebugEnabled())
+						logger.debug("[login] login successed. goto "
+								+ successPage);
+					response.sendRedirect(request.getContextPath()
+							+ successPage);
+				}
 				return false;
 			}
 			Messages.addError(request, "email", failMessage);

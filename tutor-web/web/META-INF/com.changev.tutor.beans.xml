@@ -49,62 +49,68 @@
 	<!-- Views -->
 	<bean id="public.loginView" class="com.changev.tutor.web.pub.LoginView">
 		<property name="loginValidator">
-			<bean class="com.changev.tutor.web.util.ParamValidators">
-				<property name="validators"><util:list>
-					<bean class="com.changev.tutor.web.util.ParamValidators">
-						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
-						<property name="args"><util:map>
-							<entry key="name" value="email" />
-							<entry key="pattern" value="[^@\s]+@\S+" />
-						</util:map></property>
-					</bean>
-					<bean class="com.changev.tutor.web.util.ParamRequiredValidator"
-						p:name="password"
-						p:message="请输入登录密码。"
-					/>
-					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
-						p:name="checkCode"
-						p:message="验证码不正确。"
-					/>
-				</util:list></property>
-			</bean>
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="email.required" value="请输入登录邮箱。" />
+				<entry key="password.required" value="请输入登录密码。" />
+				<entry key="checkCode.checkcode" value="验证码不正确。" />
+			</util:map>
 		</property>
 		<property name="failMessage" value="用户不存在或密码错误。" />
-		<property name="successPages"><util:map>
-			<entry key="Parent" value="/front/member.html" />
-			<entry key="Student" value="/front/member.html" />
-			<entry key="Teacher" value="/back/member.html" />
-			<entry key="Organization" value="/back/member.html" />
-			<entry key="Admin" value="/manage/member.html" />
-		</util:map></property>
+		<property name="successPages">
+			<map>
+				<entry key="ParentIncomplete" value="/front/registerStudent.html" />
+				<entry key="ParentActivated" value="/front/member.html" />
+				<entry key="Student" value="/front/member.html" />
+				<entry key="OrganizationIncomplete" value="/back/member.html" />
+				<entry key="OrganizationActivated" value="/back/member.html" />
+				<entry key="Teacher" value="/back/member.html" />
+				<entry key="Admin" value="/manage/member.html" />
+			</map>
+		</property>
 	</bean>
 	
-	<bean id="public.registerView" class="com.changev.tutor.web.pub.RegisterView">
+	<bean id="public.registerView" class="com.changev.tutor.web.pub.RegisterView" name="front.registerStudentView front.registerCompleteView">
 		<property name="registerAccountValidator">
-			<bean class="com.changev.tutor.web.util.ParamValidators">
-				<property name="validators"><util:list>
-					<bean class="com.changev.tutor.web.util.ParamValidators">
-						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
-						<property name="args"><util:map>
-							<entry key="name" value="email" />
-							<entry key="pattern" value="[^@\s]+@\S+" />
-						</util:map></property>
-					</bean>
-					<bean class="com.changev.tutor.web.util.ParamValidators">
-						<property name="validatorNames" value="required:请输入登录密码。;equals:登录密码和确认密码不一致。" />
-						<property name="args"><util:map>
-							<entry key="name" value="password" />
-							<entry key="anotherName" value="confirmPassword" />
-						</util:map></property>
-					</bean>
-					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
-						p:name="checkCode"
-						p:message="验证码不正确。"
-					/>
-				</util:list></property>
-			</bean>
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="email.required" value="请输入登录邮箱。" />
+				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
+				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
+				<entry key="email.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="email.length.maxLength"><value type="int">255</value></entry>
+				<entry key="password.required" value="请输入登录密码。" />
+				<entry key="password.equals" value="登录密码和确认密码不一致。" />
+				<entry key="password.equals.anotherName" value="confirmPassword" />
+				<entry key="password.length" value="登录密码长度在{minLength}~{maxLength}位之间。" />
+				<entry key="password.length.minLength"><value type="int">6</value></entry>
+				<entry key="password.length.maxLength"><value type="int">10</value></entry>
+				<entry key="checkCode.checkcode" value="验证码不正确。" />
+			</util:map>
 		</property>
-		<property name="registerRequiredPage" value="/public/registerComplete.html" />
+		<property name="registerStudentValidator">
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="name.required" value="请输入学生姓名。" />
+				<entry key="name.length" value="请不要超过{length}个字符。" />
+				<entry key="name.length.maxLength"><value type="int">10</value></entry>
+				<entry key="birthday[].numeric" value="年月日只能是数字。" />
+				<entry key="province.required" value="请输入学生所在省或直辖市。" />
+				<entry key="province.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="province.length.maxlength"><value type="int">10</value></entry>
+				<entry key="city.required" value="请输入学生所在市。" />
+				<entry key="city.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="city.length.maxlength"><value type="int">10</value></entry>
+				<entry key="district.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="district.length.maxlength"><value type="int">10</value></entry>
+				<entry key="school.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="school.length.maxlength"><value type="int">50</value></entry>
+				<entry key="hobby.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="hobby.length.maxlength"><value type="int">50</value></entry>
+				<entry key="description.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="description.length.maxlength"><value type="int">200</value></entry>
+			</util:map>
+		</property>
+		<property name="registerAccountPage" value="/public/registerAccount.html" />
+		<property name="registerStudentPage" value="/front/registerStudent.html" />
+		<property name="registerCompletePage" value="/front/registerComplete.html" />
 	</bean>
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />

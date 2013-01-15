@@ -45,6 +45,16 @@
 						<table border="0" cellspacing="1" cellpadding="5">
 						<tbody>
 							<tr>
+								<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
+								<td align="left">
+									<input type="text" name="name" value="${params.name!}" size="30" />
+									<@errmsg name="name" />
+								</td>
+								<td align="left">
+									<div class="alpha25">输入您的姓名。</div>
+								</td>
+							</tr>
+							<tr>
 								<th align="center" class="ui-widget-header noborder">登录邮箱<span class="required">*</span></th>
 								<td align="left">
 									<input type="text" name="email" value="${params.email!}" size="30" />
@@ -91,10 +101,11 @@
 						<tfoot>
 							<tr>
 								<th>&nbsp;</th>
-								<td colspan="2" align="left">
+								<td align="left">
 									<br />
-									<input type="submit" name="registerAccount" value="注册" class="green-button small-button ui-corner-all" />
+									<input type="submit" name="registerAccount" value="下一步" class="green-button small-button ui-corner-all" />
 								</td>
+								<td>&nbsp;</td>
 							</tr>
 						</tfoot>
 						</table>

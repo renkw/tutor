@@ -26,6 +26,12 @@ public class ParentModel extends UserModel {
 	}
 
 	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+		setRole(UserRole.Parent);
+	}
+
+	@Override
 	public ParentModel clone() {
 		return (ParentModel) super.clone();
 	}

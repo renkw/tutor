@@ -46,6 +46,12 @@ public class TeacherModel extends UserModel {
 	}
 
 	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+		setRole(UserRole.Teacher);
+	}
+
+	@Override
 	public TeacherModel clone() {
 		return (TeacherModel) super.clone();
 	}

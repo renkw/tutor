@@ -31,13 +31,19 @@ public class StudentModel extends UserModel {
 	private String grade;
 	private Byte gradeLevel;
 	private String hobby;
-	private Map<String, String> defaultServicer;
+	private Map<String, String> defaultAnswerer;
 	@Indexed
 	private ParentModel parent;
 
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
+		setRole(UserRole.Student);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
 		setRole(UserRole.Student);
 	}
 
@@ -168,21 +174,21 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, String> getDefaultServicer() {
+	public Map<String, String> getDefaultAnswerer() {
 		beforeGet();
-		return defaultServicer;
+		return defaultAnswerer;
 	}
 
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, String> getDefaultServicerFor() {
+	public Map<String, String> getDefaultAnswererFor() {
 		beforeGet();
-		if (defaultServicer == null) {
+		if (defaultAnswerer == null) {
 			beforeSet();
-			defaultServicer = new ActivatableHashMap<String, String>();
+			defaultAnswerer = new ActivatableHashMap<String, String>();
 		}
-		return defaultServicer;
+		return defaultAnswerer;
 	}
 
 	/**

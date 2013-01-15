@@ -14,5 +14,5 @@ package com.changev.tutor.model;
  * 
  */
 public enum UserState {
-	NotActivated, Activated, Locked, Disabled
+	Incomplete, NotActivated, Activated, Locked, Unavailable
 }

@@ -32,6 +32,7 @@ public class UserModel extends AbstractModel {
 	private String city;
 	@Indexed
 	private String district;
+	private String description;
 	private UserRole role;
 	private UserState state;
 	private Date lastLoginDateTime;
@@ -43,15 +44,14 @@ public class UserModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
-		setState(UserState.NotActivated);
-		setSecureCode(ModelFactory.generateSecureCode());
-		setAccountPrivacy(UserPrivacy.ContacterOnly);
-		setContactPrivacy(UserPrivacy.ContacterOnly);
-	}
-
-	@Override
-	public void objectOnUpdate(ObjectContainer container) {
-		super.objectOnUpdate(container);
+		if (getState() == null)
+			setState(UserState.NotActivated);
+		if (getSecureCode() == null)
+			setSecureCode(ModelFactory.generateSecureCode());
+		if (getAccountPrivacy() == null)
+			setAccountPrivacy(UserPrivacy.ContacterOnly);
+		if (getContactPrivacy() == null)
+			setContactPrivacy(UserPrivacy.ContacterOnly);
 	}
 
 	@Override
@@ -159,6 +159,22 @@ public class UserModel extends AbstractModel {
 	public void setDistrict(String district) {
 		beforeSet();
 		this.district = district;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		beforeGet();
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		beforeSet();
+		this.description = description;
 	}
 
 	/**

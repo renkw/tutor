@@ -5,12 +5,9 @@
  */
 package com.changev.tutor.web.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.web.Messages;
 
@@ -26,15 +23,12 @@ public class ParamValidators extends ParamValidator {
 
 	private List<ParamValidator> validators;
 	private boolean failStop;
-	private boolean replaceArgs;
 
 	@Override
 	public boolean validate(HttpServletRequest request, Messages msg) {
 		boolean ret = true;
 		if (validators != null) {
 			for (ParamValidator v : validators) {
-				if (replaceArgs)
-					v.args = args;
 				if (!v.validate(request, msg)) {
 					ret = false;
 					if (failStop)
@@ -43,38 +37,6 @@ public class ParamValidators extends ParamValidator {
 			}
 		}
 		return addError(ret, msg);
-	}
-
-	@Override
-	protected boolean validate(String v) {
-		return false;
-	}
-
-	/**
-	 * <p>
-	 * 设置验证器名。
-	 * </p>
-	 * 
-	 * <p>
-	 * 用分号分隔每个<strong>验证器名:失败消息</strong>，默认replaceArgs=true,failStop=true。
-	 * </p>
-	 * 
-	 * @param names
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 */
-	public void setValidatorNames(String names) throws InstantiationException,
-			IllegalAccessException {
-		replaceArgs = true;
-		failStop = true;
-		validators = new ArrayList<ParamValidator>();
-		for (String vn : StringUtils.split(names, ';')) {
-			int i = (vn = vn.trim()).indexOf(':');
-			ParamValidator v = getValidator(i == -1 ? vn : vn.substring(0, i));
-			if (i != -1)
-				v.setMessage(vn.substring(i + 1));
-			validators.add(v);
-		}
 	}
 
 	/**
@@ -105,21 +67,6 @@ public class ParamValidators extends ParamValidator {
 	 */
 	public void setFailStop(boolean failStop) {
 		this.failStop = failStop;
-	}
-
-	/**
-	 * @return the replaceArgs
-	 */
-	public boolean isReplaceArgs() {
-		return replaceArgs;
-	}
-
-	/**
-	 * @param replaceArgs
-	 *            the replaceArgs to set
-	 */
-	public void setReplaceArgs(boolean replaceArgs) {
-		this.replaceArgs = replaceArgs;
 	}
 
 }

@@ -36,6 +36,12 @@ public class OrganizationModel extends UserModel {
 	}
 
 	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+		setRole(UserRole.Organization);
+	}
+
+	@Override
 	public OrganizationModel clone() {
 		return (OrganizationModel) super.clone();
 	}

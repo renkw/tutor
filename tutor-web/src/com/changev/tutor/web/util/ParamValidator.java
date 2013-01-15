@@ -52,9 +52,14 @@ public abstract class ParamValidator {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public static ParamValidator getValidator(String name)
-			throws InstantiationException, IllegalAccessException {
-		return getValidatorType(name).newInstance();
+	public static ParamValidator getValidator(String name) {
+		try {
+			return getValidatorType(name).newInstance();
+		} catch (InstantiationException e) {
+			throw new UnsupportedOperationException(e);
+		} catch (IllegalAccessException e) {
+			throw new UnsupportedOperationException(e);
+		}
 	}
 
 	/**
@@ -76,57 +81,13 @@ public abstract class ParamValidator {
 		setValidatorType("numeric", ParamNumericValidator.class);
 		setValidatorType("equals", ParamEqualsValidator.class);
 		setValidatorType("checkcode", ParamCheckCodeValidator.class);
+		setValidatorType("length", ParamLengthValidator.class);
 	}
 
-	protected Map<String, Object> args;
 	protected boolean multiple;
 	protected String messageName;
 	protected TextPattern message;
-
-	/**
-	 * <p>
-	 * 验证单值是否正确。
-	 * </p>
-	 * 
-	 * @param v
-	 * @return
-	 */
-	protected abstract boolean validate(String v);
-
-	/**
-	 * <p>
-	 * 验证多值是否正确。
-	 * </p>
-	 * 
-	 * @param v
-	 * @return
-	 */
-	protected boolean validate(String[] v) {
-		if (v != null && v.length != 0) {
-			for (int i = 0; i < v.length; i++) {
-				if (!validate(v))
-					return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * <p>
-	 * 添加验证失败消息。
-	 * </p>
-	 * 
-	 * @param ret
-	 * @param msg
-	 * @return
-	 */
-	protected boolean addError(boolean ret, Messages msg) {
-		if (!ret && msg != null && message != null) {
-			String name = StringUtils.defaultString(messageName, getName());
-			msg.addError(name, message.toString(args));
-		}
-		return ret;
-	}
+	protected Map<String, Object> args = Collections.emptyMap();
 
 	/**
 	 * <p>
@@ -159,6 +120,53 @@ public abstract class ParamValidator {
 
 	/**
 	 * <p>
+	 * 验证单值是否正确。
+	 * </p>
+	 * 
+	 * @param v
+	 * @return
+	 */
+	protected boolean validate(String v) {
+		return true;
+	}
+
+	/**
+	 * <p>
+	 * 验证多值是否正确。
+	 * </p>
+	 * 
+	 * @param v
+	 * @return
+	 */
+	protected boolean validate(String[] v) {
+		if (v != null && v.length != 0) {
+			for (int i = 0; i < v.length; i++) {
+				if (!validate(v[i]))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * <p>
+	 * 添加验证失败消息。
+	 * </p>
+	 * 
+	 * @param ret
+	 * @param msg
+	 * @return
+	 */
+	protected boolean addError(boolean ret, Messages msg) {
+		if (!ret && msg != null && message != null) {
+			String name = StringUtils.defaultString(messageName, getName());
+			msg.addError(name, message.toString(args));
+		}
+		return ret;
+	}
+
+	/**
+	 * <p>
 	 * 取得验证用的设定值。
 	 * </p>
 	 * 
@@ -166,7 +174,7 @@ public abstract class ParamValidator {
 	 * @return
 	 */
 	public Object get(String key) {
-		return args == null ? null : args.get(key);
+		return args.get(key);
 	}
 
 	/**
@@ -178,7 +186,7 @@ public abstract class ParamValidator {
 	 * @param value
 	 */
 	public void set(String key, Object value) {
-		if (args == null)
+		if (args == null || args == Collections.EMPTY_MAP)
 			args = new HashMap<String, Object>();
 		args.put(key, value);
 	}
@@ -247,7 +255,7 @@ public abstract class ParamValidator {
 	 * @return the message
 	 */
 	public String getMessage() {
-		return message.toString();
+		return message == null ? null : message.toString();
 	}
 
 	/**

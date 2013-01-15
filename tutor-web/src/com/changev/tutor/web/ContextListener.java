@@ -7,11 +7,15 @@ package com.changev.tutor.web;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -46,7 +50,7 @@ import com.db4o.ObjectContainer;
  * 
  */
 public class ContextListener implements ServletContextListener,
-		HttpSessionListener {
+		HttpSessionListener, ServletRequestListener {
 
 	static final String LOG4J_CONFIG_PATH = "log4jConfigPath";
 	static final String BEAN_CONFIG_PATH = "beanConfigPath";
@@ -136,6 +140,22 @@ public class ContextListener implements ServletContextListener,
 			container.logout();
 		// close current object container
 		Tutor.closeCurrentContainer();
+	}
+
+	@Override
+	public void requestInitialized(ServletRequestEvent event) {
+		HttpServletRequest request = (HttpServletRequest) event
+				.getServletRequest();
+		// set character encoding
+		try {
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			event.getServletContext().log("utf-8 is unsupported", e);
+		}
+	}
+
+	@Override
+	public void requestDestroyed(ServletRequestEvent event) {
 	}
 
 }
