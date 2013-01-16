@@ -3,21 +3,23 @@
  */
 package com.changev.tutor;
 
-import java.lang.management.ManagementFactory;
 import java.security.Key;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
@@ -49,11 +51,11 @@ public final class Tutor {
 	/** 默认的Spring配置文件路径 */
 	public static final String DEFAULT_BEAN_CONFIG_PATH = "//META-INF/com.changev.tutor.beans.xml";
 
+	/** 默认的db4o配置文件路径 */
+	public static final String DEFAULT_DB4O_CONFIG_PATH = "//META-INF/com.changev.tutor.db4o-embed.properties";
+
 	/** 默认的上传文件目录 */
 	public static final String DEFAULT_UPLOAD_PATH = "//../upload/";
-
-	/** 默认的db4o数据文件 */
-	public static final String DEFAULT_DATAFILE_PATH = "//../data/runtime";
 
 	/** 默认的日期格式 */
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -68,10 +70,13 @@ public final class Tutor {
 	public static final String AUTH_LOGGER_NAME = "com.changev.tutor.AUTH";
 
 	/** 用户登录日志消息 */
-	public static final String AUTH_LOGIN_FORMAT = "[LOGIN ] {0}@{1}";
+	public static final String AUTH_LOGIN_FORMAT = "[LOGIN] {0} : {1}";
 
 	/** 用户退出日志消息 */
-	public static final String AUTH_LOGOUT_FORMAT = "[LOGIN ] {0}@{1}";
+	public static final String AUTH_LOGOUT_FORMAT = "[LOGOUT] {0} : {1}";
+
+	/** 性能日志名 */
+	public static final String PERFORMANCE_LOGGER_NAME = "com.changev.tutor.PERFORMANCE";
 
 	/** 实例原型（在Freemarker中使用） */
 	public static final Tutor SINGLETON = new Tutor();
@@ -137,22 +142,22 @@ public final class Tutor {
 		Tutor.beanFactory = beanFactory;
 	}
 
-	private static ExtObjectContainer topContainer;
-	private static Map<Long, ObjectContainer> localContainers = new HashMap<Long, ObjectContainer>();
+	private static ExtObjectContainer rootContainer;
+	private static ThreadLocal<ObjectContainerWrapper> currentContainer = new ThreadLocal<ObjectContainerWrapper>();
 
 	/**
-	 * @return the topContainer
+	 * @return the rootContainer
 	 */
-	public static ExtObjectContainer getTopContainer() {
-		return topContainer;
+	public static ExtObjectContainer getRootContainer() {
+		return rootContainer;
 	}
 
 	/**
-	 * @param topContainer
-	 *            the topContainer to set
+	 * @param rootContainer
+	 *            the rootContainer to set
 	 */
-	public static void setTopContainer(ExtObjectContainer topContainer) {
-		Tutor.topContainer = topContainer;
+	public static void setRootContainer(ExtObjectContainer rootContainer) {
+		Tutor.rootContainer = rootContainer;
 	}
 
 	/**
@@ -161,45 +166,62 @@ public final class Tutor {
 	 * </p>
 	 * 
 	 * @return
+	 * @see ObjectContainerWrapper
 	 */
 	public static ObjectContainer getCurrentContainer() {
-		ObjectContainer objc;
-		Long tid = Thread.currentThread().getId();
-		synchronized (localContainers) {
-			objc = localContainers.get(tid);
-			if (objc == null) {
-				objc = topContainer.openSession();
-				localContainers.put(tid, objc);
-			}
+		ObjectContainerWrapper objc = currentContainer.get();
+		if (objc == null) {
+			objc = new ObjectContainerWrapper();
+			currentContainer.set(objc);
 		}
 		return objc;
 	}
 
 	/**
 	 * <p>
-	 * 结束并删除已结束线程的ObjectContainer实例。
+	 * 取得当前线程关联的ExtObjectContainer实例。
+	 * </p>
+	 * 
+	 * @return
+	 * @see ObjectContainerWrapper
+	 */
+	public static ExtObjectContainer getCurrentContainerExt() {
+		return getCurrentContainer().ext();
+	}
+
+	/**
+	 * <p>
+	 * 提交当前事务。
 	 * </p>
 	 */
-	public static void cleanLocalContainers() {
-		if (localContainers.isEmpty())
-			return;
+	public static void commitCurrent() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.commit();
+	}
 
-		long[] tids = ManagementFactory.getThreadMXBean().getAllThreadIds();
-		Arrays.sort(tids);
-		synchronized (localContainers) {
-			Iterator<Map.Entry<Long, ObjectContainer>> iter = localContainers
-					.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry<Long, ObjectContainer> entry = iter.next();
-				ExtObjectContainer objc = entry.getValue().ext();
-				if (objc.isClosed()
-						|| Arrays.binarySearch(tids, entry.getKey()) < 0) {
-					iter.remove();
-					if (!objc.isClosed())
-						objc.close();
-				}
-			}
-		}
+	/**
+	 * <p>
+	 * 回滚当前事务。
+	 * </p>
+	 */
+	public static void rollbackCurrent() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.rollback();
+	}
+
+	/**
+	 * <p>
+	 * 关闭当前线程关联的ObjectContainer实例。
+	 * </p>
+	 * 
+	 * @see ObjectContainerWrapper
+	 */
+	public static void closeCurrentContainer() {
+		ObjectContainer objc = currentContainer.get();
+		if (objc != null)
+			objc.close();
 	}
 
 	/**
@@ -211,7 +233,7 @@ public final class Tutor {
 	 * @return
 	 */
 	public static long id(Object obj) {
-		return topContainer.getID(obj);
+		return rootContainer.getID(obj);
 	}
 
 	/**
@@ -223,6 +245,92 @@ public final class Tutor {
 	 */
 	public static long timestamp() {
 		return System.currentTimeMillis();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentCalendar() {
+		return Calendar.getInstance();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象，时间部分为00:00:00.000。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentDateCalendar() {
+		Calendar cal = currentCalendar();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象，日期部分为0001/01/01。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar currentTimeCalendar() {
+		Calendar cal = currentCalendar();
+		cal.set(1, 0, 1);
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日历对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Calendar emptyCalendar() {
+		Calendar cal = currentCalendar();
+		cal.clear();
+		return cal;
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日期和时间对象。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentDateTime() {
+		return currentCalendar().getTime();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前日期对象，时间部分为00:00:00.000。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentDate() {
+		return currentDateCalendar().getTime();
+	}
+
+	/**
+	 * <p>
+	 * 取得当前时间对象，日期部分为0001/01/01。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Date currentTime() {
+		return currentTimeCalendar().getTime();
 	}
 
 	/**
@@ -415,7 +523,7 @@ public final class Tutor {
 	 * 
 	 * @param obj
 	 * @param clsname
-	 * @return 当指定类型为原始类型而且对象为null，返回false。<br />
+	 * @return 当指定类型为原始类型而且对象为null，返回false。<br>
 	 *         当指定类型非原始类型而且对象为null，返回true。
 	 * @throws ClassNotFoundException
 	 */
@@ -482,6 +590,93 @@ public final class Tutor {
 		if (obj instanceof Date)
 			return ((Date) obj).getTime();
 		return Double.parseDouble(obj.toString());
+	}
+
+	/**
+	 * <p>
+	 * 用数组元素填充List。
+	 * </p>
+	 * 
+	 * @param ea
+	 * @return
+	 */
+	public static <T> List<T> toList(T... ea) {
+		if (ea == null || ea.length == 0)
+			return Collections.emptyList();
+		List<T> list = new ArrayList<T>(ea.length);
+		for (int i = 0; i < ea.length; i++)
+			list.add(ea[i]);
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * 用数组元素填充Map。
+	 * </p>
+	 * 
+	 * <p>
+	 * 奇数位元素为键，偶数位元素为值。 如果数组长度为奇数，最后一个键对应的值为null。
+	 * </p>
+	 * 
+	 * @param kv
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static <K, V> Map<K, V> toMap(Object... kv) {
+		if (kv == null || kv.length == 0)
+			return Collections.emptyMap();
+		Map map = new HashMap((kv.length + 1) / 2);
+		int i = 1;
+		do {
+			map.put(kv[i - 1], i < kv.length ? kv[i] : null);
+			i += 2;
+		} while (i < kv.length);
+		return map;
+	}
+
+	/**
+	 * <p>
+	 * 从十六制数字串转换为比特数组。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static byte[] fromHex(String s) {
+		byte[] bytes = new byte[(s.length() + 1) / 2];
+		// TODO
+		return bytes;
+	}
+
+	/**
+	 * <p>
+	 * 从比特数组转换为十六制数字串。
+	 * </p>
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	public static String toHex(byte[] bytes) {
+		char[] chars = new char[bytes.length * 2];
+		for (int i = 0; i < bytes.length; i++) {
+			int v = bytes[i] & 0x0F;
+			chars[i * 2] = (char) (v + (v < 10 ? '0' : 'a' - 10));
+			v = (bytes[i] >>> 4) & 0x0F;
+			chars[i * 2 + 1] = (char) (v + (v < 10 ? '0' : 'a' - 10));
+		}
+		return new String(chars);
+	}
+
+	/**
+	 * <p>
+	 * 生成随机十六制数字串。
+	 * </p>
+	 * 
+	 * @param len
+	 * @return
+	 */
+	public static String randomHex(int len) {
+		return RandomStringUtils.random(len, "0123456789abcdef");
 	}
 
 }

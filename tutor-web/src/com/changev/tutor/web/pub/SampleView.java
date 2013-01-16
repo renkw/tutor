@@ -3,7 +3,7 @@
  * Create 2012/12/26
  * Copyright (c) change-v.com 2012 
  */
-package com.changev.tutor.web.front;
+package com.changev.tutor.web.pub;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,14 +30,23 @@ public class SampleView implements View {
 			logger.trace("[preRender] called");
 		ObjectContainer objc = Tutor.getCurrentContainer();
 		ObjectSet<SimpleBean> set = objc.query(SimpleBean.class);
-		SimpleBean bean = null;
 		if (set.isEmpty()) {
-			objc.store(bean = new SimpleBean());
+			objc.store(new SimpleBean("Foo", 0, 0));
+			objc.store(new SimpleBean("Foo", 1, 1));
+			objc.store(new SimpleBean("Bar", 0, 0));
+			objc.store(new SimpleBean("Bar", 1, 1));
 			objc.commit();
-		} else {
-			bean = set.next();
 		}
-		request.setAttribute("user", bean);
+
+		set = objc.queryByExample(new SimpleBean("Foo", null, 0));
+		System.out.println("----------------" + set.size());
+		SimpleBean bean1 = set.next();
+		request.setAttribute("user", bean1);
+
+		set = objc.queryByExample(new SimpleBean("Foo", null, 1));
+		System.out.println("----------------" + set.size());
+		SimpleBean bean2 = set.next();
+		request.setAttribute("user", bean2);
 		return true;
 	}
 
@@ -50,7 +59,15 @@ public class SampleView implements View {
 
 	public static class SimpleBean {
 
-		private String name = "Foo";
+		private String name;
+		private Integer wrapper;
+		private int primitive;
+
+		public SimpleBean(String name, Integer wrapper, int primitive) {
+			this.name = name;
+			this.wrapper = wrapper;
+			this.primitive = primitive;
+		}
 
 		@Override
 		public String toString() {
@@ -70,6 +87,36 @@ public class SampleView implements View {
 		 */
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		/**
+		 * @return the wrapper
+		 */
+		public Integer getWrapper() {
+			return wrapper;
+		}
+
+		/**
+		 * @param wrapper
+		 *            the wrapper to set
+		 */
+		public void setWrapper(Integer wrapper) {
+			this.wrapper = wrapper;
+		}
+
+		/**
+		 * @return the primitive
+		 */
+		public int getPrimitive() {
+			return primitive;
+		}
+
+		/**
+		 * @param primitive
+		 *            the primitive to set
+		 */
+		public void setPrimitive(int primitive) {
+			this.primitive = primitive;
 		}
 
 	}

@@ -88,7 +88,8 @@ public class DataView implements View {
 		do {
 			Field[] fields = type.getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {
-				if (Modifier.isStatic(fields[i].getModifiers()))
+				if (Modifier.isStatic(fields[i].getModifiers())
+						|| Modifier.isTransient(fields[i].getModifiers()))
 					continue;
 				names.add(fields[i].getName());
 			}

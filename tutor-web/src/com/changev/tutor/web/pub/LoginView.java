@@ -3,7 +3,9 @@
  * Create 2012/12/28
  * Copyright (c) change-v.com 2012 
  */
-package com.changev.tutor.web.front;
+package com.changev.tutor.web.pub;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,11 +15,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
-import com.changev.tutor.util.Validator;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 
@@ -33,7 +36,9 @@ public class LoginView implements View {
 
 	private static final Logger logger = Logger.getLogger(LoginView.class);
 
-	private String successPage;
+	private ParamValidator loginValidator;
+	private String failMessage;
+	private Map<String, String> successPages;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -67,61 +72,85 @@ public class LoginView implements View {
 		if (logger.isTraceEnabled())
 			logger.trace("[login] called");
 
-		// TODO validate code
-		String username = request.getParameter("username");
+		String email = request.getParameter("email");
 		String password = request.getParameter("password");
+		String checkCode = request.getParameter("checkCode");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[login] username = " + username);
+			logger.debug("[login] email = " + email);
 			logger.debug("[login] password = " + password);
+			logger.debug("[login] checkCode = " + checkCode);
 		}
 		// validation
-		if (Validator.required(username)) {
-			Messages.addError(request, "username", "请输入用户名");
-		}
-		if (Validator.required(password)) {
-			Messages.addError(request, "password", "请输入密码");
-		}
-		// do login
-		if (!Messages.hasErrors(request)) {
+		if (loginValidator == null || loginValidator.validate(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[login] validation passed");
 
 			ObjectContainer objc = Tutor.getCurrentContainer();
-			UserModel user = new UserModel();
-			user.setUsername(username);
-			// TODO encrypt password
-			user.setPassword(password);
-			user.setDeleted(Boolean.FALSE);
-			ObjectSet<UserModel> userSet = objc.queryByExample(user);
-			if (!userSet.isEmpty()) {
+			ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
+					.getUserExample(email,
+							ModelFactory.encryptPassword(password)));
+			if (userSet.hasNext()) {
 				// reset session
 				HttpSession session = request.getSession(false);
 				if (session != null)
 					session.invalidate();
-				user = userSet.next();
-				SessionContainer.get(request, true).setLoginUser(user);
-				// TODO
+				UserModel user = userSet.next();
+				SessionContainer.get(request, true).login(
+						objc.ext().getID(user));
+				String successPage = successPages.get(user.getRole().name());
 				if (logger.isDebugEnabled())
 					logger.debug("[login] login successed. goto " + successPage);
 				response.sendRedirect(request.getContextPath() + successPage);
+				return false;
 			}
+			Messages.addError(request, "email", failMessage);
 		}
 		return true;
 	}
 
 	/**
-	 * @return the successPage
+	 * @return the loginValidator
 	 */
-	public String getSuccessPage() {
-		return successPage;
+	public ParamValidator getLoginValidator() {
+		return loginValidator;
 	}
 
 	/**
-	 * @param successPage
-	 *            the successPage to set
+	 * @param loginValidator
+	 *            the loginValidator to set
 	 */
-	public void setSuccessPage(String successPage) {
-		this.successPage = successPage;
+	public void setLoginValidator(ParamValidator loginValidator) {
+		this.loginValidator = loginValidator;
+	}
+
+	/**
+	 * @return the failMessage
+	 */
+	public String getFailMessage() {
+		return failMessage;
+	}
+
+	/**
+	 * @param failMessage
+	 *            the failMessage to set
+	 */
+	public void setFailMessage(String failMessage) {
+		this.failMessage = failMessage;
+	}
+
+	/**
+	 * @return the successPages
+	 */
+	public Map<String, String> getSuccessPages() {
+		return successPages;
+	}
+
+	/**
+	 * @param successPages
+	 *            the successPages to set
+	 */
+	public void setSuccessPages(Map<String, String> successPages) {
+		this.successPages = successPages;
 	}
 
 }

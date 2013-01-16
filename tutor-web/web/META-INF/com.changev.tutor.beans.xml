@@ -24,10 +24,6 @@
 		p:timer-ref="timer"
 		p:period="3600000"
 	>
-		<property name="task">
-			<!-- clean invalid db4o sessions -->
-			<bean class="com.changev.tutor.util.Db4oCleanTask" />
-		</property>
 	</bean>
 	
 	<!-- Freemarker -->
@@ -45,97 +41,74 @@
 	
 	<!-- Gson -->
 	<bean class="com.google.gson.Gson" />
-	
-	<!-- NavigationNode -->
-	<bean class="com.changev.tutor.web.util.NavigationNode"
-		p:linkUrl="/home.html"
-		p:label="主页"
-		p:description="主页"
-	>
-		<property name="childNodes">
-		<util:list>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/front/login.html"
-				p:label="用户登录"
-				p:description="用户登录"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/front/register.html"
-				p:label="用户注册"
-				p:description="用户注册"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/login.html"
-				p:label="用户登录"
-				p:description="用户登录"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/register.html"
-				p:label="用户注册"
-				p:description="用户注册"
-			/>
-			<bean class="com.changev.tutor.web.util.NavigationNode"
-				p:linkUrl="/back/member.html"
-				p:label="我的主页"
-				p:description="我的主页"
-			>
-				<property name="childNodes">
-				<util:list>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/questionList.html"
-						p:label="提问列表"
-						p:description="提问列表"
-					>
-						<property name="childNodes">
-						<util:list>
-							<bean class="com.changev.tutor.web.util.NavigationNode"
-								p:linkUrl="/back/questionDetail.html"
-								p:label="解答提问"
-								p:description="解答提问"
-							/>
-						</util:list>
-						</property>
-					</bean>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/modifyMember.html"
-						p:label="修改资料"
-						p:description="修改资料"
-					/>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/teacherList.html"
-						p:label="教师列表"
-						p:description="教师列表"
-					/>
-					<bean class="com.changev.tutor.web.util.NavigationNode"
-						p:linkUrl="/back/resetPassword.html"
-						p:label="重置密码"
-						p:description="重置密码"
-					/>
-				</util:list>
-				</property>
-			</bean>
-		</util:list>
-		</property>
-	</bean>
 
 	<!-- ####################################### -->
 	<!-- ##     APPLICATION CONFIGURATION     ## -->
 	<!-- ####################################### -->
 	
 	<!-- Views -->
-	<bean id="front.sampleView" class="com.changev.tutor.web.front.SampleView" />
+	<bean id="public.loginView" class="com.changev.tutor.web.pub.LoginView">
+		<property name="loginValidator">
+			<bean class="com.changev.tutor.web.util.ParamValidators">
+				<property name="validators"><util:list>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
+						<property name="args"><util:map>
+							<entry key="name" value="email" />
+							<entry key="pattern" value="[^@\s]+@\S+" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamRequiredValidator"
+						p:name="password"
+						p:message="请输入登录密码。"
+					/>
+					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
+						p:name="checkCode"
+						p:message="验证码不正确。"
+					/>
+				</util:list></property>
+			</bean>
+		</property>
+		<property name="failMessage" value="用户不存在或密码错误。" />
+		<property name="successPages"><util:map>
+			<entry key="Parent" value="/front/member.html" />
+			<entry key="Student" value="/front/member.html" />
+			<entry key="Teacher" value="/back/member.html" />
+			<entry key="Organization" value="/back/member.html" />
+			<entry key="Admin" value="/manage/member.html" />
+		</util:map></property>
+	</bean>
 	
-	<bean id="front.registerView" class="com.changev.tutor.web.front.RegisterView"
-		p:successPage="/front/login.html"
-	/>
-	
-	<bean id="front.loginView" class="com.changev.tutor.web.front.LoginView"
-		p:successPage="/front/sample.html"
-	/>
+	<bean id="public.registerView" class="com.changev.tutor.web.pub.RegisterView">
+		<property name="registerAccountValidator">
+			<bean class="com.changev.tutor.web.util.ParamValidators">
+				<property name="validators"><util:list>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录邮箱。;pattern:请输入正确的邮箱地址。" />
+						<property name="args"><util:map>
+							<entry key="name" value="email" />
+							<entry key="pattern" value="[^@\s]+@\S+" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamValidators">
+						<property name="validatorNames" value="required:请输入登录密码。;equals:登录密码和确认密码不一致。" />
+						<property name="args"><util:map>
+							<entry key="name" value="password" />
+							<entry key="anotherName" value="confirmPassword" />
+						</util:map></property>
+					</bean>
+					<bean class="com.changev.tutor.web.util.ParamCheckCodeValidator"
+						p:name="checkCode"
+						p:message="验证码不正确。"
+					/>
+				</util:list></property>
+			</bean>
+		</property>
+		<property name="registerRequiredPage" value="/public/registerComplete.html" />
+	</bean>
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 
 	<!-- Services -->
-	<bean id="app.testService" class="com.changev.tutor.web.service.TestService" />
 
 </beans>

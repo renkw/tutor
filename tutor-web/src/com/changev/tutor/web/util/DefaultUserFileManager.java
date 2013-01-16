@@ -35,7 +35,7 @@ public class DefaultUserFileManager implements UserFileManager {
 	 * </p>
 	 * 
 	 * <p>
-	 * 新建文件路径：<i>workDir</i>/<i>user</i><br />
+	 * 新建文件路径：<i>workDir</i>/<i>user</i><br>
 	 * 新建文件名格式：yyMMddHHmm_<i>[000-999]</i>.<i>ext</i>
 	 * </p>
 	 * 

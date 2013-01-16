@@ -5,9 +5,16 @@
  */
 package com.changev.tutor.web;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -15,9 +22,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.changev.tutor.Tutor;
-import com.db4o.Db4oEmbedded;
+import com.changev.tutor.util.Db4oConfigurator;
 import com.db4o.ObjectContainer;
-import com.db4o.cs.Db4oClientServer;
 
 /**
  * <p>
@@ -27,25 +33,24 @@ import com.db4o.cs.Db4oClientServer;
  * <p>
  * 上下文设定参数：
  * <ul>
- * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br />
+ * <li><strong>log4jConfigPath</strong> - 可选参数。Log4j配置文件路径。<br>
  * 默认为{@link Tutor#DEFAULT_LOG4J_CONFIG_PATH DEFAULT_LOG4J_CONFIG_PATH}。</li>
- * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br />
+ * <li><strong>beanConfigPath</strong> - 可选参数。Spring配置文件路径。<br>
  * 默认为{@link Tutor#DEFAULT_BEAN_CONFIG_PATH DEFAULT_BEAN_CONFIG_PATH}。</li>
- * <li><strong>db4oConnectPath</strong> - 可选参数。Db4o数据文件路径或服务器连接字符串。<br />
- * 服务器连接字符串格式：db4o:<i>host</i>:<i>port</i>?user=<i>user</i>&amp;password=<i>
- * password</i><br />
- * 默认为{@link Tutor#DEFAULT_DATAFILE_PATH DEFAULT_DATAFILE_PATH}。</li>
+ * <li><strong>db4oConfigPath</strong> - 可选参数。Db4o配置文件路径。<br>
+ * 默认为{@link Tutor#DEFAULT_DB4O_CONFIG_PATH DEFAULT_DB4O_CONFIG_PATH}。</li>
  * </ul>
  * </p>
  * 
  * @author ren
  * 
  */
-public class ContextListener implements ServletContextListener {
+public class ContextListener implements ServletContextListener,
+		HttpSessionListener {
 
 	static final String LOG4J_CONFIG_PATH = "log4jConfigPath";
 	static final String BEAN_CONFIG_PATH = "beanConfigPath";
-	static final String DB4O_CONNECT_PATH = "db4oConnectPath";
+	static final String DB4O_CONFIG_PATH = "db4oConfigPath";
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
@@ -74,30 +79,23 @@ public class ContextListener implements ServletContextListener {
 
 		// init db4o
 		context.log("init db4o...");
-		String db4oDataPath = StringUtils.defaultIfEmpty(
-				context.getInitParameter(DB4O_CONNECT_PATH),
-				Tutor.DEFAULT_DATAFILE_PATH);
-		context.log("db4oDataPath = " + db4oDataPath);
-		ObjectContainer objc;
-		if (db4oDataPath.startsWith("db4o:")) {
-			// open in client-server mode
-			// db4o:host:port?user=user&password=password
-			String[] sa = StringUtils.split(db4oDataPath, ":?=&");
-			String host = sa[1];
-			int port = Integer.parseInt(sa[2]);
-			String user = "", password = "";
-			for (int i = 4; i < sa.length; i += 2) {
-				if ("user".equals(sa[i - 1]))
-					user = sa[i];
-				else if ("password".equals(sa[i - 1]))
-					password = sa[i];
-			}
-			objc = Db4oClientServer.openClient(host, port, user, password);
-		} else {
-			// open in local file mode
-			objc = Db4oEmbedded.openFile(Tutor.getRealPath(db4oDataPath));
+		String db4oConfigPath = StringUtils.defaultIfEmpty(
+				context.getInitParameter(DB4O_CONFIG_PATH),
+				Tutor.DEFAULT_DB4O_CONFIG_PATH);
+		context.log("db4oConfigPath = " + db4oConfigPath);
+		Properties props = new Properties();
+		try {
+			FileInputStream stream = new FileInputStream(
+					Tutor.getRealPath(db4oConfigPath));
+			if (db4oConfigPath.endsWith(".xml"))
+				props.loadFromXML(stream);
+			else
+				props.load(stream);
+			props.put("@root", Tutor.getContextRootPath());
+			Tutor.setRootContainer(Db4oConfigurator.open(props).ext());
+		} catch (IOException e) {
+			context.log("read db4o config error", e);
 		}
-		Tutor.setTopContainer(objc.ext());
 
 		// run startup action
 		context.log("run startup...");
@@ -117,11 +115,27 @@ public class ContextListener implements ServletContextListener {
 
 		// close db4o
 		context.log("close db4o...");
-		ObjectContainer objc = Tutor.getTopContainer();
+		ObjectContainer objc = Tutor.getRootContainer();
 		if (objc != null) {
 			while (!objc.close())
 				;
 		}
+	}
+
+	@Override
+	public void sessionCreated(HttpSessionEvent event) {
+	}
+
+	@Override
+	public void sessionDestroyed(HttpSessionEvent event) {
+		HttpSession session = event.getSession();
+		// logout
+		SessionContainer container = (SessionContainer) session
+				.getAttribute(Tutor.KEY_SESSION_CONTAINER);
+		if (container != null)
+			container.logout();
+		// close current object container
+		Tutor.closeCurrentContainer();
 	}
 
 }

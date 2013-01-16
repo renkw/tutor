@@ -6,10 +6,15 @@
 package com.changev.tutor.model;
 
 import java.util.Date;
+import java.util.List;
+
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableArrayList;
+import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
- * 教师模型。
+ * 教师。
  * </p>
  * 
  * @author ren
@@ -19,45 +24,37 @@ public class TeacherModel extends UserModel {
 
 	private static final long serialVersionUID = -5724580114977645750L;
 
-	private String realName;
 	private Boolean male;
 	private Date birthday;
+	@Indexed
 	private String subject;
+	private String grade;
+	private Byte gradeLevelFrom;
+	private Byte gradeLevelTo;
+	private String education;
+	private Byte teachYears;
+	private List<String> speciality;
 	private Integer score;
-	private String description;
+	private String homepage;
+	@Indexed
+	private OrganizationModel organization;
 
-	public TeacherModel() {
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Teacher);
 	}
 
-	public TeacherModel(TeacherModel copy) {
-		super(copy);
-		this.setRealName(copy.getRealName());
-		this.setMale(copy.getMale());
-		this.setBirthday(copy.getBirthday());
-		this.setSubject(copy.getSubject());
-		this.setScore(copy.getScore());
-		this.setDescription(copy.getDescription());
-	}
-
-	/**
-	 * @return the realName
-	 */
-	public String getRealName() {
-		return realName;
-	}
-
-	/**
-	 * @param realName
-	 *            the realName to set
-	 */
-	public void setRealName(String realName) {
-		this.realName = realName;
+	@Override
+	public TeacherModel clone() {
+		return (TeacherModel) super.clone();
 	}
 
 	/**
 	 * @return the male
 	 */
 	public Boolean getMale() {
+		beforeGet();
 		return male;
 	}
 
@@ -66,6 +63,7 @@ public class TeacherModel extends UserModel {
 	 *            the male to set
 	 */
 	public void setMale(Boolean male) {
+		beforeSet();
 		this.male = male;
 	}
 
@@ -73,6 +71,7 @@ public class TeacherModel extends UserModel {
 	 * @return the birthday
 	 */
 	public Date getBirthday() {
+		beforeGet();
 		return birthday;
 	}
 
@@ -81,6 +80,7 @@ public class TeacherModel extends UserModel {
 	 *            the birthday to set
 	 */
 	public void setBirthday(Date birthday) {
+		beforeSet();
 		this.birthday = birthday;
 	}
 
@@ -88,6 +88,7 @@ public class TeacherModel extends UserModel {
 	 * @return the subject
 	 */
 	public String getSubject() {
+		beforeGet();
 		return subject;
 	}
 
@@ -96,13 +97,120 @@ public class TeacherModel extends UserModel {
 	 *            the subject to set
 	 */
 	public void setSubject(String subject) {
+		beforeSet();
 		this.subject = subject;
+	}
+
+	/**
+	 * @return the grade
+	 */
+	public String getGrade() {
+		beforeGet();
+		return grade;
+	}
+
+	/**
+	 * @param grade
+	 *            the grade to set
+	 */
+	public void setGrade(String grade) {
+		beforeSet();
+		this.grade = grade;
+	}
+
+	/**
+	 * @return the gradeLevelFrom
+	 */
+	public Byte getGradeLevelFrom() {
+		beforeGet();
+		return gradeLevelFrom;
+	}
+
+	/**
+	 * @param gradeLevelFrom
+	 *            the gradeLevelFrom to set
+	 */
+	public void setGradeLevelFrom(Byte gradeLevelFrom) {
+		beforeSet();
+		this.gradeLevelFrom = gradeLevelFrom;
+	}
+
+	/**
+	 * @return the gradeLevelTo
+	 */
+	public Byte getGradeLevelTo() {
+		beforeGet();
+		return gradeLevelTo;
+	}
+
+	/**
+	 * @param gradeLevelTo
+	 *            the gradeLevelTo to set
+	 */
+	public void setGradeLevelTo(Byte gradeLevelTo) {
+		beforeSet();
+		this.gradeLevelTo = gradeLevelTo;
+	}
+
+	/**
+	 * @return the education
+	 */
+	public String getEducation() {
+		beforeGet();
+		return education;
+	}
+
+	/**
+	 * @param education
+	 *            the education to set
+	 */
+	public void setEducation(String education) {
+		beforeSet();
+		this.education = education;
+	}
+
+	/**
+	 * @return the teachYears
+	 */
+	public Byte getTeachYears() {
+		beforeGet();
+		return teachYears;
+	}
+
+	/**
+	 * @param teachYears
+	 *            the teachYears to set
+	 */
+	public void setTeachYears(Byte teachYears) {
+		beforeSet();
+		this.teachYears = teachYears;
+	}
+
+	/**
+	 * @return the speciality
+	 */
+	public List<String> getSpeciality() {
+		beforeGet();
+		return speciality;
+	}
+
+	/**
+	 * @return the speciality
+	 */
+	public List<String> getSpecialityFor() {
+		beforeGet();
+		if (speciality == null) {
+			beforeSet();
+			speciality = new ActivatableArrayList<String>();
+		}
+		return speciality;
 	}
 
 	/**
 	 * @return the score
 	 */
 	public Integer getScore() {
+		beforeGet();
 		return score;
 	}
 
@@ -111,22 +219,42 @@ public class TeacherModel extends UserModel {
 	 *            the score to set
 	 */
 	public void setScore(Integer score) {
+		beforeSet();
 		this.score = score;
 	}
 
 	/**
-	 * @return the description
+	 * @return the homepage
 	 */
-	public String getDescription() {
-		return description;
+	public String getHomepage() {
+		beforeGet();
+		return homepage;
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @param homepage
+	 *            the homepage to set
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setHomepage(String homepage) {
+		beforeSet();
+		this.homepage = homepage;
+	}
+
+	/**
+	 * @return the organization
+	 */
+	public OrganizationModel getOrganization() {
+		beforeGet();
+		return organization;
+	}
+
+	/**
+	 * @param organization
+	 *            the organization to set
+	 */
+	public void setOrganization(OrganizationModel organization) {
+		beforeSet();
+		this.organization = organization;
 	}
 
 }

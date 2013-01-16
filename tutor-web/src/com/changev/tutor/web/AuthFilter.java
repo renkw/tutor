@@ -43,15 +43,15 @@ import com.changev.tutor.model.UserRole;
  * </ul>
  * 
  * ACL规则格式： <strong>pattern</strong> <i>spaces</i> <strong>roles</strong>
- * <i>spaces</i> <strong>forward_path</strong><br />
- * <strong>pattern:</strong> *|<i>path_pattern</i><br />
- * &nbsp;&nbsp;*表示全部；path_pattern中可使用通配符(*)表示任意某一路径名或文件名<br />
- * <strong>roles:</strong> (+|-)<i>role_name</i><br />
- * &nbsp;&nbsp;+表示允许访问；-表示拒绝访问；默认为+<br />
- * &nbsp;&nbsp;设置多个角色用|分隔<br />
- * <strong>forward_path:</strong> (F|R)<i>path</i><br />
- * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br />
- * <br />
+ * <i>spaces</i> <strong>forward_path</strong><br>
+ * <strong>pattern:</strong> *|<i>path_pattern</i><br>
+ * &nbsp;&nbsp;*表示全部；path_pattern中可使用通配符(*)表示任意某一路径名或文件名<br>
+ * <strong>roles:</strong> (+|-)<i>role_name</i><br>
+ * &nbsp;&nbsp;+表示允许访问；-表示拒绝访问；默认为+<br>
+ * &nbsp;&nbsp;设置多个角色用|分隔<br>
+ * <strong>forward_path:</strong> (F|R)<i>path</i><br>
+ * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br>
+ * <br>
  * 
  * 满足pattern的第一条规则决定可访问与否。
  * </p>

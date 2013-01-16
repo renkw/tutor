@@ -45,17 +45,17 @@
 						<table border="0" cellspacing="1" cellpadding="5">
 						<tbody>
 							<tr>
-								<th align="left" class="ui-widget-header noborder">邮箱地址<span class="required">*</span></th>
+								<th align="center" class="ui-widget-header noborder">登录邮箱<span class="required">*</span></th>
 								<td align="left">
-									<input type="text" name="username" value="${params.username!}" size="30" />
-									<@errmsg name="username" />
+									<input type="text" name="email" value="${params.email!}" size="30" />
+									<@errmsg name="email" />
 								</td>
 								<td align="left">
 									<div class="alpha25">此邮箱地址将作为登录用户名，和发送激活或更改密码时使用。</div>
 								</td>
 							</tr>
 							<tr>
-								<th align="left" class="ui-widget-header noborder">密码<span class="required">*</span></th>
+								<th align="center" class="ui-widget-header noborder">登录密码<span class="required">*</span></th>
 								<td align="left">
 									<input type="password" name="password" value="" size="30" maxlength="10" />
 									<@errmsg name="password" />
@@ -65,7 +65,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th align="left" class="ui-widget-header noborder">确认密码<span class="required">*</span></th>
+								<th align="center" class="ui-widget-header noborder">确认密码<span class="required">*</span></th>
 								<td align="left">
 									<input type="password" name="confirmPassword" value="" size="30" maxlength="10" />
 									<@errmsg name="confirmPassword" />
@@ -75,7 +75,7 @@
 								</td>
 							</tr>
 							<tr>
-								<th align="left" class="ui-widget-header noborder">验证码<span class="required">*</span></th>
+								<th align="center" class="ui-widget-header noborder">验证码<span class="required">*</span></th>
 								<td align="left">
 									<input type="text" name="checkCode" value="" size="10" maxlength="4" />
 									<img src="${pathrel}/random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
@@ -93,7 +93,7 @@
 								<th>&nbsp;</th>
 								<td colspan="2" align="left">
 									<br />
-									<input type="submit" name="register" value="注册" class="green-button small-button ui-corner-all" />
+									<input type="submit" name="registerAccount" value="注册" class="green-button small-button ui-corner-all" />
 								</td>
 							</tr>
 						</tfoot>

@@ -6,10 +6,15 @@
 package com.changev.tutor.model;
 
 import java.util.Date;
+import java.util.Map;
+
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableHashMap;
+import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
- * 学生模型。
+ * 学生。
  * </p>
  * 
  * @author ren
@@ -19,48 +24,50 @@ public class StudentModel extends UserModel {
 
 	private static final long serialVersionUID = 7524370787816259509L;
 
-	private String realName;
+	private String facePicture;
 	private Boolean male;
 	private Date birthday;
-	private String schoolName;
+	private String school;
 	private String grade;
-	private Integer level;
+	private Byte gradeLevel;
 	private String hobby;
-	private String description;
+	private Map<String, String> defaultServicer;
+	@Indexed
+	private ParentModel parent;
 
-	public StudentModel() {
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setRole(UserRole.Student);
 	}
 
-	public StudentModel(StudentModel copy) {
-		super(copy);
-		this.setRealName(copy.getRealName());
-		this.setMale(copy.getMale());
-		this.setBirthday(copy.getBirthday());
-		this.setSchoolName(copy.getSchoolName());
-		this.setGrade(copy.getGrade());
-		this.setHobby(copy.getHobby());
-		this.setDescription(copy.getDescription());
-	}
-
-	/**
-	 * @return the realName
-	 */
-	public String getRealName() {
-		return realName;
+	@Override
+	public StudentModel clone() {
+		return (StudentModel) super.clone();
 	}
 
 	/**
-	 * @param realName
-	 *            the realName to set
+	 * @return the facePicture
 	 */
-	public void setRealName(String realName) {
-		this.realName = realName;
+	public String getFacePicture() {
+		beforeGet();
+		return facePicture;
+	}
+
+	/**
+	 * @param facePicture
+	 *            the facePicture to set
+	 */
+	public void setFacePicture(String facePicture) {
+		beforeSet();
+		this.facePicture = facePicture;
 	}
 
 	/**
 	 * @return the male
 	 */
 	public Boolean getMale() {
+		beforeGet();
 		return male;
 	}
 
@@ -69,6 +76,7 @@ public class StudentModel extends UserModel {
 	 *            the male to set
 	 */
 	public void setMale(Boolean male) {
+		beforeSet();
 		this.male = male;
 	}
 
@@ -76,6 +84,7 @@ public class StudentModel extends UserModel {
 	 * @return the birthday
 	 */
 	public Date getBirthday() {
+		beforeGet();
 		return birthday;
 	}
 
@@ -84,28 +93,32 @@ public class StudentModel extends UserModel {
 	 *            the birthday to set
 	 */
 	public void setBirthday(Date birthday) {
+		beforeSet();
 		this.birthday = birthday;
 	}
 
 	/**
-	 * @return the schoolName
+	 * @return the school
 	 */
-	public String getSchoolName() {
-		return schoolName;
+	public String getSchool() {
+		beforeGet();
+		return school;
 	}
 
 	/**
-	 * @param schoolName
-	 *            the schoolName to set
+	 * @param school
+	 *            the school to set
 	 */
-	public void setSchoolName(String schoolName) {
-		this.schoolName = schoolName;
+	public void setSchool(String school) {
+		beforeSet();
+		this.school = school;
 	}
 
 	/**
 	 * @return the grade
 	 */
 	public String getGrade() {
+		beforeGet();
 		return grade;
 	}
 
@@ -114,28 +127,32 @@ public class StudentModel extends UserModel {
 	 *            the grade to set
 	 */
 	public void setGrade(String grade) {
+		beforeSet();
 		this.grade = grade;
 	}
 
 	/**
-	 * @return the level
+	 * @return the gradeLevel
 	 */
-	public Integer getLevel() {
-		return level;
+	public Byte getGradeLevel() {
+		beforeGet();
+		return gradeLevel;
 	}
 
 	/**
-	 * @param level
-	 *            the level to set
+	 * @param gradeLevel
+	 *            the gradeLevel to set
 	 */
-	public void setLevel(Integer level) {
-		this.level = level;
+	public void setGradeLevel(Byte gradeLevel) {
+		beforeSet();
+		this.gradeLevel = gradeLevel;
 	}
 
 	/**
 	 * @return the hobby
 	 */
 	public String getHobby() {
+		beforeGet();
 		return hobby;
 	}
 
@@ -144,22 +161,45 @@ public class StudentModel extends UserModel {
 	 *            the hobby to set
 	 */
 	public void setHobby(String hobby) {
+		beforeSet();
 		this.hobby = hobby;
 	}
 
 	/**
-	 * @return the description
+	 * @return the defaultServicer
 	 */
-	public String getDescription() {
-		return description;
+	public Map<String, String> getDefaultServicer() {
+		beforeGet();
+		return defaultServicer;
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @return the defaultServicer
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public Map<String, String> getDefaultServicerFor() {
+		beforeGet();
+		if (defaultServicer == null) {
+			beforeSet();
+			defaultServicer = new ActivatableHashMap<String, String>();
+		}
+		return defaultServicer;
+	}
+
+	/**
+	 * @return the parent
+	 */
+	public ParentModel getParent() {
+		beforeGet();
+		return parent;
+	}
+
+	/**
+	 * @param parent
+	 *            the parent to set
+	 */
+	public void setParent(ParentModel parent) {
+		beforeSet();
+		this.parent = parent;
 	}
 
 }
