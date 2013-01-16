@@ -33,6 +33,6 @@ public interface Service<INPUT> {
 	 * @return 处理结果
 	 * @throws Throwable
 	 */
-	Object run(UserModel user, INPUT input) throws Throwable;
+	String run(UserModel user, INPUT input) throws Throwable;
 
 }

@@ -281,7 +281,7 @@ public class ServiceServlet extends HttpServlet {
 					logger.debug("[getUserModel] content = " + content);
 			} catch (Exception e) {
 				logger.error("[getUserModel] AES decrypt failed", e);
-				throw new ServletException(e);
+//				throw new ServletException(e);
 			}
 
 			// username::clientToken
@@ -338,7 +338,7 @@ public class ServiceServlet extends HttpServlet {
 			}
 		} catch (Exception e) {
 			logger.error("[getUserModel] HmacMD5 encrypt failed", e);
-			throw new ServletException(e);
+//			throw new ServletException(e);
 		}
 
 		return userModel;
@@ -373,25 +373,16 @@ public class ServiceServlet extends HttpServlet {
 		}
 		// run service
 		Object input = readInput(request, inputType);
-		Object result;
+		ServiceMessage result = new ServiceMessage();
 		try {
-			result = service.run(userModel, input);
-		} catch (RuntimeException e) {
+			String internal_result = service.run(userModel, input);
+			result.setCode(ServiceMessage.CODE_SUCCESS);
+			result.setResult(internal_result);
+		} catch (Throwable e) {//TODO 抓各种异常 不同返回码
 			logger.error("[runService] error occur", e);
-			throw e;
-		} catch (ServletException e) {
-			logger.error("[runService] error occur", e);
-			throw e;
-		} catch (IOException e) {
-			logger.error("[runService] error occur", e);
-			throw e;
-		} catch (Error e) {
-			logger.error("[runService] error occur", e);
-			throw e;
-		} catch (Throwable t) {
-			logger.error("[runService] error occur", t);
-			throw new ServletException(t);
-		}
+			result.setCode(ServiceMessage.CODE_INTERNAL_ERROR);
+			result.setResult("没有服务请稍后重试");
+		} 
 		// output result
 		writeOutput(response, result);
 	}

@@ -17,6 +17,7 @@ public class ServiceMessage {
 
 	private int code;
 	private String description;
+	private String result = "";
 
 	public ServiceMessage() {
 	}
@@ -69,5 +70,21 @@ public class ServiceMessage {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public String getResult() {
+		return result;
+	}
+	
+	public void setResult(String result) {
+		this.result = result;
+	}
 
+	/**
+	 * 成功返回
+	 */
+	public static final int CODE_SUCCESS = 200;
+	/**
+	 * 系统内部错误
+	 */
+	public static final int CODE_INTERNAL_ERROR = 505;
 }
