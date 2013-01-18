@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl>
+	<rule pattern="/public/.*" />
+	<rule pattern="/front/registerStudent.html">
+		<accept		role="Parent"
+					state="Incomplete" />
+		<redirect	path="/front/member.html" />
+	</rule>
+	<rule pattern="/front/.*">
+		<accept		role="Parent|Student"
+					state="Activated" />
+		<redirect	role="Parent" 
+					state="Incomplete" 
+					path="/front/registerStudent.html" />
+		<redirect	path="/public/login.html?url={url}" />
+	</rule>
+	<rule pattern="/mobile/(?:login|register)\.html" />
+	<rule pattern="/mobile/.*">
+		<accept		role="Parent|Student"
+					state="Activated" />
+		<redirect	role="Parent" 
+					state="Incomplete" 
+					path="/mobile/registerStudent.html" />
+		<redirect	path="/mobile/login.html?url={url}" />
+	</rule>
+	<rule pattern="/back/.*">
+		<accept		role="Organization|Teacher"
+					state="Activated" />
+		<redirect	path="/public/login.html?url={url}" />
+	</rule>
+	<!-- 
+	<rule pattern="/manage/.*">
+		<accept		role="Admin" />
+		<redirect	path="/public/login.html?url={url}" />
+	</rule>
+	 -->
+	<rule pattern="/files/.*">
+		<redirect	role="None"
+					path="/public/login.html?url={url}" />
+	</rule>
+	<rule pattern="/_inc/*">
+		<error		code="404" />
+	</rule>
+</acl>

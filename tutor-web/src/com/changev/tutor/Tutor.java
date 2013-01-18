@@ -3,6 +3,7 @@
  */
 package com.changev.tutor;
 
+import java.lang.reflect.Array;
 import java.security.Key;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -24,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
 import com.db4o.ext.ExtObjectContainer;
 
 /**
@@ -42,6 +44,9 @@ public final class Tutor {
 	/** 在HttpSession中的SessionContainer实例键 */
 	public static final String KEY_SESSION_CONTAINER = "com.changev.tutor.KEY_SESSION_CONTAINER";
 
+	/** 在HttpRequest或HttpSession中的ObjectContainer实例键 */
+	public static final String KEY_OBJECT_CONTAINER = "com.changev.tutor.KEY_OBJECT_CONTAINER";
+
 	/** 默认的字符编码 */
 	public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -54,8 +59,11 @@ public final class Tutor {
 	/** 默认的db4o配置文件路径 */
 	public static final String DEFAULT_DB4O_CONFIG_PATH = "//META-INF/com.changev.tutor.db4o-embed.properties";
 
+	/** 默认的访问控制文件路径 */
+	public static final String DEFAULT_ACL_PATH = "//META-INF/com.changev.tutor.acl.xml";
+
 	/** 默认的上传文件目录 */
-	public static final String DEFAULT_UPLOAD_PATH = "//../upload/";
+	public static final String DEFAULT_UPLOAD_PATH = "//../files/";
 
 	/** 默认的日期格式 */
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -143,7 +151,7 @@ public final class Tutor {
 	}
 
 	private static ExtObjectContainer rootContainer;
-	private static ThreadLocal<ObjectContainerWrapper> currentContainer = new ThreadLocal<ObjectContainerWrapper>();
+	private static ThreadLocal<ObjectContainer> currentContainer = new ThreadLocal<ObjectContainer>();
 
 	/**
 	 * @return the rootContainer
@@ -169,12 +177,7 @@ public final class Tutor {
 	 * @see ObjectContainerWrapper
 	 */
 	public static ObjectContainer getCurrentContainer() {
-		ObjectContainerWrapper objc = currentContainer.get();
-		if (objc == null) {
-			objc = new ObjectContainerWrapper();
-			currentContainer.set(objc);
-		}
-		return objc;
+		return currentContainer.get();
 	}
 
 	/**
@@ -187,6 +190,17 @@ public final class Tutor {
 	 */
 	public static ExtObjectContainer getCurrentContainerExt() {
 		return getCurrentContainer().ext();
+	}
+
+	/**
+	 * <p>
+	 * 设置当前线程关联的ObjectContainer实例。
+	 * </p>
+	 * 
+	 * @param container
+	 */
+	public static void setCurrentContainer(ObjectContainer container) {
+		currentContainer.set(container);
 	}
 
 	/**
@@ -233,7 +247,20 @@ public final class Tutor {
 	 * @return
 	 */
 	public static long id(Object obj) {
-		return rootContainer.getID(obj);
+		return getCurrentContainerExt().getID(obj);
+	}
+
+	/**
+	 * <p>
+	 * 从数据集中取得第一个对象，如果为空返回null。
+	 * </p>
+	 * 
+	 * @param set
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T one(ObjectSet<?> set) {
+		return set.hasNext() ? (T) set.next() : null;
 	}
 
 	/**
@@ -586,7 +613,7 @@ public final class Tutor {
 				return false;
 			cls = ClassUtils.primitiveToWrapper(cls);
 		}
-		return obj == null || cls.isInstance(obj);
+		return cls.isInstance(obj);
 	}
 
 	/**
@@ -728,6 +755,24 @@ public final class Tutor {
 	 */
 	public static String randomHex(int len) {
 		return RandomStringUtils.random(len, "0123456789abcdef");
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Enum<T>> T[] enumValues(String s, Class<T> enumType) {
+		if (StringUtils.isEmpty(s) || "*".equals(s))
+			return enumType.getEnumConstants();
+		String[] sa = StringUtils.split(s, '|');
+		T[] values = (T[]) Array.newInstance(enumType, sa.length);
+		for (int i = 0; i < sa.length; i++) {
+			values[i] = Enum.valueOf(enumType, sa[i]);
+		}
+		return values;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Enum<T>> T[] enumValues(String s, String enumType)
+			throws ClassNotFoundException {
+		return enumValues(s, (Class<T>) Class.forName(enumType));
 	}
 
 }

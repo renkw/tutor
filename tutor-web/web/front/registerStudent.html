@@ -58,8 +58,8 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">性别</th>
 								<td align="left">
-									<label><input type="radio" name="gender" value="Male" />男</label>
-									<label><input type="radio" name="gender" value="Female" />女</label>
+									<@radio name="gender" value="Male" check=params.gender!"Male">男</@radio>
+									<@radio name="gender" value="Female" check=params.gender>女</@radio>
 									<@errmsg name="gender" />
 								</td>
 								<td align="left">
@@ -102,16 +102,16 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 								<td align="left">
-									<label><input type="radio" name="grade" value="小学" />小学</label>
-									<label><input type="radio" name="grade" value="初中" />初中</label>
-									<label><input type="radio" name="grade" value="高中" />高中</label>
+									<@checkbox name="grade" value="小学" check=params.grade>小学</@checkbox>
+									<@checkbox name="grade" value="初中" check=params.grade>初中</@checkbox>
+									<@checkbox name="grade" value="高中" check=params.grade>高中</@checkbox>
 									<select name="gradeLevel">
-										<option value="1">一年级</option>
-										<option value="2">二年级</option>
-										<option value="3">三年级</option>
-										<option value="4">四年级</option>
-										<option value="5">五年级</option>
-										<option value="6">六年级</option>
+										<@option value="1" check=params.gradeLevel>一年级</@option>
+										<@option value="2" check=params.gradeLevel>二年级</@option>
+										<@option value="3" check=params.gradeLevel>三年级</@option>
+										<@option value="4" check=params.gradeLevel>四年级</@option>
+										<@option value="5" check=params.gradeLevel>五年级</@option>
+										<@option value="6" check=params.gradeLevel>六年级</@option>
 									</select>
 									<@errmsg name="grade" />
 								</td>
@@ -143,28 +143,16 @@
 								<th width="80" align="center" class="ui-widget-header noborder">指定解答<span class="required">*</span></th>
 								<td width="300" align="left">
 									<div>
-										<select name="subject">
-											<option value="语文">语文</option>
-											<option value="数学">数学</option>
-											<option value="英语">英语</option>
-										</select>
-										<input type="text" name="answerer" value="${(params.answerer[0])!}" />
+										<input type="hidden" name="subject" value="语文" />
+										<label>语文&nbsp;<input type="text" name="answerer" value="${(params.answerer[0])!}" /></label>
 									</div>
 									<div>
-										<select name="subject">
-											<option value="语文">语文</option>
-											<option value="数学">数学</option>
-											<option value="英语">英语</option>
-										</select>
-										<input type="text" name="answerer" value="${(params.answerer[1])!}" />
+										<input type="hidden" name="subject" value="数学" />
+										<label>数学&nbsp;<input type="text" name="answerer" value="${(params.answerer[1])!}" /></label>
 									</div>
 									<div>
-										<select name="subject">
-											<option value="语文">语文</option>
-											<option value="数学">数学</option>
-											<option value="英语">英语</option>
-										</select>
-										<input type="text" name="answerer" value="${(params.answerer[2])!}" />
+										<input type="hidden" name="subject" value="英语" />
+										<label>英语&nbsp;<input type="text" name="answerer" value="${(params.answerer[2])!}" /></label>
 									</div>
 									<@errmsg name="defaultAnswerer" />
 								</td>

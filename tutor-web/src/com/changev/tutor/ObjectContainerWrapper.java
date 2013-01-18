@@ -5,6 +5,7 @@
  */
 package com.changev.tutor;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import com.db4o.ObjectContainer;
@@ -31,9 +32,11 @@ import com.db4o.query.QueryComparator;
  * @author ren
  * @see ObjectContainer
  */
-public class ObjectContainerWrapper implements ObjectContainer {
+public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 
-	protected ObjectContainer original;
+	private static final long serialVersionUID = -6221167529547830146L;
+
+	protected transient ObjectContainer original;
 
 	protected ObjectContainer original() {
 		if (original == null || original.ext().isClosed())

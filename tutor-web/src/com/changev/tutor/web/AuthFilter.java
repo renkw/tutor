@@ -5,14 +5,14 @@
  */
 package com.changev.tutor.web;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
@@ -23,13 +23,22 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.model.UserState;
 
 /**
  * <p>
@@ -39,20 +48,9 @@ import com.changev.tutor.model.UserRole;
  * <p>
  * 设定参数：
  * <ul>
- * <li><strong>ACL</strong> - 可选参数。访问控制列表，默认为全部允许。</li>
+ * <li><strong>ACL</strong> - 可选参数。访问控制文件路径，默认为{@link Tutor#DEFAULT_ACL_PATH
+ * DEFAULT_ACL_PATH}。</li>
  * </ul>
- * 
- * ACL规则格式： <strong>pattern</strong> <i>spaces</i> <strong>roles</strong>
- * <i>spaces</i> <strong>forward_path</strong><br>
- * <strong>pattern:</strong> *|<i>path_pattern</i><br>
- * &nbsp;&nbsp;*表示全部；path_pattern中可使用通配符(*)表示任意某一路径名或文件名<br>
- * <strong>roles:</strong> (+|-)<i>role_name</i><br>
- * &nbsp;&nbsp;+表示允许访问；-表示拒绝访问；默认为+<br>
- * &nbsp;&nbsp;设置多个角色用|分隔<br>
- * <strong>forward_path:</strong> (F|R)<i>path</i><br>
- * &nbsp;&nbsp;F表示请求转发（forward）；R表示响应重定向（redirect）；默认为F<br>
- * <br>
- * 
  * 满足pattern的第一条规则决定可访问与否。
  * </p>
  * 
@@ -63,89 +61,145 @@ public class AuthFilter implements Filter {
 
 	private static final Logger logger = Logger.getLogger(AuthFilter.class);
 
-	/** 允许访问 */
-	public static final int ACCEPTED = 0;
-
-	/** 不允许访问 */
-	public static final int NOT_ACCEPTED = 1;
-
-	/** 拒绝访问 */
-	public static final int DENIED = 2;
-
 	static final String ACL = "ACL";
-	static final String ACL_PAT = "^\\s*([^\\s]+)\\s*([^\\s]*)\\s*([FR]?)([^\\s]*)\\s*$";
 
-	static AccessControlRule parseAcl(String str) throws ParseException {
+	static AccessControlRule parseAcl(String path) throws IOException,
+			XMLStreamException {
 		if (logger.isTraceEnabled())
 			logger.trace("[parseAcl] called");
 
-		AccessControlRule item = null, head = null;
-		// parse
-		Matcher matcher = Pattern.compile(ACL_PAT, Pattern.MULTILINE).matcher(
-				str);
-		int end = 0;
-		while (matcher.find()) {
-			end = matcher.end();
-			if (item == null)
-				item = head = new AccessControlRule();
-			else
-				item = item.next = new AccessControlRule();
-			// get options
-			String sPat = matcher.group(1);
-			String sRoles = StringUtils.defaultString(matcher.group(2), "*");
-			String sForward = StringUtils.defaultString(matcher.group(3), "F");
-			String sPath = matcher.group(4);
-			// set rule
-			item.pattern = "*".equals(sPat) ? null : Pattern.compile(Pattern
-					.quote(sPat).replace("*", "\\E[^/]*\\Q")
-					.replace("\\Q\\E", ""));
-			if ("-*".equals(sRoles)) {
-				item.denyRoles = UserRole.values();
-			} else if (!"*".equals(sRoles)) {
-				for (String roleName : StringUtils.split(sRoles, '|')) {
-					if (roleName.startsWith("-")) {
-						item.denyRoles = (UserRole[]) ArrayUtils.add(
-								item.denyRoles,
-								UserRole.valueOf(roleName.substring(1)));
+		AccessControlRule head = null, tail = null;
+		// read xml
+		InputStream stream = new FileInputStream(path);
+		try {
+			XMLEventReader reader = XMLInputFactory.newFactory()
+					.createXMLEventReader(stream);
+			XMLEvent evt = reader.nextTag();
+			// acl
+			if (!"acl".equals(evt.asStartElement().getName().getLocalPart()))
+				throw new XMLStreamException("root tag must be acl");
+			while (true) {
+				evt = reader.nextTag();
+				if (evt.isStartElement()) {
+					// rule
+					StartElement elem = evt.asStartElement();
+					String name = elem.getName().getLocalPart();
+					if ("rule".equals(name)) {
+						if (tail == null)
+							head = tail = new AccessControlRule();
+						else
+							tail = tail.next = new AccessControlRule();
+						parseRule(reader, elem, tail);
 					} else {
-						if (roleName.startsWith("+"))
-							roleName = roleName.substring(1);
-						item.acceptRoles = (UserRole[]) ArrayUtils.add(
-								item.acceptRoles, UserRole.valueOf(roleName));
+						throw new XMLStreamException("unknown tag " + name);
 					}
+				} else if (evt.isEndElement()) {
+					if ("acl".equals(evt.asEndElement().getName()
+							.getLocalPart()))
+						break;
 				}
 			}
-			item.forward = "F".equals(sForward);
-			item.path = sPath;
-
-			if (logger.isDebugEnabled())
-				logger.debug("[parseAcl] add rule: " + item);
+			return head;
+		} finally {
+			stream.close();
 		}
-		// check format
-		while (end < str.length()) {
-			if (!Character.isWhitespace(str.charAt(end)))
-				throw new ParseException(str, end);
-			end++;
-		}
-		return head;
 	}
 
-	Map<String, AccessControlRule> ruleMap;
+	static void parseRule(XMLEventReader reader, StartElement elem,
+			AccessControlRule rule) throws XMLStreamException {
+		Attribute pattern = elem.getAttributeByName(new QName("pattern"));
+		if (pattern == null)
+			throw new XMLStreamException("attribute pattern is required");
+		rule.pattern = Pattern.compile(pattern.getValue());
+		if (logger.isDebugEnabled())
+			logger.trace("[parseRule] add rule for " + pattern.getValue());
+
+		AccessControlRuleItem item = null;
+		// accept|forward|redirect|error
+		while (true) {
+			XMLEvent evt = reader.nextTag();
+			if (evt.isStartElement()) {
+				elem = evt.asStartElement();
+				String name = elem.getName().getLocalPart();
+				Attribute role = elem.getAttributeByName(new QName("role"));
+				Attribute state = elem.getAttributeByName(new QName("state"));
+				Attribute path = elem.getAttributeByName(new QName("path"));
+				Attribute code = elem.getAttributeByName(new QName("code"));
+				if (logger.isDebugEnabled()) {
+					logger.debug("[parseRule] "
+							+ name
+							+ " role = "
+							+ (role == null ? "*" : StringUtils.defaultIfEmpty(
+									role.getValue(), "*"))
+							+ " state = "
+							+ (state == null ? "*" : StringUtils
+									.defaultIfEmpty(state.getValue(), "*"))
+							+ (path == null ? "" : " path = " + path.getValue())
+							+ (code == null ? "" : " code = " + code.getValue()));
+				}
+
+				if (item == null)
+					rule.item = item = new AccessControlRuleItem();
+				else
+					item = item.next = new AccessControlRuleItem();
+				item.roles = Tutor.enumValues(
+						role == null ? null : role.getValue(), UserRole.class);
+				item.states = Tutor.enumValues(
+						state == null ? null : state.getValue(),
+						UserState.class);
+
+				if ("accept".equals(name)) {
+					item.path = null;
+				} else if ("forward".equals(name)) {
+					if (path == null)
+						throw new XMLStreamException(
+								"attribute path is required");
+					item.forward = true;
+					item.path = path.getValue();
+				} else if ("redirect".equals(name)) {
+					if (path == null)
+						throw new XMLStreamException(
+								"attribute path is required");
+					item.forward = false;
+					item.path = path.getValue();
+				} else if ("error".equals(name)) {
+					if (code == null)
+						throw new XMLStreamException(
+								"attribute code is required");
+					item.errorCode = Integer.parseInt(code.getValue());
+				}
+			} else if (evt.isEndElement()) {
+				if ("rule".equals(evt.asEndElement().getName().getLocalPart()))
+					break;
+			}
+		}
+	}
+
 	AccessControlRule acl;
+	Map<String, AccessControlRule> ruleMap;
 
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		if (logger.isTraceEnabled())
 			logger.trace("[init] called");
 
-		String sAcl = config.getInitParameter(ACL);
-		if (StringUtils.isNotBlank(sAcl)) {
+		String sAcl = StringUtils.defaultString(config.getInitParameter(ACL),
+				Tutor.DEFAULT_ACL_PATH);
+		if (logger.isDebugEnabled())
+			logger.debug("[init] ACL = " + sAcl);
+
+		if (StringUtils.isNotEmpty(sAcl)) {
 			try {
-				acl = parseAcl(sAcl);
-			} catch (ParseException e) {
+				acl = parseAcl(Tutor.getRealPath(sAcl));
+			} catch (IOException e) {
+				logger.error("[init] parse acl error", e);
+				throw new ServletException(e);
+			} catch (XMLStreamException e) {
+				logger.error("[init] parse acl error", e);
 				throw new ServletException(e);
 			}
 		}
+
 		if (acl != null) {
 			ruleMap = Collections
 					.synchronizedMap(new HashMap<String, AccessControlRule>());
@@ -170,36 +224,45 @@ public class AuthFilter implements Filter {
 				request.getContextPath().length());
 		// get user role
 		UserRole role = UserRole.None;
-		SessionContainer sess = SessionContainer.get(request, false);
-		if (sess != null && sess.getLoginUser() != null)
-			role = sess.getLoginUser().getRole();
-		if (logger.isDebugEnabled()) {
-			logger.debug("[doFilter] reqPath = " + reqPath);
-			logger.debug("[doFilter] role = " + role);
+		UserState state = UserState.Unavailable;
+		UserModel user = SessionContainer.getLoginUser(request);
+		if (user != null) {
+			role = user.getRole();
+			state = user.getState();
 		}
+		if (logger.isDebugEnabled())
+			logger.debug("[doFilter] reqPath = " + reqPath + ", role = " + role
+					+ ", state = " + state);
 		// check with ACL
 		if (acl != null) {
-			AccessControlRule item;
+			AccessControlRule rule;
 			if (ruleMap.containsKey(reqPath)) {
-				item = ruleMap.get(reqPath);
+				rule = ruleMap.get(reqPath);
 			} else {
-				item = acl;
-				while (item != null && !item.match(reqPath))
-					item = item.next;
-				ruleMap.put(reqPath, item);
+				rule = acl;
+				while (rule != null && !rule.match(reqPath))
+					rule = rule.next;
+				ruleMap.put(reqPath, rule);
 			}
-			int reason;
-			if (item != null && (reason = item.accept(role)) != ACCEPTED) {
+			AccessControlRuleItem item;
+			if (rule != null && (item = rule.accept(role, state)) != null) {
 				if (logger.isDebugEnabled())
-					logger.debug("[doFilter] failed rule: " + item);
-				// goto login page
-				String path = getForwardPath(item.path, reason,
-						request.getRequestURI(), request.getQueryString());
-				if (item.forward)
-					request.getRequestDispatcher(path).forward(req, resp);
-				else
-					response.sendRedirect(request.getContextPath() + path);
-				return;
+					logger.debug("[doFilter] matched: " + rule + " " + item);
+				if (item.errorCode != 0) {
+					// send error code
+					response.sendError(item.errorCode);
+					return;
+				}
+				if (item.path != null && !item.path.equals(reqPath)) {
+					// goto the specified page
+					String path = getForwardPath(item.path,
+							request.getRequestURI(), request.getQueryString());
+					if (item.forward)
+						request.getRequestDispatcher(path).forward(req, resp);
+					else
+						response.sendRedirect(request.getContextPath() + path);
+					return;
+				}
 			}
 		}
 		// accept
@@ -208,11 +271,11 @@ public class AuthFilter implements Filter {
 		chain.doFilter(req, resp);
 	}
 
-	private String getForwardPath(String path, int reason, String uri,
-			String qstr) throws UnsupportedEncodingException {
+	private String getForwardPath(String path, String uri, String qstr)
+			throws UnsupportedEncodingException {
 		String url = StringUtils.isEmpty(qstr) ? uri : uri + "?" + qstr;
-		return path.replace("{reason}", Integer.toString(reason)).replace(
-				"{url}", URLEncoder.encode(url, Tutor.DEFAULT_ENCODING));
+		return path.replace("{url}",
+				URLEncoder.encode(url, Tutor.DEFAULT_ENCODING));
 	}
 
 	/**
@@ -226,50 +289,55 @@ public class AuthFilter implements Filter {
 	static class AccessControlRule {
 
 		Pattern pattern;
-		UserRole[] acceptRoles;
-		UserRole[] denyRoles;
-		boolean forward;
-		String path;
+		AccessControlRuleItem item;
 		AccessControlRule next;
 
 		public boolean match(String path) {
-			return pattern == null || pattern.matcher(path).find();
+			return pattern == null || pattern.matcher(path).matches();
 		}
 
-		public int accept(UserRole role) {
-			if (acceptRoles != null && !ArrayUtils.contains(acceptRoles, role))
-				return NOT_ACCEPTED;
-			if (denyRoles != null && ArrayUtils.contains(denyRoles, role))
-				return DENIED;
-			return ACCEPTED;
+		public AccessControlRuleItem accept(UserRole role, UserState state) {
+			for (AccessControlRuleItem item = this.item; item != null; item = item.next) {
+				if (ArrayUtils.contains(item.roles, role)
+						&& ArrayUtils.contains(item.states, state))
+					return item;
+			}
+			return null;
 		}
 
 		@Override
 		public String toString() {
+			return pattern.pattern();
+		}
+
+	}
+
+	/**
+	 * <p>
+	 * 访问控制规则。
+	 * </p>
+	 * 
+	 * @author ren
+	 * 
+	 */
+	static class AccessControlRuleItem {
+
+		UserRole[] roles;
+		UserState[] states;
+		String path;
+		boolean forward;
+		int errorCode;
+		AccessControlRuleItem next;
+
+		@Override
+		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			// pattern
-			if (pattern == null)
-				sb.append('*');
+			if (path == null)
+				sb.append(errorCode == 0 ? "ACCEPT " : "ERROR " + errorCode);
+			else if (forward)
+				sb.append("FORAWRD ").append(path);
 			else
-				sb.append(pattern.pattern());
-			sb.append(' ');
-			// roles
-			if (acceptRoles == null && denyRoles == null) {
-				sb.append('*').append(' ');
-			} else {
-				if (acceptRoles != null) {
-					for (UserRole role : acceptRoles)
-						sb.append('+').append(role.name()).append('|');
-				}
-				if (denyRoles != null) {
-					for (UserRole role : denyRoles)
-						sb.append('-').append(role.name()).append('|');
-				}
-				sb.setCharAt(sb.length() - 1, ' ');
-			}
-			// forward path
-			if (StringUtils.isNotEmpty(path))
-				sb.append(forward ? 'F' : 'R').append(' ').append(path);
+				sb.append("REDIRECT ").append(path);
 			return sb.toString();
 		}
 

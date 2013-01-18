@@ -107,30 +107,10 @@
 		<filter-class>com.changev.tutor.web.AuthFilter</filter-class>
 		<init-param>
 			<description>
-			 Access Control List.
-			 Rule format: '*'|pattern '*'|(('+'|'-')?role('|'('+'|'-')?role)*)? (('F'|'R')?path)?
-			 Follow by the first matched rule.
+			 The path of the Access Control List.
 			</description>
 			<param-name>ACL</param-name>
-			<param-value>
-			<!-- 
-			 /_inc/*					-*
-			 /front/login.html			*
-			 /front/register.html		*
-			 /front/studentList.html	Parent					R/front/login.html?url={url}
-			 /front/modifyStudent.html	Parent					R/front/login.html?url={url}
-			 /front/*					Parent|Student			R/front/login.html?url={url}
-			 /files/*					-None					R/front/login.html?url={url}
-			 /mobile/member*			Parent|Student			F/mobile/login.html?url={url}
-			 /back/login.html			*
-			 /back/register.html		*
-			 /back/teacherList.html		Organization			R/back/login.html?url={url}
-			 /back/modifyTeacher.html	Organization			R/back/login.html?url={url}
-			 /back/*					Organization|Teacher	R/back/login.html?url={url}
-			 /manage/login.html			*
-			 /manage/*					Admin					R/manage/login.html?url={url}
-			  -->
-			</param-value>
+			<param-value>//META-INF/com.changev.tutor.acl.xml</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>

@@ -65,8 +65,7 @@ import freemarker.template.TemplateModelException;
  * <li><string>{@link ServletContext application}</strong> - 上下文对象。</li>
  * <li><string>{@link HttpServletRequest#getParameter(String) params}</strong> -
  * 请求参数。</li>
- * <li><string>{@link Messages msg}</strong> - 处理消息。</li>
- * <li><string>{@link NavigationNode navigation}</strong> - 页面位置。</li>
+ * <li><string>{@link Messages messages}</strong> - 处理消息。</li>
  * </ul>
  * </p>
  * 
@@ -295,7 +294,7 @@ public class ViewServlet extends HttpServlet {
 			m.putUnlistedModel("application", wrapper.wrap(getServletContext()));
 			m.putUnlistedModel("params", new HttpRequestParametersHashModel(
 					request));
-			m.putUnlistedModel("msg", wrapper.wrap(Messages.get(request)));
+			m.putUnlistedModel("messages", wrapper.wrap(Messages.get(request)));
 
 			request.setAttribute(KEY_TEMPLATE_MODEL, model = m);
 		}

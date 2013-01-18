@@ -20,8 +20,6 @@ import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamValidator;
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
 
 /**
  * <p>
@@ -84,31 +82,19 @@ public class LoginView implements View {
 			if (logger.isDebugEnabled())
 				logger.debug("[login] validation passed");
 
-			ObjectContainer objc = Tutor.getCurrentContainer();
-			ObjectSet<UserModel> userSet = objc.queryByExample(ModelFactory
-					.getUserExample(email,
-							ModelFactory.encryptPassword(password)));
-			if (userSet.hasNext()) {
+			UserModel user = Tutor.one(Tutor.getCurrentContainer()
+					.queryByExample(
+							ModelFactory.getUserExample(email,
+									ModelFactory.encryptPassword(password))));
+			if (user != null) {
 				// reset session
 				request.getSession().invalidate();
-				UserModel user = userSet.next();
 				SessionContainer.get(request, true).login(
-						objc.ext().getID(user));
-				String pageKey = user.getRole().name() + user.getState().name();
-				String successPage = successPages.get(pageKey);
-				if (StringUtils.isEmpty(successPage))
-					successPage = successPages.get(user.getRole().name());
-				if (StringUtils.isEmpty(successPage)) {
-					logger.error("[login] no avaliable entry page for "
-							+ pageKey);
-					response.sendError(HttpServletResponse.SC_NOT_FOUND);
-				} else {
-					if (logger.isDebugEnabled())
-						logger.debug("[login] login successed. goto "
-								+ successPage);
-					response.sendRedirect(request.getContextPath()
-							+ successPage);
-				}
+						Tutor.getCurrentContainerExt().getID(user));
+				String successPage = successPages.get(user.getRole().name());
+				if (logger.isDebugEnabled())
+					logger.debug("[login] login successed. goto " + successPage);
+				response.sendRedirect(request.getContextPath() + successPage);
 				return false;
 			}
 			Messages.addError(request, "email", failMessage);

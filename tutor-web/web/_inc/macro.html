@@ -1,26 +1,26 @@
 <#-- 输出一般消息 -->
 <#macro infomsg name>
-<#if msg.messages[name]??>
+<#if messages.messages[name]??>
 <div class="ui-state-default">
-	<div class="ui-icon ui-icon-comment float-left"></div>${msg.messages[name]}
+	<div class="ui-icon ui-icon-comment float-left"></div>${messages.messages[name]}
 </div>
 </#if>
 </#macro>
 
 <#-- 输出警告消息 -->
 <#macro warnmsg name>
-<#if msg.warnings[name]??>
+<#if messages.warnings[name]??>
 <div class="ui-state-highlight">
-	<div class="ui-icon ui-icon-alert float-left"></div>${msg.warnings[name]}
+	<div class="ui-icon ui-icon-alert float-left"></div>${messages.warnings[name]}
 </div>
 </#if>
 </#macro>
 
 <#-- 输出错误消息 -->
 <#macro errmsg name>
-<#if msg.errors[name]??>
+<#if messages.errors[name]??>
 <div class="ui-state-error">
-	<div class="ui-icon ui-icon-close float-left"></div>${msg.errors[name]}
+	<div class="ui-icon ui-icon-close float-left"></div>${messages.errors[name]}
 </div>
 </#if>
 </#macro>
@@ -63,4 +63,19 @@
 	<tr><th align="left">地址</th><td align="left">&nbsp;&nbsp;XXXXXX</td></tr>
 </tbody>
 </table>
+</#macro>
+
+<#-- 单选按钮 -->
+<#macro radio name value check="">
+<label><input type="radio" name="${name}" value="${value}" ${(check==value)?string('checked="checked"', '')} /><#nested></label>
+</#macro>
+
+<#-- 多选按钮 -->
+<#macro checkbox name value check="">
+<label><input type="checkbox" name="${name}" value="${value}" ${(check==value)?string('checked="checked"', '')} /><#nested></label>
+</#macro>
+
+<#-- 选项 -->
+<#macro option value check="">
+<option value="${value}" ${(check==value)?string('selected="selected"', '')} ><#nested></option>
 </#macro>

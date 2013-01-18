@@ -28,16 +28,36 @@ public final class ModelFactory {
 	}
 
 	public static UserModel getUserExample(String email) {
-		UserModel model = new UserModel();
-		model.setEmail(email);
-		model.setDeleted(Boolean.FALSE);
-		return model;
+		UserModel userExample = new UserModel();
+		userExample.setEmail(email);
+		userExample.setDeleted(Boolean.FALSE);
+		return userExample;
 	}
 
 	public static UserModel getUserExample(String email, String password) {
-		UserModel model = new UserModel();
-		model.setEmail(email);
-		model.setPassword(password);
+		UserModel userExample = new UserModel();
+		userExample.setEmail(email);
+		userExample.setPassword(password);
+		userExample.setDeleted(Boolean.FALSE);
+		return userExample;
+	}
+
+	public static StudentModel getParentStudentExample(String email) {
+		ParentModel parentExample = new ParentModel();
+		parentExample.setEmail(email);
+		StudentModel studentExample = new StudentModel();
+		studentExample.setRole(UserRole.Student);
+		studentExample.setParent(parentExample);
+		studentExample.setDeleted(Boolean.FALSE);
+		return studentExample;
+	}
+
+	public static TeacherModel getOrganizationTeacherExample(String email) {
+		OrganizationModel organizationExample = new OrganizationModel();
+		organizationExample.setEmail(email);
+		TeacherModel model = new TeacherModel();
+		model.setRole(UserRole.Teacher);
+		model.setOrganization(organizationExample);
 		model.setDeleted(Boolean.FALSE);
 		return model;
 	}

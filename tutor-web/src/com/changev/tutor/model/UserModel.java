@@ -7,6 +7,8 @@ package com.changev.tutor.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.db4o.ObjectContainer;
 import com.db4o.config.annotations.Indexed;
 
@@ -57,6 +59,13 @@ public class UserModel extends AbstractModel {
 	@Override
 	public UserModel clone() {
 		return (UserModel) super.clone();
+	}
+
+	public String getLocation() {
+		beforeGet();
+		return new StringBuilder().append(StringUtils.defaultString(province))
+				.append(StringUtils.defaultString(city))
+				.append(StringUtils.defaultString(district)).toString();
 	}
 
 	/**
@@ -170,7 +179,8 @@ public class UserModel extends AbstractModel {
 	}
 
 	/**
-	 * @param description the description to set
+	 * @param description
+	 *            the description to set
 	 */
 	public void setDescription(String description) {
 		beforeSet();

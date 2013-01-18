@@ -48,6 +48,13 @@ public class StudentModel extends UserModel {
 	}
 
 	@Override
+	public UserContactModel getContact() {
+		if (super.getContact() == null && getParent() != null)
+			return getParent().getContact();
+		return super.getContact();
+	}
+
+	@Override
 	public StudentModel clone() {
 		return (StudentModel) super.clone();
 	}

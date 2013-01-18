@@ -47,10 +47,6 @@ public final class SessionContainer implements Serializable {
 		if (session != null)
 			container = (SessionContainer) session
 					.getAttribute(Tutor.KEY_SESSION_CONTAINER);
-		if (container == null && create) {
-			container = new SessionContainer();
-			session.setAttribute(Tutor.KEY_SESSION_CONTAINER, container);
-		}
 		return container;
 	}
 
@@ -70,12 +66,27 @@ public final class SessionContainer implements Serializable {
 		return get(request, true);
 	}
 
+	/**
+	 * <p>
+	 * 取得当前登录用户。
+	 * </p>
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static UserModel getLoginUser(HttpServletRequest request) {
+		SessionContainer container = get(request, false);
+		return container == null ? null : container.getLoginUser();
+	}
+
 	private Long loginUserId;
 	private Date loginDateTime;
 	private Messages sessionMessage = new Messages();
 	private String checkCode;
 
-	private SessionContainer() {
+	private transient UserModel loginUser;
+
+	SessionContainer() {
 	}
 
 	/**
@@ -96,15 +107,33 @@ public final class SessionContainer implements Serializable {
 	 * </p>
 	 */
 	public void logout() {
-		// execute logout
 		UserModel user = getLoginUser();
 		if (user != null) {
 			user.setLastLoginDateTime(loginDateTime);
 			Tutor.getCurrentContainer().store(user);
 			Tutor.commitCurrent();
-			this.loginUserId = null;
-			this.loginDateTime = null;
+			loginUserId = null;
+			loginDateTime = null;
+			loginUser = null;
 		}
+	}
+
+	/**
+	 * @return the loginUser
+	 */
+	public UserModel getLoginUser() {
+		if (loginUserId == null)
+			return null;
+		if (loginUser == null) {
+			try {
+				loginUser = Tutor.getCurrentContainerExt().getByID(loginUserId);
+			} catch (InvalidIDException e) {
+				loginUserId = null;
+				loginDateTime = null;
+				throw e;
+			}
+		}
+		return loginUser;
 	}
 
 	/**
@@ -119,21 +148,6 @@ public final class SessionContainer implements Serializable {
 	 */
 	public Date getLoginDateTime() {
 		return loginDateTime;
-	}
-
-	/**
-	 * @return the loginUser
-	 */
-	public UserModel getLoginUser() {
-		if (loginUserId == null)
-			return null;
-		try {
-			return Tutor.getCurrentContainerExt().getByID(loginUserId);
-		} catch (InvalidIDException e) {
-			loginUserId = null;
-			loginDateTime = null;
-			throw e;
-		}
 	}
 
 	/**

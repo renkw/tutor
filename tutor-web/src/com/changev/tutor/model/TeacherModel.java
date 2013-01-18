@@ -56,6 +56,13 @@ public class TeacherModel extends UserModel {
 		return (TeacherModel) super.clone();
 	}
 
+	@Override
+	public UserContactModel getContact() {
+		if (super.getContact() == null && getOrganization() != null)
+			return getOrganization().getContact();
+		return super.getContact();
+	}
+
 	/**
 	 * @return the male
 	 */

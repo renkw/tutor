@@ -25,6 +25,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.changev.tutor.ObjectContainerWrapper;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.util.Db4oConfigurator;
 import com.db4o.ObjectContainer;
@@ -77,8 +78,8 @@ public class ContextListener implements ServletContextListener,
 				context.getInitParameter(BEAN_CONFIG_PATH),
 				Tutor.DEFAULT_BEAN_CONFIG_PATH);
 		context.log("beanConfigPath = " + beanConfigPath);
-		BeanFactory beanFactory = new FileSystemXmlApplicationContext(
-				Tutor.getRealPath(beanConfigPath));
+		BeanFactory beanFactory = new FileSystemXmlApplicationContext("file:"
+				+ Tutor.getRealPath(beanConfigPath));
 		Tutor.setBeanFactory(beanFactory);
 
 		// init db4o
@@ -128,6 +129,13 @@ public class ContextListener implements ServletContextListener,
 
 	@Override
 	public void sessionCreated(HttpSessionEvent event) {
+		HttpSession session = event.getSession();
+		// set current object container
+		session.setAttribute(Tutor.KEY_OBJECT_CONTAINER,
+				new ObjectContainerWrapper());
+		// set session container
+		session.setAttribute(Tutor.KEY_SESSION_CONTAINER,
+				new SessionContainer());
 	}
 
 	@Override
@@ -136,26 +144,55 @@ public class ContextListener implements ServletContextListener,
 		// logout
 		SessionContainer container = (SessionContainer) session
 				.getAttribute(Tutor.KEY_SESSION_CONTAINER);
-		if (container != null)
+		if (container != null) {
+			session.removeAttribute(Tutor.KEY_SESSION_CONTAINER);
 			container.logout();
+		}
 		// close current object container
-		Tutor.closeCurrentContainer();
+		ObjectContainer objc = (ObjectContainer) session
+				.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
+		if (objc != null) {
+			session.removeAttribute(Tutor.KEY_OBJECT_CONTAINER);
+			objc.close();
+		}
 	}
 
 	@Override
 	public void requestInitialized(ServletRequestEvent event) {
 		HttpServletRequest request = (HttpServletRequest) event
 				.getServletRequest();
+		HttpSession session = request.getSession(false);
 		// set character encoding
 		try {
 			request.setCharacterEncoding("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			event.getServletContext().log("utf-8 is unsupported", e);
 		}
+		// set current object container
+		ObjectContainer objc = null;
+		if (session != null) {
+			objc = (ObjectContainer) session
+					.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
+		}
+		if (objc == null) {
+			objc = new ObjectContainerWrapper();
+			request.setAttribute(Tutor.KEY_OBJECT_CONTAINER, objc);
+		}
+		Tutor.setCurrentContainer(objc);
 	}
 
 	@Override
 	public void requestDestroyed(ServletRequestEvent event) {
+		HttpServletRequest request = (HttpServletRequest) event
+				.getServletRequest();
+		// close current object container
+		Tutor.setCurrentContainer(null);
+		ObjectContainer objc = (ObjectContainer) request
+				.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
+		if (objc != null) {
+			request.removeAttribute(Tutor.KEY_OBJECT_CONTAINER);
+			objc.close();
+		}
 	}
 
 }
