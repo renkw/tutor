@@ -23,17 +23,21 @@ public class ParamValidators extends ParamValidator {
 
 	private List<ParamValidator> validators;
 	private boolean failStop;
+	private boolean failAll;
 
 	@Override
 	public boolean validate(HttpServletRequest request, Messages msg) {
-		boolean ret = true;
-		if (validators != null) {
-			for (ParamValidator v : validators) {
-				if (!v.validate(request, msg)) {
-					ret = false;
-					if (failStop)
-						break;
-				}
+		if (validators == null || validators.isEmpty())
+			return true;
+
+		boolean ret = failAll ? false : true;
+		for (ParamValidator v : validators) {
+			if (v.validate(request, msg)) {
+				ret = failAll ? true : ret && true;
+			} else {
+				ret = failAll ? ret || false : false;
+				if (failStop)
+					break;
 			}
 		}
 		return addError(ret, msg);
@@ -67,6 +71,21 @@ public class ParamValidators extends ParamValidator {
 	 */
 	public void setFailStop(boolean failStop) {
 		this.failStop = failStop;
+	}
+
+	/**
+	 * @return the failAll
+	 */
+	public boolean isFailAll() {
+		return failAll;
+	}
+
+	/**
+	 * @param failAll
+	 *            the failAll to set
+	 */
+	public void setFailAll(boolean failAll) {
+		this.failAll = failAll;
 	}
 
 }

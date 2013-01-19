@@ -85,7 +85,7 @@ public class TextPattern implements Cloneable {
 		return vars;
 	}
 
-	public String toString(Map<String, Object> vars) {
+	public String toString(Map<String, ?> vars) {
 		if (pieces.length == 0)
 			return "";
 		if (pieces.length == 1)

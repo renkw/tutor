@@ -10,6 +10,13 @@ function search(id) {
 	document.getElementById("id").value = id;
 	document.getElementById("search").click();
 }
+function edit(id) {
+	location.href = "dataEditor.html?id=" + id;
+}
+function del(id) {
+	if (confirm("确定删除？"))
+		alert("NotImplemented");
+}
 //-->
 </script>
 </head>
@@ -67,6 +74,7 @@ function search(id) {
 <table border="1">
 	<thead>
 		<tr>
+			<th>&nbsp;</th>
 			<#list result.names as name>
 			<th>${name}</th>
 			</#list>
@@ -75,9 +83,10 @@ function search(id) {
 	<tbody>
 		<#list result.rows as row>
 		<tr>
+			<td nowrap="nowrap"><a href="javascript:edit(${Tutor.id(row)})">EDIT</a> <a href="javascript:del(${Tutor.id(row)})">DEL</a></td>
 			<#list result.names as name>
 			<#if Tutor.is(row[name], "com.changev.tutor.model.AbstractModel")>
-			<td><a href="javascript:search(${Tutor.id(row[name])})">${row[name].class.simpleName}(${Tutor.id(row[name])})</a></td>
+			<td nowrap="nowrap"><a href="javascript:search(${Tutor.id(row[name])})">${row[name].class.simpleName}(${Tutor.id(row[name])})</a></td>
 			<#else>
 			<td>${Tutor.toString(row[name])}</td>
 			</#if>

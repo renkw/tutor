@@ -5,8 +5,10 @@
  */
 package com.changev.tutor.model;
 
-import java.util.Date;
+import java.util.List;
 
+import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableArrayList;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -21,14 +23,28 @@ public class AnswerModel extends AbstractModel {
 
 	private static final long serialVersionUID = 8353464399050892383L;
 
-	private Date answerDateTime;
 	@Indexed
-	private UserModel answerer;
+	private TeacherModel answerer;
 	private OrganizationModel organization;
 	@Indexed
 	private QuestionModel question;
-	private String inquery;
 	private String answer;
+	private List<AnswerDetailModel> details;
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
 
 	@Override
 	public AnswerModel clone() {
@@ -36,26 +52,9 @@ public class AnswerModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the answerDateTime
-	 */
-	public Date getAnswerDateTime() {
-		beforeGet();
-		return answerDateTime;
-	}
-
-	/**
-	 * @param answerDateTime
-	 *            the answerDateTime to set
-	 */
-	public void setAnswerDateTime(Date answerDateTime) {
-		beforeSet();
-		this.answerDateTime = answerDateTime;
-	}
-
-	/**
 	 * @return the answerer
 	 */
-	public UserModel getAnswerer() {
+	public TeacherModel getAnswerer() {
 		beforeGet();
 		return answerer;
 	}
@@ -64,7 +63,7 @@ public class AnswerModel extends AbstractModel {
 	 * @param answerer
 	 *            the answerer to set
 	 */
-	public void setAnswerer(UserModel answerer) {
+	public void setAnswerer(TeacherModel answerer) {
 		beforeSet();
 		this.answerer = answerer;
 	}
@@ -104,23 +103,6 @@ public class AnswerModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the inquery
-	 */
-	public String getInquery() {
-		beforeGet();
-		return inquery;
-	}
-
-	/**
-	 * @param inquery
-	 *            the inquery to set
-	 */
-	public void setInquery(String inquery) {
-		beforeSet();
-		this.inquery = inquery;
-	}
-
-	/**
 	 * @return the answer
 	 */
 	public String getAnswer() {
@@ -135,6 +117,26 @@ public class AnswerModel extends AbstractModel {
 	public void setAnswer(String answer) {
 		beforeSet();
 		this.answer = answer;
+	}
+
+	/**
+	 * @return the details
+	 */
+	public List<AnswerDetailModel> getDetails() {
+		beforeGet();
+		return details;
+	}
+
+	/**
+	 * @return the details
+	 */
+	public List<AnswerDetailModel> getDetailsFor() {
+		beforeGet();
+		if (details == null) {
+			beforeSet();
+			details = new ActivatableArrayList<AnswerDetailModel>();
+		}
+		return details;
 	}
 
 }

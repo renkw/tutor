@@ -15,7 +15,11 @@
 				<input type="text" id="search" name="s" value="搜索" />
 			</form>
 			<div class="float-right" style="margin-top:2px">
+				<#if (tutor.loginUser)??>
+				<a href="${pathrel}/public/logout.html">退出登录</a> |
+				<#else>
 				<a href="${pathrel}/public/login.html">登录</a> |
+				</#if>
 				<a href="${pathrel}/public/register.html">注册</a> |
 				<a href="${pathrel}/mobile/home.html">手机版</a> |
 				<a href="${pathrel}/public/help.html">帮助</a>&nbsp;&nbsp;

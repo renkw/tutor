@@ -5,6 +5,8 @@
  */
 package com.changev.tutor.model;
 
+import com.db4o.ObjectContainer;
+
 /**
  * <p>
  * 用户联系方式。
@@ -29,6 +31,21 @@ public class UserContactModel extends AbstractModel {
 	private String mailAddress;
 	private Double posX;
 	private Double posY;
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
 
 	@Override
 	public UserContactModel clone() {

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Insert title here</title>
+<script type="text/javascript">
+<!--
+function bodyOnLoad() {
+	var elems = frmEditor.elements;
+	for (var i = 0; i < elems.length; i++) {
+		if (elems[i].name.lastIndexOf("_NULL") != -1) {
+			var elem = frmEditor[elems[i].name.slice(0, -5)];
+			if (elem) {
+				elem.disabled = elems[i].checked;
+				elems[i].onclick = function() {
+					frmEditor[this.name.slice(0, -5)].disabled = this.checked;
+				};
+			}
+		}
+	}
+}
+//-->
+</script>
+</head>
+<body onload="bodyOnLoad()">
+<h3><a href="data.html?id=${params.id}&search=s">&lt;&lt;</a> ${type}</h3>
+<form name="frmEditor" action="dataEditor.html" method="post">
+	<table border="1">
+	<tbody>
+	<#list editors as ed>
+		<tr><th>${ed.name}</th><td>${ed.editor}</td></tr>
+	</#list>
+	</tbody>
+	<tfoot>
+		<tr><td colspan="2" align="center"><input type="submit" name="submit" value="提交" /></td></tr>
+	</tfoot>
+	</table>
+	<input type="hidden" name="id" value="${params.id}" />
+</form>
+</body>
+</html>

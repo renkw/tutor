@@ -5,12 +5,17 @@
  */
 package com.changev.tutor.web.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.util.TextPattern;
@@ -76,12 +81,25 @@ public abstract class ParamValidator {
 	}
 
 	static {
-		setValidatorType("required", ParamRequiredValidator.class);
-		setValidatorType("pattern", ParamPatternValidator.class);
-		setValidatorType("numeric", ParamNumericValidator.class);
-		setValidatorType("equals", ParamEqualsValidator.class);
-		setValidatorType("checkcode", ParamCheckCodeValidator.class);
-		setValidatorType("length", ParamLengthValidator.class);
+		InputStream stream = ParamValidator.class
+				.getResourceAsStream("validators.properties");
+		if (stream != null) {
+			Properties props = new Properties();
+			try {
+				props.load(stream);
+				for (Enumeration<?> en = props.keys(); en.hasMoreElements();) {
+					String key = (String) en.nextElement();
+					validatorTypes.put(key,
+							Class.forName(props.getProperty(key)));
+				}
+			} catch (ClassNotFoundException e) {
+				throw new ExceptionInInitializerError(e);
+			} catch (IOException e) {
+				throw new ExceptionInInitializerError(e);
+			} finally {
+				IOUtils.closeQuietly(stream);
+			}
+		}
 	}
 
 	protected boolean multiple;

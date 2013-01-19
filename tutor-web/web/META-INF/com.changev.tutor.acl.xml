@@ -26,6 +26,9 @@
 	<rule pattern="/back/.*">
 		<accept		role="Organization|Teacher"
 					state="Activated" />
+		<redirect	role="Organization"
+					state="Incomplete"
+					path="/public/contact.html" />
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
 	<!-- 

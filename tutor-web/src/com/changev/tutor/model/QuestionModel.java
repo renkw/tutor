@@ -8,6 +8,7 @@ package com.changev.tutor.model;
 import java.util.Date;
 import java.util.List;
 
+import com.db4o.ObjectContainer;
 import com.db4o.collections.ActivatableArrayList;
 import com.db4o.config.annotations.Indexed;
 
@@ -31,19 +32,39 @@ public class QuestionModel extends AbstractModel {
 	private String district;
 	private String subject;
 	private String grade;
-	private Integer gradeLevel;
+	private Byte gradeLevel;
 	private String title;
 	@Indexed
-	private UserModel specifiedAnswerer;
-	private Date questionDateTime;
+	private TeacherModel specifiedAnswerer;
 	private Date questionExpiration;
-	private Date finalAnswerDateTime;
-	private UserModel finalAnswerer;
+	private Boolean closed;
+	private Date closedDateTime;
+	private TeacherModel finalAnswerer;
 	private List<String> uploadPictures;
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
 
 	@Override
 	public QuestionModel clone() {
 		return (QuestionModel) super.clone();
+	}
+
+	public List<AnswerModel> getAnswers() {
+		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -168,7 +189,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the gradeLevel
 	 */
-	public Integer getGradeLevel() {
+	public Byte getGradeLevel() {
 		beforeGet();
 		return gradeLevel;
 	}
@@ -177,7 +198,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param gradeLevel
 	 *            the gradeLevel to set
 	 */
-	public void setGradeLevel(Integer gradeLevel) {
+	public void setGradeLevel(Byte gradeLevel) {
 		beforeSet();
 		this.gradeLevel = gradeLevel;
 	}
@@ -202,7 +223,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the specifiedAnswerer
 	 */
-	public UserModel getSpecifiedAnswerer() {
+	public TeacherModel getSpecifiedAnswerer() {
 		beforeGet();
 		return specifiedAnswerer;
 	}
@@ -211,26 +232,9 @@ public class QuestionModel extends AbstractModel {
 	 * @param specifiedAnswerer
 	 *            the specifiedAnswerer to set
 	 */
-	public void setSpecifiedAnswerer(UserModel specifiedAnswerer) {
+	public void setSpecifiedAnswerer(TeacherModel specifiedAnswerer) {
 		beforeSet();
 		this.specifiedAnswerer = specifiedAnswerer;
-	}
-
-	/**
-	 * @return the questionDateTime
-	 */
-	public Date getQuestionDateTime() {
-		beforeGet();
-		return questionDateTime;
-	}
-
-	/**
-	 * @param questionDateTime
-	 *            the questionDateTime to set
-	 */
-	public void setQuestionDateTime(Date questionDateTime) {
-		beforeSet();
-		this.questionDateTime = questionDateTime;
 	}
 
 	/**
@@ -251,26 +255,43 @@ public class QuestionModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the finalAnswerDateTime
+	 * @return the closed
 	 */
-	public Date getFinalAnswerDateTime() {
+	public Boolean getClosed() {
 		beforeGet();
-		return finalAnswerDateTime;
+		return closed;
 	}
 
 	/**
-	 * @param finalAnswerDateTime
-	 *            the finalAnswerDateTime to set
+	 * @param closed
+	 *            the closed to set
 	 */
-	public void setFinalAnswerDateTime(Date finalAnswerDateTime) {
+	public void setClosed(Boolean closed) {
 		beforeSet();
-		this.finalAnswerDateTime = finalAnswerDateTime;
+		this.closed = closed;
+	}
+
+	/**
+	 * @return the closedDateTime
+	 */
+	public Date getClosedDateTime() {
+		beforeGet();
+		return closedDateTime;
+	}
+
+	/**
+	 * @param closedDateTime
+	 *            the closedDateTime to set
+	 */
+	public void setClosedDateTime(Date closedDateTime) {
+		beforeSet();
+		this.closedDateTime = closedDateTime;
 	}
 
 	/**
 	 * @return the finalAnswerer
 	 */
-	public UserModel getFinalAnswerer() {
+	public TeacherModel getFinalAnswerer() {
 		beforeGet();
 		return finalAnswerer;
 	}
@@ -279,7 +300,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param finalAnswerer
 	 *            the finalAnswerer to set
 	 */
-	public void setFinalAnswerer(UserModel finalAnswerer) {
+	public void setFinalAnswerer(TeacherModel finalAnswerer) {
 		beforeSet();
 		this.finalAnswerer = finalAnswerer;
 	}

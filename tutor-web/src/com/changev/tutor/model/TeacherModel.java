@@ -5,7 +5,6 @@
  */
 package com.changev.tutor.model;
 
-import java.util.Date;
 import java.util.List;
 
 import com.db4o.ObjectContainer;
@@ -25,7 +24,7 @@ public class TeacherModel extends UserModel {
 	private static final long serialVersionUID = -5724580114977645750L;
 
 	private Boolean male;
-	private Date birthday;
+	private String birthday;
 	@Indexed
 	private String subject;
 	private String grade;
@@ -39,21 +38,12 @@ public class TeacherModel extends UserModel {
 	@Indexed
 	private OrganizationModel organization;
 
-	@Override
-	public void objectOnNew(ObjectContainer container) {
-		super.objectOnNew(container);
-		setRole(UserRole.Teacher);
+	public TeacherModel() {
+		super.setRole(UserRole.Teacher);
 	}
 
 	@Override
-	public void objectOnUpdate(ObjectContainer container) {
-		super.objectOnUpdate(container);
-		setRole(UserRole.Teacher);
-	}
-
-	@Override
-	public TeacherModel clone() {
-		return (TeacherModel) super.clone();
+	public void setRole(UserRole role) {
 	}
 
 	@Override
@@ -61,6 +51,41 @@ public class TeacherModel extends UserModel {
 		if (super.getContact() == null && getOrganization() != null)
 			return getOrganization().getContact();
 		return super.getContact();
+	}
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
+
+	@Override
+	public TeacherModel clone() {
+		return (TeacherModel) super.clone();
+	}
+
+	public List<QuestionModel> getAssignedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<AnswerModel> getAnswers() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<AnswerModel> getAcceptAnswers() {
+		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -83,7 +108,7 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the birthday
 	 */
-	public Date getBirthday() {
+	public String getBirthday() {
 		beforeGet();
 		return birthday;
 	}
@@ -92,7 +117,7 @@ public class TeacherModel extends UserModel {
 	 * @param birthday
 	 *            the birthday to set
 	 */
-	public void setBirthday(Date birthday) {
+	public void setBirthday(String birthday) {
 		beforeSet();
 		this.birthday = birthday;
 	}

@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
+import com.changev.tutor.model.UserRole;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
@@ -87,14 +88,20 @@ public class LoginView implements View {
 							ModelFactory.getUserExample(email,
 									ModelFactory.encryptPassword(password))));
 			if (user != null) {
+				long userId = Tutor.getCurrentContainerExt().getID(user);
+				UserRole role = user.getRole();
 				// reset session
 				request.getSession().invalidate();
-				SessionContainer.get(request, true).login(
-						Tutor.getCurrentContainerExt().getID(user));
-				String successPage = successPages.get(user.getRole().name());
+				SessionContainer.get(request, true).login(userId);
+				String url = request.getParameter("url");
+				if (StringUtils.isEmpty(url)) {
+					url = request.getContextPath()
+							+ StringUtils.defaultString(successPages.get(role
+									.name()));
+				}
 				if (logger.isDebugEnabled())
-					logger.debug("[login] login successed. goto " + successPage);
-				response.sendRedirect(request.getContextPath() + successPage);
+					logger.debug("[login] login successed. goto " + url);
+				response.sendRedirect(url);
 				return false;
 			}
 			Messages.addError(request, "email", failMessage);

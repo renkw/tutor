@@ -36,16 +36,51 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	private transient Activator activator;
 
 	@Override
-	public void bind(Activator activator) {
+	public final void bind(Activator activator) {
 		this.activator = activator;
 	}
 
 	@Override
-	public void activate(ActivationPurpose purpose) {
+	public final void activate(ActivationPurpose purpose) {
 		if (activator != null)
 			activator.activate(purpose);
 	}
 
+	/**
+	 * <p>
+	 * 读取可序列化对象前必须调用。
+	 * </p>
+	 */
+	protected void beforeGet() {
+		activate(ActivationPurpose.READ);
+	}
+
+	/**
+	 * <p>
+	 * 设置可序列化对象前必须调用。
+	 * </p>
+	 */
+	protected void beforeSet() {
+		activate(ActivationPurpose.WRITE);
+	}
+
+	/**
+	 * <p>
+	 * 即使简单调用，子类也必须显式覆盖该方法。
+	 * </p>
+	 * 
+	 * @param container
+	 */
+	public void objectOnActivate(ObjectContainer container) {
+	}
+
+	/**
+	 * <p>
+	 * 即使简单调用，子类也必须显式覆盖该方法。
+	 * </p>
+	 * 
+	 * @param container
+	 */
 	public void objectOnNew(ObjectContainer container) {
 		Date date = Tutor.currentDateTime();
 		setCreateDateTime(date);
@@ -53,16 +88,15 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 		setDeleted(Boolean.FALSE);
 	}
 
+	/**
+	 * <p>
+	 * 即使简单调用，子类也必须显式覆盖该方法。
+	 * </p>
+	 * 
+	 * @param container
+	 */
 	public void objectOnUpdate(ObjectContainer container) {
 		setUpdateDateTime(Tutor.currentDateTime());
-	}
-
-	protected void beforeGet() {
-		activate(ActivationPurpose.READ);
-	}
-
-	protected void beforeSet() {
-		activate(ActivationPurpose.WRITE);
 	}
 
 	@Override

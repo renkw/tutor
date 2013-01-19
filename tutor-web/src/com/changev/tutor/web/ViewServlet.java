@@ -6,6 +6,7 @@
 package com.changev.tutor.web;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,17 +24,19 @@ import org.springframework.beans.factory.BeanFactory;
 
 import com.changev.tutor.Tutor;
 
-import freemarker.ext.servlet.AllHttpScopesHashModel;
-import freemarker.ext.servlet.HttpRequestHashModel;
-import freemarker.ext.servlet.HttpRequestParametersHashModel;
-import freemarker.ext.servlet.HttpSessionHashModel;
-import freemarker.ext.servlet.ServletContextHashModel;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleCollection;
+import freemarker.template.SimpleScalar;
 import freemarker.template.Template;
+import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateScalarModel;
+import freemarker.template.TemplateSequenceModel;
 
 /**
  * <p>
@@ -275,30 +278,247 @@ public class ViewServlet extends HttpServlet {
 		TemplateModel model = (TemplateModel) request
 				.getAttribute(KEY_TEMPLATE_MODEL);
 		if (model == null) {
-			HttpSession session = request.getSession(false);
-			ObjectWrapper wrapper = config.getObjectWrapper();
-			AllHttpScopesHashModel m = new AllHttpScopesHashModel(wrapper,
-					getServletContext(), request);
-
-			m.putUnlistedModel("Tutor", wrapper.wrap(Tutor.SINGLETON));
-			m.putUnlistedModel("tutor",
-					wrapper.wrap(SessionContainer.get(request, false)));
-			m.putUnlistedModel("Request", new HttpRequestHashModel(request,
-					wrapper));
-			m.putUnlistedModel("Session", new HttpSessionHashModel(session,
-					wrapper));
-			m.putUnlistedModel("Application", new ServletContextHashModel(this,
-					wrapper));
-			m.putUnlistedModel("request", wrapper.wrap(request));
-			m.putUnlistedModel("session", wrapper.wrap(session));
-			m.putUnlistedModel("application", wrapper.wrap(getServletContext()));
-			m.putUnlistedModel("params", new HttpRequestParametersHashModel(
-					request));
-			m.putUnlistedModel("messages", wrapper.wrap(Messages.get(request)));
-
-			request.setAttribute(KEY_TEMPLATE_MODEL, model = m);
+			model = new RootTemplateModel(request, config.getObjectWrapper());
+			request.setAttribute(KEY_TEMPLATE_MODEL, model);
 		}
 		return model;
+	}
+
+	static class RootTemplateModel extends AttrTemplateModel {
+
+		static final String[] NAMES = { "Application", // 0
+				"Request", // 1
+				"Session", // 2
+				"Tutor", // 3
+				"application", // 4
+				"messages", // 5
+				"params", // 6
+				"request", // 7
+				"session", // 8
+				"tutor" // 9
+		};
+
+		TemplateModel[] preserved;
+
+		public RootTemplateModel(HttpServletRequest request,
+				ObjectWrapper wrapper) throws TemplateModelException {
+			super(request, request.getSession(false), request
+					.getServletContext(), wrapper);
+		}
+
+		TemplateModel create(int n) throws TemplateModelException {
+			switch (n) {
+			case 0:
+				return new AttrTemplateModel(null, null, context, wrapper);
+			case 1:
+				return new AttrTemplateModel(request, null, null, wrapper);
+			case 2:
+				return new AttrTemplateModel(null, session, null, wrapper);
+			case 3:
+				return wrapper.wrap(Tutor.SINGLETON);
+			case 4:
+				return wrapper.wrap(context);
+			case 5:
+				return new MessagesHashModel(Messages.get(request));
+			case 6:
+				return new ParamHashModel(request.getParameterMap());
+			case 7:
+				return wrapper.wrap(request);
+			case 8:
+				return wrapper.wrap(session);
+			case 9:
+				return wrapper.wrap(SessionContainer.get(request, false));
+			}
+			return null;
+		}
+
+		@Override
+		public TemplateModel get(String key) throws TemplateModelException {
+			int i = Arrays.binarySearch(NAMES, key);
+			if (i < 0)
+				return super.get(key);
+			if (preserved == null)
+				preserved = new TemplateModel[NAMES.length];
+			if (preserved[i] == null)
+				preserved[i] = create(i);
+			return preserved[i];
+		}
+
+		@Override
+		public boolean isEmpty() throws TemplateModelException {
+			return false;
+		}
+
+	}
+
+	static class AttrTemplateModel implements TemplateHashModel {
+
+		HttpServletRequest request;
+		HttpSession session;
+		ServletContext context;
+		ObjectWrapper wrapper;
+
+		Map<String, TemplateModel> map = Collections.emptyMap();
+
+		AttrTemplateModel(HttpServletRequest request, HttpSession session,
+				ServletContext context, ObjectWrapper wrapper) {
+			this.request = request;
+			this.session = session;
+			this.context = context;
+			this.wrapper = wrapper;
+		}
+
+		@Override
+		public TemplateModel get(String key) throws TemplateModelException {
+			TemplateModel model = map.get(key);
+			if (model == null) {
+				Object value = null;
+				if (request != null)
+					value = request.getAttribute(key);
+				if (value == null && session != null)
+					value = session.getAttribute(key);
+				if (value == null && context != null)
+					value = context.getAttribute(key);
+				model = wrapper.wrap(value);
+				if (map == Collections.EMPTY_MAP)
+					map = new HashMap<String, TemplateModel>();
+				map.put(key, model);
+			}
+			return model;
+		}
+
+		@Override
+		public boolean isEmpty() throws TemplateModelException {
+			return false;
+		}
+
+	}
+
+	static class MessagesHashModel implements TemplateHashModel {
+
+		Messages messages;
+		TemplateModel messagesModel;
+		TemplateModel warningsModel;
+		TemplateModel errorsModel;
+
+		MessagesHashModel(Messages messages) {
+			this.messages = messages;
+		}
+
+		@Override
+		public TemplateModel get(String key) throws TemplateModelException {
+			if ("errors".equals(key)) {
+				if (errorsModel == null)
+					errorsModel = new MessageHashModel(messages.getErrors());
+				return errorsModel;
+			}
+			if ("messages".equals(key)) {
+				if (messagesModel == null)
+					messagesModel = new MessageHashModel(messages.getMessages());
+				return messagesModel;
+			}
+			if ("warnings".equals(key)) {
+				if (warningsModel == null)
+					warningsModel = new MessageHashModel(messages.getWarnings());
+				return warningsModel;
+			}
+			return null;
+		}
+
+		@Override
+		public boolean isEmpty() throws TemplateModelException {
+			return messages.isEmpty();
+		}
+
+	}
+
+	static class MessageHashModel implements TemplateHashModelEx {
+
+		Map<String, String> message;
+		TemplateCollectionModel keys;
+		TemplateCollectionModel values;
+
+		public MessageHashModel(Map<String, String> message) {
+			this.message = message;
+		}
+
+		@Override
+		public TemplateModel get(String key) throws TemplateModelException {
+			String value = message.get(key);
+			return value == null ? null : new SimpleScalar(value);
+		}
+
+		@Override
+		public boolean isEmpty() throws TemplateModelException {
+			return message.isEmpty();
+		}
+
+		@Override
+		public int size() throws TemplateModelException {
+			return message.size();
+		}
+
+		@Override
+		public TemplateCollectionModel keys() throws TemplateModelException {
+			if (keys == null)
+				keys = new SimpleCollection(message.keySet());
+			return keys;
+		}
+
+		@Override
+		public TemplateCollectionModel values() throws TemplateModelException {
+			if (values == null)
+				values = new SimpleCollection(message.values());
+			return values;
+		}
+
+	}
+
+	static class ParamHashModel implements TemplateHashModel {
+
+		Map<String, String[]> params;
+
+		public ParamHashModel(Map<String, String[]> params) {
+			this.params = params;
+		}
+
+		@Override
+		public TemplateModel get(String key) throws TemplateModelException {
+			String[] values = params.get(key);
+			return values == null ? null : new ParamScalarModel(values);
+		}
+
+		@Override
+		public boolean isEmpty() throws TemplateModelException {
+			return params.isEmpty();
+		}
+
+	}
+
+	static class ParamScalarModel implements TemplateScalarModel,
+			TemplateSequenceModel {
+
+		String[] values;
+
+		public ParamScalarModel(String[] values) {
+			this.values = values;
+		}
+
+		@Override
+		public String getAsString() throws TemplateModelException {
+			return values[0];
+		}
+
+		@Override
+		public TemplateModel get(int index) throws TemplateModelException {
+			return new SimpleScalar(values[index]);
+		}
+
+		@Override
+		public int size() throws TemplateModelException {
+			return values.length;
+		}
+
 	}
 
 }

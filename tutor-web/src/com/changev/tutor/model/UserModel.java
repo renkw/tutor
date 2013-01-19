@@ -44,6 +44,11 @@ public class UserModel extends AbstractModel {
 	private UserPrivacy contactPrivacy;
 
 	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
 		if (getState() == null)
@@ -54,6 +59,11 @@ public class UserModel extends AbstractModel {
 			setAccountPrivacy(UserPrivacy.ContacterOnly);
 		if (getContactPrivacy() == null)
 			setContactPrivacy(UserPrivacy.ContacterOnly);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
 	}
 
 	@Override

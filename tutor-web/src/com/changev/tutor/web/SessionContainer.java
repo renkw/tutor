@@ -107,14 +107,19 @@ public final class SessionContainer implements Serializable {
 	 * </p>
 	 */
 	public void logout() {
-		UserModel user = getLoginUser();
-		if (user != null) {
-			user.setLastLoginDateTime(loginDateTime);
-			Tutor.getCurrentContainer().store(user);
-			Tutor.commitCurrent();
-			loginUserId = null;
-			loginDateTime = null;
-			loginUser = null;
+		if (loginUserId != null) {
+			try {
+				UserModel user = getLoginUser();
+				if (user != null) {
+					user.setLastLoginDateTime(loginDateTime);
+					Tutor.getCurrentContainer().store(user);
+					Tutor.commitCurrent();
+				}
+			} finally {
+				loginUserId = null;
+				loginDateTime = null;
+				loginUser = null;
+			}
 		}
 	}
 
@@ -124,12 +129,14 @@ public final class SessionContainer implements Serializable {
 	public UserModel getLoginUser() {
 		if (loginUserId == null)
 			return null;
-		if (loginUser == null) {
+		if (loginUser == null
+				|| !Tutor.getCurrentContainerExt().isStored(loginUser)) {
 			try {
 				loginUser = Tutor.getCurrentContainerExt().getByID(loginUserId);
 			} catch (InvalidIDException e) {
 				loginUserId = null;
 				loginDateTime = null;
+				loginUser = null;
 				throw e;
 			}
 		}

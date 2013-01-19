@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
+import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.model.ParentModel;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserState;
@@ -37,15 +38,18 @@ public class RegisterView implements View {
 
 	private ParamValidator registerValidator;
 	private String duplicatedEmailMessage;
-	private String successPage;
+	private String userSuccessPage;
+	private String orgSuccessPage;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
-		if (StringUtils.isNotEmpty(request.getParameter("registerAccount")))
-			return registerAccount(request, response);
+		if (StringUtils.isNotEmpty(request.getParameter("registerUser")))
+			return registerUser(request, response);
+		if (StringUtils.isNotEmpty(request.getParameter("registerOrg")))
+			return registerOrg(request, response);
 		return true;
 	}
 
@@ -56,10 +60,42 @@ public class RegisterView implements View {
 			logger.trace("[postRender] called");
 	}
 
-	protected boolean registerAccount(HttpServletRequest request,
+	protected boolean registerUser(HttpServletRequest request,
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
-			logger.trace("[registerAccount] called");
+			logger.trace("[registerUser] called");
+
+		ParentModel parentModel = new ParentModel();
+		parentModel.setState(UserState.Incomplete);
+		if (register(request, response, parentModel))
+			return true;
+
+		if (logger.isDebugEnabled())
+			logger.debug("[registerUser] success. goto " + userSuccessPage);
+		response.sendRedirect(request.getContextPath() + userSuccessPage);
+		return false;
+	}
+
+	protected boolean registerOrg(HttpServletRequest request,
+			HttpServletResponse response) throws Throwable {
+		if (logger.isTraceEnabled())
+			logger.trace("[registerOrg] called");
+
+		OrganizationModel parentModel = new OrganizationModel();
+		parentModel.setState(UserState.Incomplete);
+		if (register(request, response, parentModel))
+			return true;
+
+		if (logger.isDebugEnabled())
+			logger.debug("[registerOrg] success. goto " + orgSuccessPage);
+		response.sendRedirect(request.getContextPath() + orgSuccessPage);
+		return false;
+	}
+
+	protected boolean register(HttpServletRequest request,
+			HttpServletResponse response, UserModel userModel) throws Throwable {
+		if (logger.isTraceEnabled())
+			logger.trace("[register] called");
 		// get parameters
 		String name = request.getParameter("name");
 		String email = request.getParameter("email");
@@ -67,12 +103,11 @@ public class RegisterView implements View {
 		String confirmPassword = request.getParameter("confirmPassword");
 		String checkCode = request.getParameter("checkCode");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[registerAccount] name = " + name);
-			logger.debug("[registerAccount] email = " + email);
-			logger.debug("[registerAccount] password = " + password);
-			logger.debug("[registerAccount] confirmPassword = "
-					+ confirmPassword);
-			logger.debug("[registerAccount] checkCode = " + checkCode);
+			logger.debug("[register] name = " + name);
+			logger.debug("[register] email = " + email);
+			logger.debug("[register] password = " + password);
+			logger.debug("[register] confirmPassword = " + confirmPassword);
+			logger.debug("[register] checkCode = " + checkCode);
 		}
 		// validation
 		if (registerValidator == null || registerValidator.validate(request)) {
@@ -84,27 +119,20 @@ public class RegisterView implements View {
 							.queryByExample(ModelFactory.getUserExample(email));
 					if (!userSet.hasNext()) {
 						// register
-						ParentModel parentModel = new ParentModel();
-						parentModel.setName(name);
-						parentModel.setEmail(email);
-						parentModel.setPassword(ModelFactory
+						userModel.setName(name);
+						userModel.setEmail(email);
+						userModel.setPassword(ModelFactory
 								.encryptPassword(password));
-						parentModel.setState(UserState.Incomplete);
-						objc.store(parentModel);
+						objc.store(userModel);
 						objc.commit();
 						// login
 						request.getSession().invalidate();
 						SessionContainer.get(request).login(
-								objc.ext().getID(parentModel));
-						if (logger.isDebugEnabled())
-							logger.debug("[registerAccount] success. goto "
-									+ successPage);
-						response.sendRedirect(request.getContextPath()
-								+ successPage);
+								objc.ext().getID(userModel));
 						return false;
 					}
 				} catch (Throwable t) {
-					logger.error("[registerAccount] failed", t);
+					logger.error("[register] failed", t);
 					objc.rollback();
 					throw t;
 				} finally {
@@ -147,18 +175,33 @@ public class RegisterView implements View {
 	}
 
 	/**
-	 * @return the successPage
+	 * @return the userSuccessPage
 	 */
-	public String getSuccessPage() {
-		return successPage;
+	public String getUserSuccessPage() {
+		return userSuccessPage;
 	}
 
 	/**
-	 * @param successPage
-	 *            the successPage to set
+	 * @param userSuccessPage
+	 *            the userSuccessPage to set
 	 */
-	public void setSuccessPage(String successPage) {
-		this.successPage = successPage;
+	public void setUserSuccessPage(String userSuccessPage) {
+		this.userSuccessPage = userSuccessPage;
+	}
+
+	/**
+	 * @return the orgSuccessPage
+	 */
+	public String getOrgSuccessPage() {
+		return orgSuccessPage;
+	}
+
+	/**
+	 * @param orgSuccessPage
+	 *            the orgSuccessPage to set
+	 */
+	public void setOrgSuccessPage(String orgSuccessPage) {
+		this.orgSuccessPage = orgSuccessPage;
 	}
 
 }

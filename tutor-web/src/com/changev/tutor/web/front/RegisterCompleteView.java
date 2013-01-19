@@ -63,6 +63,7 @@ public class RegisterCompleteView implements View {
 			logger.trace("[registerComplete] called");
 		// get parameters
 		String name = request.getParameter("name");
+		String postcode = request.getParameter("postcode");
 		String address1 = request.getParameter("address1");
 		String address2 = request.getParameter("address2");
 		String telephone = request.getParameter("telephone");
@@ -74,6 +75,7 @@ public class RegisterCompleteView implements View {
 		String contactPrivacy = request.getParameter("contactPrivacy");
 		if (logger.isDebugEnabled()) {
 			logger.debug("[registerComplete] name = " + name);
+			logger.debug("[registerComplete] postcode = " + postcode);
 			logger.debug("[registerComplete] address1 = " + address1);
 			logger.debug("[registerComplete] address2 = " + address2);
 			logger.debug("[registerComplete] telephone = " + telephone);
@@ -110,6 +112,7 @@ public class RegisterCompleteView implements View {
 
 				try {
 					contactModel.setName(name);
+					contactModel.setPostcode(postcode);
 					contactModel.setAddress1(address1);
 					contactModel.setAddress2(address2);
 					contactModel.setTelephone(telephone);
@@ -118,14 +121,12 @@ public class RegisterCompleteView implements View {
 					contactModel.setWeibo(weibo);
 					contactModel.setMailAddress(mailAddress);
 
-					parentModel.setAccountPrivacy(UserPrivacy
-							.valueOf(accountPrivacy));
-					parentModel.setContactPrivacy(UserPrivacy
-							.valueOf(contactPrivacy));
-					studentModel.setAccountPrivacy(parentModel
-							.getAccountPrivacy());
-					studentModel.setContactPrivacy(studentModel
-							.getContactPrivacy());
+					UserPrivacy acc = UserPrivacy.valueOf(accountPrivacy);
+					UserPrivacy con = UserPrivacy.valueOf(contactPrivacy);
+					parentModel.setAccountPrivacy(acc);
+					studentModel.setAccountPrivacy(acc);
+					parentModel.setContactPrivacy(con);
+					studentModel.setContactPrivacy(con);
 
 					objc.store(studentModel);
 					objc.commit();
@@ -143,7 +144,7 @@ public class RegisterCompleteView implements View {
 					objc.ext().releaseSemaphore(lock);
 				}
 			}
-			Messages.addError(request, "email", userLockedMessage);
+			Messages.addError(request, "name", userLockedMessage);
 		}
 		return true;
 	}

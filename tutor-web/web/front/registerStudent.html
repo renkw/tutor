@@ -5,6 +5,107 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>完成注册</title>
 <#include "/_inc/head.html">
+<script type="text/javascript">
+<!--
+$(function() {
+	var areas = ${areaJson};
+	$("#province").change(function() {
+		var value = this.options[this.selectedIndex].value;
+		var city = $("#city option:selected").val() || "${params.city!}";
+		var cities = areas[value];
+		$("#city").empty();
+		if (cities) {
+			for (var key in cities) {
+				var opt = document.createElement("option");
+				opt.value = key;
+				opt.text = key;
+				opt.selected = key == city;
+				$("#city").append(opt);
+			}
+			$("#city").change();
+		}
+	});
+	$("#city").change(function() {
+		var value = this.options[this.selectedIndex].value;
+		var prov = $("#province option:selected").val();
+		var dist = $("#district option:selected").val() || "${params.district!}";
+		var dists = areas[prov][value];
+		$("#district").empty();
+		if (dists) {
+			for (var i = 0; i < dists.length; i++) {
+				var opt = document.createElement("option");
+				opt.value = dists[i];
+				opt.text = dists[i];
+				opt.selected = dists[i] == dist;
+				$("#district").append(opt);
+			}
+		}
+	});
+	
+	$("#birthYear,#birthMonth").change(function() {
+		var year = parseInt($("#birthYear option:selected").val()),
+			month = parseInt($("#birthMonth option:selected").val()),
+			date = parseInt($("#birthDate option:selected").val() || "${(params.birthday[2])!}");
+		$("#birthDate").html("<option />");
+		if (year && month) {
+			var dates;
+			switch (month) {
+			case 4: case 6: case 9: case 11:
+				dates = 30;
+				break;
+			case 2:
+				dates = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 29 : 28;
+				break;
+			default:
+				dates = 31;
+				break;
+			}
+			for (var i = 1; i <= dates; i++) {
+				var opt = document.createElement("option");
+				opt.value = i;
+				opt.text = i;
+				opt.selected = i == date;
+				$("#birthDate").append(opt);
+			}
+		}
+	});
+	
+	var gradeLevels = ${gradeLevelJson};
+	$("#grades input:radio").change(function() {
+		if (!this.checked) return;
+		var value = this.value;
+		var level = parseInt($("#grades select option:selected").val() || "${params.gradeLevel!}");
+		var levels = gradeLevels[value];
+		$("#grades select").empty();
+		if (levels) {
+			for (var i = 0; i < levels.length; i++) {
+				var opt = document.createElement("option");
+				opt.value = i + 1;
+				opt.text = levels[i];
+				opt.selected = i + 1 == level;
+				$("#grades select").append(opt);
+			}
+		}
+	});
+	
+	$("#answerAll").change(function() {
+		var checked = this.checked, val;
+		$("#answers input:text").each(function(i) {
+			if (i == 0)
+				val = this.value;
+			else if (checked)
+				this.value = val;
+		});
+	});
+	$("#answers input:text").change(function() {
+		if ($("#answerAll")[0].checked)
+			$("#answers input:text").val(this.value);
+	});
+	
+	$("#province,#birthYear,#grades input:radio,#answerAll").change();
+});
+//-->
+</script>
 </head>
 <body>
 <table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
@@ -49,7 +150,7 @@
 								<th width="80" align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
 								<td width="300" align="left">
 									<input type="text" name="name" value="${params.name!}" size="30" />
-									<@errmsg name="realName" />
+									<@errmsg name="name" />
 								</td>
 								<td align="left">
 									<div class="alpha25">学生真实姓名。</div>
@@ -58,8 +159,8 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">性别</th>
 								<td align="left">
-									<@radio name="gender" value="Male" check=params.gender!"Male">男</@radio>
-									<@radio name="gender" value="Female" check=params.gender>女</@radio>
+									<@radio name="gender" value="Male" select=params.gender!"Male">男</@radio>
+									<@radio name="gender" value="Female" select=params.gender>女</@radio>
 									<@errmsg name="gender" />
 								</td>
 								<td align="left">
@@ -69,9 +170,21 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">生日</th>
 								<td align="left">
-									<input type="text" name="birthday" value="${(params.birthday[0])!}" size="4" />年
-									<input type="text" name="birthday" value="${(params.birthday[1])!}" size="2" />月
-									<input type="text" name="birthday" value="${(params.birthday[2])!}" size="2" />日
+									<select name="birthday" id="birthYear">
+										<option></option>
+									<#list 1980..birthYear as year>
+										<@option value="${year?c}" select=(params.birthday[0])!>${year?c}</@option>
+									</#list>
+									</select>年
+									<select name="birthday" id="birthMonth">
+										<option></option>
+									<#list 1..12 as month>
+										<@option value="${month?c}" select=(params.birthday[1])!>${month?c}</@option>
+									</#list>
+									</select>月
+									<select name="birthday" id="birthDate">
+										<option></option>
+									</select>日
 									<@errmsg name="birthday" />
 								</td>
 								<td align="left">
@@ -81,9 +194,14 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
 								<td align="left">
-									<label><input type="text" name="province" value="${params.province!}" size="4" />省（直辖市）</label>
-									<label><input type="text" name="city" value="${params.city!}" size="4" />市</label>
-									<label><input type="text" name="district" value="${params.district!}" size="4" />县（区）</label>
+									<select name="province" id="province">
+									<#list areas?keys as province>
+										<@option value=province select=params.province>${province}</@option>
+									</#list>
+									</select>
+									<select name="city" id="city"></select>
+									<select name="district" id="district"></select>
+									<@errmsg name="area" />
 								</td>
 								<td align="left">
 									<div class="alpha25">学生所在地区。</div>
@@ -102,17 +220,12 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 								<td align="left">
-									<@checkbox name="grade" value="小学" check=params.grade>小学</@checkbox>
-									<@checkbox name="grade" value="初中" check=params.grade>初中</@checkbox>
-									<@checkbox name="grade" value="高中" check=params.grade>高中</@checkbox>
-									<select name="gradeLevel">
-										<@option value="1" check=params.gradeLevel>一年级</@option>
-										<@option value="2" check=params.gradeLevel>二年级</@option>
-										<@option value="3" check=params.gradeLevel>三年级</@option>
-										<@option value="4" check=params.gradeLevel>四年级</@option>
-										<@option value="5" check=params.gradeLevel>五年级</@option>
-										<@option value="6" check=params.gradeLevel>六年级</@option>
-									</select>
+									<div id="grades">
+										<#list grades?keys as grade>
+											<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
+										</#list>
+										<select name="gradeLevel"></select>
+									</div>
 									<@errmsg name="grade" />
 								</td>
 								<td align="left">
@@ -142,19 +255,16 @@
 							<tr>
 								<th width="80" align="center" class="ui-widget-header noborder">指定解答<span class="required">*</span></th>
 								<td width="300" align="left">
-									<div>
-										<input type="hidden" name="subject" value="语文" />
-										<label>语文&nbsp;<input type="text" name="answerer" value="${(params.answerer[0])!}" /></label>
+									<div><@checkbox id="answerAll" name="answerAll" value="true" select=params.answerAll>全部一致</@checkbox></div>
+									<div id="answers">
+										<#list subjects?keys as subject>
+										<div>
+											<input type="hidden" name="subject" value="${subject}" />
+											<label>${subjects[subject]}&nbsp;<input type="text" name="answerer" value="${(params.answerer[subject_index])!}" /></label>
+										</div>
+										</#list>
 									</div>
-									<div>
-										<input type="hidden" name="subject" value="数学" />
-										<label>数学&nbsp;<input type="text" name="answerer" value="${(params.answerer[1])!}" /></label>
-									</div>
-									<div>
-										<input type="hidden" name="subject" value="英语" />
-										<label>英语&nbsp;<input type="text" name="answerer" value="${(params.answerer[2])!}" /></label>
-									</div>
-									<@errmsg name="defaultAnswerer" />
+									<@errmsg name="answerer" />
 								</td>
 								<td align="left">
 									<div class="alpha25">设置指定回答的机构或教师。</div>

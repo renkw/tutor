@@ -6,9 +6,11 @@
 package com.changev.tutor.model;
 
 import java.util.List;
+import java.util.Set;
 
+import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
-import com.db4o.collections.ActivatableArrayList;
+import com.db4o.collections.ActivatableHashSet;
 
 /**
  * <p>
@@ -23,27 +25,43 @@ public class OrganizationModel extends UserModel {
 	private static final long serialVersionUID = -8527838031223751954L;
 
 	private String logoPicture;
-	private List<String> subjects;
+	private Set<String> subjects;
 	private Integer teacherCount;
 	private String homepage;
 	private Integer score;
 	private Integer accountLevel;
 
+	public OrganizationModel() {
+		super.setRole(UserRole.Organization);
+	}
+
+	@Override
+	public void setRole(UserRole role) {
+	}
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
-		setRole(UserRole.Organization);
 	}
 
 	@Override
 	public void objectOnUpdate(ObjectContainer container) {
 		super.objectOnUpdate(container);
-		setRole(UserRole.Organization);
 	}
 
 	@Override
 	public OrganizationModel clone() {
 		return (OrganizationModel) super.clone();
+	}
+
+	public List<TeacherModel> getTeachers() {
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getOrganizationTeacherExample(getEmail()));
 	}
 
 	/**
@@ -66,7 +84,7 @@ public class OrganizationModel extends UserModel {
 	/**
 	 * @return the subjects
 	 */
-	public List<String> getSubjects() {
+	public Set<String> getSubjects() {
 		beforeGet();
 		return subjects;
 	}
@@ -74,11 +92,11 @@ public class OrganizationModel extends UserModel {
 	/**
 	 * @return the subjects
 	 */
-	public List<String> getSubjectsFor() {
+	public Set<String> getSubjectsFor() {
 		beforeGet();
 		if (subjects == null) {
 			beforeSet();
-			subjects = new ActivatableArrayList<String>();
+			subjects = new ActivatableHashSet<String>();
 		}
 		return subjects;
 	}

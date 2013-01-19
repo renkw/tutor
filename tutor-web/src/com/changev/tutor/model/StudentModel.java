@@ -5,7 +5,7 @@
  */
 package com.changev.tutor.model;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.db4o.ObjectContainer;
@@ -26,7 +26,7 @@ public class StudentModel extends UserModel {
 
 	private String facePicture;
 	private Boolean male;
-	private Date birthday;
+	private String birthday;
 	private String school;
 	private String grade;
 	private Byte gradeLevel;
@@ -35,16 +35,12 @@ public class StudentModel extends UserModel {
 	@Indexed
 	private ParentModel parent;
 
-	@Override
-	public void objectOnNew(ObjectContainer container) {
-		super.objectOnNew(container);
-		setRole(UserRole.Student);
+	public StudentModel() {
+		super.setRole(UserRole.Student);
 	}
 
 	@Override
-	public void objectOnUpdate(ObjectContainer container) {
-		super.objectOnUpdate(container);
-		setRole(UserRole.Student);
+	public void setRole(UserRole role) {
 	}
 
 	@Override
@@ -55,8 +51,38 @@ public class StudentModel extends UserModel {
 	}
 
 	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
+
+	@Override
 	public StudentModel clone() {
 		return (StudentModel) super.clone();
+	}
+
+	public List<QuestionModel> getQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getUnclosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getClosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -96,7 +122,7 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the birthday
 	 */
-	public Date getBirthday() {
+	public String getBirthday() {
 		beforeGet();
 		return birthday;
 	}
@@ -105,7 +131,7 @@ public class StudentModel extends UserModel {
 	 * @param birthday
 	 *            the birthday to set
 	 */
-	public void setBirthday(Date birthday) {
+	public void setBirthday(String birthday) {
 		beforeSet();
 		this.birthday = birthday;
 	}

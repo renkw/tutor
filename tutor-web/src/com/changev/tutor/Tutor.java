@@ -263,6 +263,47 @@ public final class Tutor {
 		return set.hasNext() ? (T) set.next() : null;
 	}
 
+	private static volatile Map<String, Object> constants = Collections
+			.emptyMap();
+
+	/**
+	 * <p>
+	 * 取得系统常量。
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static Map<String, Object> getConstants() {
+		return constants;
+	}
+
+	/**
+	 * <p>
+	 * 取得系统常量。
+	 * </p>
+	 * 
+	 * @param name
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getConstant(String name) {
+		return (T) constants.get(name);
+	}
+
+	/**
+	 * <p>
+	 * 设置系统常量。
+	 * </p>
+	 * 
+	 * @param c
+	 */
+	public static void setConstants(Map<String, Object> c) {
+		if (c == null || c == Collections.EMPTY_MAP)
+			constants = Collections.emptyMap();
+		else
+			constants = Collections.unmodifiableMap(c);
+	}
+
 	/**
 	 * <p>
 	 * 取得当前时间戳。
@@ -421,7 +462,9 @@ public final class Tutor {
 	 * @return
 	 */
 	public static String formatDate(Date date, String pattern) {
-		return new SimpleDateFormat(pattern).format(date);
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		df.setLenient(true);
+		return df.format(date);
 	}
 
 	/**
@@ -434,8 +477,10 @@ public final class Tutor {
 	 * @return
 	 */
 	public static Date parseDate(String str, String pattern) {
+		SimpleDateFormat df = new SimpleDateFormat(pattern);
+		df.setLenient(true);
 		try {
-			return new SimpleDateFormat(pattern).parse(str);
+			return df.parse(str);
 		} catch (ParseException e) {
 			return null;
 		}
@@ -757,6 +802,19 @@ public final class Tutor {
 		return RandomStringUtils.random(len, "0123456789abcdef");
 	}
 
+	/**
+	 * <p>
+	 * 取得枚举数组。
+	 * </p>
+	 * 
+	 * <p>
+	 * 用|分隔枚举名，空字符串和*表示全部。
+	 * </p>
+	 * 
+	 * @param s
+	 * @param enumType
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> T[] enumValues(String s, Class<T> enumType) {
 		if (StringUtils.isEmpty(s) || "*".equals(s))
@@ -767,12 +825,6 @@ public final class Tutor {
 			values[i] = Enum.valueOf(enumType, sa[i]);
 		}
 		return values;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends Enum<T>> T[] enumValues(String s, String enumType)
-			throws ClassNotFoundException {
-		return enumValues(s, (Class<T>) Class.forName(enumType));
 	}
 
 }

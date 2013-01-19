@@ -6,6 +6,7 @@
 package com.changev.tutor.web.front;
 
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
+import com.google.gson.Gson;
 
 /**
  * <p>
@@ -50,6 +52,7 @@ public class RegisterStudentView implements View {
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("registerStudent")))
 			return registerStudent(request, response);
+		setVariables(request);
 		return true;
 	}
 
@@ -58,6 +61,23 @@ public class RegisterStudentView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
+	}
+
+	protected void setVariables(HttpServletRequest request) {
+		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
+		// birthYear
+		request.setAttribute("birthYear",
+				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
+		// areas
+		request.setAttribute("areas", Tutor.getConstant("areas"));
+		request.setAttribute("areaJson",
+				gson.toJson(Tutor.getConstant("areas")));
+		// grades
+		request.setAttribute("grades", Tutor.getConstant("grades"));
+		request.setAttribute("gradeLevelJson",
+				gson.toJson(Tutor.getConstant("gradeLevels")));
+		// subjects
+		request.setAttribute("subjects", Tutor.getConstant("subjects"));
 	}
 
 	protected boolean registerStudent(HttpServletRequest request,
@@ -114,7 +134,7 @@ public class RegisterStudentView implements View {
 					StudentModel studentModel = new StudentModel();
 					studentModel.setName(name);
 					studentModel.setMale("Male".equals(gender));
-					// studentModel.setBirthday(birthday);
+					studentModel.setBirthday(StringUtils.join(birthday, '-'));
 					studentModel.setProvince(province);
 					studentModel.setCity(city);
 					studentModel.setDistrict(district);
@@ -124,8 +144,8 @@ public class RegisterStudentView implements View {
 					studentModel.setHobby(hobby);
 					studentModel.setDescription(description);
 					studentModel.setParent((ParentModel) parentModel);
-					// studentModel.setState(UserState.Activated);
-					studentModel.setState(UserState.Unavailable);
+					// studentModel.setState(UserState.Unavailable);
+					studentModel.setState(UserState.Incomplete);
 					for (int i = 0; i < subject.length && i < answerer.length; i++) {
 						if (StringUtils.isNotEmpty(answerer[i])) {
 							studentModel.getDefaultAnswererFor().put(
@@ -155,8 +175,10 @@ public class RegisterStudentView implements View {
 					objc.ext().releaseSemaphore(lock);
 				}
 			}
-			Messages.addError(request, "email", userLockedMessage);
+			Messages.addError(request, "name", userLockedMessage);
 		}
+
+		setVariables(request);
 		return true;
 	}
 

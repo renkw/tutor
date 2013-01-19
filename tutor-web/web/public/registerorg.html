@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>用户注册</title>
+<title>机构注册</title>
 <#include "/_inc/head.html">
 </head>
 <body>
@@ -15,14 +15,14 @@
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
-					<div class="ui-icon ui-icon-pin-s float-left"></div>注册新的用户
+					<div class="ui-icon ui-icon-pin-s float-left"></div>注册新的机构
 				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-bookmark float-left"></div>其他
 				</div>
 				<div class="box-content ui-widget-content">
 					<a href="login.html">登录</a><br />
-					<a href="registerorg.html">注册辅导机构</a><br />
+					<a href="register.html">注册用户</a><br />
 				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-contact float-left"></div>联系我们
@@ -36,22 +36,22 @@
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">用户注册</a>
+					<a href="#" class="nav-link float-left">机构注册</a>
 				</div>
 				<div class="box-content ui-widget-content">
 					<form method="post">
 						<table border="0" cellspacing="1" cellpadding="5">
 						<tbody>
 							<tr>
-								<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
+								<th align="center" class="ui-widget-header noborder">名称<span class="required">*</span></th>
 								<td align="left">
 									<input type="text" name="name" value="${params.name!}" size="30" />
 									<@errmsg name="name" />
 								</td>
 								<td align="left">
-									<div class="alpha25">输入您的姓名。</div>
+									<div class="alpha25">输入机构名称。</div>
 								</td>
 							</tr>
 							<tr>
@@ -103,7 +103,7 @@
 								<th>&nbsp;</th>
 								<td align="left">
 									<br />
-									<input type="submit" name="registerUser" value="下一步" class="green-button small-button ui-corner-all" />
+									<input type="submit" name="registerOrg" value="注册" class="green-button small-button ui-corner-all" />
 								</td>
 								<td>&nbsp;</td>
 							</tr>

@@ -34,6 +34,14 @@ public final class ModelFactory {
 		return userExample;
 	}
 
+	public static UserModel getUserExample(String email, UserRole role) {
+		UserModel userExample = new UserModel();
+		userExample.setEmail(email);
+		userExample.setRole(role);
+		userExample.setDeleted(Boolean.FALSE);
+		return userExample;
+	}
+
 	public static UserModel getUserExample(String email, String password) {
 		UserModel userExample = new UserModel();
 		userExample.setEmail(email);
