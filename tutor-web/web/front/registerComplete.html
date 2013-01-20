@@ -127,9 +127,9 @@
 							<tr>
 								<th width="80" align="center" class="ui-widget-header noborder">学生资料</th>
 								<td width="300" align="left">
-									<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!tutor.loginUser.accountPrivacy>不公开</@radio>
-									<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!tutor.loginUser.accountPrivacy>只对联系人公开</@radio>
-									<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!tutor.loginUser.accountPrivacy>全部公开</@radio>
+									<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!"ContacterOnly">不公开</@radio>
+									<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!"ContacterOnly">只对联系人公开</@radio>
+									<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!"ContacterOnly">全部公开</@radio>
 									<@errmsg name="accountPrivacy" />
 								</td>
 								<td align="left">
@@ -139,9 +139,9 @@
 							<tr>
 								<th align="center" class="ui-widget-header noborder">联系资料</th>
 								<td align="left">
-									<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!tutor.loginUser.contactPrivacy>不公开</@radio>
-									<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!tutor.loginUser.contactPrivacy>只对联系人公开</@radio>
-									<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!tutor.loginUser.contactPrivacy>全部公开</@radio>
+									<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!"ContacterOnly">不公开</@radio>
+									<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!"ContacterOnly">只对联系人公开</@radio>
+									<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!"ContacterOnly">全部公开</@radio>
 									<@errmsg name="contactPrivacy" />
 								</td>
 								<td align="left">

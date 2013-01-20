@@ -64,6 +64,9 @@ public class RegisterStudentView implements View {
 	}
 
 	protected void setVariables(HttpServletRequest request) {
+		if (logger.isTraceEnabled())
+			logger.trace("[setVariables] called");
+
 		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
 		// birthYear
 		request.setAttribute("birthYear",
@@ -120,16 +123,17 @@ public class RegisterStudentView implements View {
 		if (registerValidator == null || registerValidator.validate(request)) {
 			ObjectContainer objc = Tutor.getCurrentContainer();
 			UserModel parentModel = SessionContainer.getLoginUser(request);
+			if (parentModel.getRole() != UserRole.Parent
+					|| parentModel.getState() != UserState.Incomplete) {
+				// no need register
+				if (logger.isDebugEnabled())
+					logger.debug("[registerStudent] no need register. goto /home.html");
+				response.sendRedirect(request.getContextPath() + "/");
+				return false;
+			}
+
 			String lock = ModelFactory.getUserSemaphore(parentModel.getEmail());
 			if (objc.ext().setSemaphore(lock, 0)) {
-				if (parentModel.getRole() != UserRole.Parent
-						|| parentModel.getState() != UserState.Incomplete) {
-					// no need register
-					if (logger.isDebugEnabled())
-						logger.debug("[registerStudent] no need register. goto /home.html");
-					response.sendRedirect(request.getContextPath() + "/");
-					return false;
-				}
 				try {
 					StudentModel studentModel = new StudentModel();
 					studentModel.setName(name);

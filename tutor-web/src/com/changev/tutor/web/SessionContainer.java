@@ -74,9 +74,11 @@ public final class SessionContainer implements Serializable {
 	 * @param request
 	 * @return
 	 */
-	public static UserModel getLoginUser(HttpServletRequest request) {
+	@SuppressWarnings("unchecked")
+	public static <T extends UserModel> T getLoginUser(
+			HttpServletRequest request) {
 		SessionContainer container = get(request, false);
-		return container == null ? null : container.getLoginUser();
+		return container == null ? null : (T) container.getLoginUser();
 	}
 
 	private Long loginUserId;
@@ -126,7 +128,8 @@ public final class SessionContainer implements Serializable {
 	/**
 	 * @return the loginUser
 	 */
-	public UserModel getLoginUser() {
+	@SuppressWarnings("unchecked")
+	public <T extends UserModel> T getLoginUser() {
 		if (loginUserId == null)
 			return null;
 		if (loginUser == null
@@ -140,7 +143,7 @@ public final class SessionContainer implements Serializable {
 				throw e;
 			}
 		}
-		return loginUser;
+		return (T) loginUser;
 	}
 
 	/**

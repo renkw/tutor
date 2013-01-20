@@ -62,7 +62,7 @@ $(function() {
 			}
 			for (var i = 1; i <= dates; i++) {
 				var opt = document.createElement("option");
-				opt.value = i;
+				opt.value = i < 10 ? "0" + i : i;
 				opt.text = i;
 				opt.selected = i == date;
 				$("#birthDate").append(opt);
@@ -179,7 +179,7 @@ $(function() {
 									<select name="birthday" id="birthMonth">
 										<option></option>
 									<#list 1..12 as month>
-										<@option value="${month?c}" select=(params.birthday[1])!>${month?c}</@option>
+										<@option value="${month?string('00')}" select=(params.birthday[1])!>${month?c}</@option>
 									</#list>
 									</select>月
 									<select name="birthday" id="birthDate">
@@ -259,7 +259,7 @@ $(function() {
 									<div id="answers">
 										<#list subjects?keys as subject>
 										<div>
-											<input type="hidden" name="subject" value="${subject}" />
+											<input type="hidden" name="subject" value="${subjects[subject]}" />
 											<label>${subjects[subject]}&nbsp;<input type="text" name="answerer" value="${(params.answerer[subject_index])!}" /></label>
 										</div>
 										</#list>

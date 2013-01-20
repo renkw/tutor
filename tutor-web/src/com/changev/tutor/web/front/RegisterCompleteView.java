@@ -92,25 +92,25 @@ public class RegisterCompleteView implements View {
 		if (registerValidator == null || registerValidator.validate(request)) {
 			ObjectContainer objc = Tutor.getCurrentContainer();
 			UserModel parentModel = SessionContainer.getLoginUser(request);
+			StudentModel studentModel = Tutor.one(objc
+					.queryByExample(ModelFactory
+							.getParentStudentExample(parentModel.getEmail())));
+			if (studentModel == null) {
+				logger.error("[registerComplete] student not found for "
+						+ parentModel.getEmail());
+				// TODO
+				return true;
+			}
+
 			String lock = ModelFactory.getUserSemaphore(parentModel.getEmail());
 			if (objc.ext().setSemaphore(lock, 0)) {
-				StudentModel studentModel = Tutor
-						.one(objc.queryByExample(ModelFactory
-								.getParentStudentExample(parentModel.getEmail())));
-				if (studentModel == null) {
-					logger.error("[registerComplete] student not found for "
-							+ parentModel.getEmail());
-					// TODO
-					return true;
-				}
-
-				UserContactModel contactModel = parentModel.getContact();
-				if (contactModel == null) {
-					contactModel = new UserContactModel();
-					parentModel.setContact(contactModel);
-				}
-
 				try {
+					UserContactModel contactModel = parentModel.getContact();
+					if (contactModel == null) {
+						contactModel = new UserContactModel();
+						parentModel.setContact(contactModel);
+					}
+
 					contactModel.setName(name);
 					contactModel.setPostcode(postcode);
 					contactModel.setAddress1(address1);

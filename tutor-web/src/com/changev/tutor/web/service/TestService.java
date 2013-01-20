@@ -23,10 +23,10 @@ public class TestService implements Service<Object> {
 	private static final Logger logger = Logger.getLogger(TestService.class);
 
 	@Override
-	public Object run(UserModel user, Object input) throws Throwable {
+	public String run(UserModel user, Object input) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[run] called");
-		return input;
+		return input.toString();
 	}
 
 }

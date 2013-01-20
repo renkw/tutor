@@ -214,7 +214,8 @@ public class DataEditorView implements View {
 								.append("</textarea>");
 					} else if (fieldType == boolean.class
 							|| fieldType == Boolean.class) {
-						editor.append("<label><input type='checkbox' name='")
+						editor.append(
+								"<label><input type='checkbox' value='true' name='")
 								.append(name)
 								.append(Boolean.TRUE.equals(value) ? "' checked='checked' />"
 										: "' />").append("TRUE</label>");

@@ -6,9 +6,10 @@
 package com.changev.tutor.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.db4o.ObjectContainer;
-import com.db4o.collections.ActivatableArrayList;
+import com.db4o.collections.ActivatableHashSet;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -26,15 +27,16 @@ public class TeacherModel extends UserModel {
 	private Boolean male;
 	private String birthday;
 	@Indexed
-	private String subject;
+	private Set<String> subjects;
 	private String grade;
 	private Byte gradeLevelFrom;
 	private Byte gradeLevelTo;
 	private String education;
-	private Byte teachYears;
-	private List<String> speciality;
+	private Byte teachedYears;
+	private Set<String> speciality;
 	private Integer score;
 	private String homepage;
+	private Boolean supervisor;
 	@Indexed
 	private OrganizationModel organization;
 
@@ -44,13 +46,6 @@ public class TeacherModel extends UserModel {
 
 	@Override
 	public void setRole(UserRole role) {
-	}
-
-	@Override
-	public UserContactModel getContact() {
-		if (super.getContact() == null && getOrganization() != null)
-			return getOrganization().getContact();
-		return super.getContact();
 	}
 
 	@Override
@@ -123,20 +118,23 @@ public class TeacherModel extends UserModel {
 	}
 
 	/**
-	 * @return the subject
+	 * @return the subjects
 	 */
-	public String getSubject() {
+	public Set<String> getSubjects() {
 		beforeGet();
-		return subject;
+		return subjects;
 	}
 
 	/**
-	 * @param subject
-	 *            the subject to set
+	 * @return the subjects
 	 */
-	public void setSubject(String subject) {
-		beforeSet();
-		this.subject = subject;
+	public Set<String> getSubjectsFor() {
+		beforeGet();
+		if (subjects == null) {
+			beforeSet();
+			subjects = new ActivatableHashSet<String>();
+		}
+		return subjects;
 	}
 
 	/**
@@ -210,24 +208,24 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the teachYears
 	 */
-	public Byte getTeachYears() {
+	public Byte getTeachedYears() {
 		beforeGet();
-		return teachYears;
+		return teachedYears;
 	}
 
 	/**
 	 * @param teachYears
 	 *            the teachYears to set
 	 */
-	public void setTeachYears(Byte teachYears) {
+	public void setTeachedYears(Byte teachYears) {
 		beforeSet();
-		this.teachYears = teachYears;
+		this.teachedYears = teachYears;
 	}
 
 	/**
 	 * @return the speciality
 	 */
-	public List<String> getSpeciality() {
+	public Set<String> getSpeciality() {
 		beforeGet();
 		return speciality;
 	}
@@ -235,11 +233,11 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the speciality
 	 */
-	public List<String> getSpecialityFor() {
+	public Set<String> getSpecialityFor() {
 		beforeGet();
 		if (speciality == null) {
 			beforeSet();
-			speciality = new ActivatableArrayList<String>();
+			speciality = new ActivatableHashSet<String>();
 		}
 		return speciality;
 	}
@@ -276,6 +274,21 @@ public class TeacherModel extends UserModel {
 	public void setHomepage(String homepage) {
 		beforeSet();
 		this.homepage = homepage;
+	}
+
+	/**
+	 * @return the supervisor
+	 */
+	public Boolean getSupervisor() {
+		return supervisor;
+	}
+
+	/**
+	 * @param supervisor
+	 *            the supervisor to set
+	 */
+	public void setSupervisor(Boolean supervisor) {
+		this.supervisor = supervisor;
 	}
 
 	/**

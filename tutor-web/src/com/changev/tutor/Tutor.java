@@ -827,4 +827,40 @@ public final class Tutor {
 		return values;
 	}
 
+	public static String emptyNull(String s) {
+		return StringUtils.isEmpty(s) ? null : s;
+	}
+
+	public static Boolean boolNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Boolean.valueOf(s);
+	}
+
+	public static Byte byteNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Byte.valueOf(s);
+	}
+
+	public static Short shortNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Short.valueOf(s);
+	}
+
+	public static Integer intNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Integer.valueOf(s);
+	}
+
+	public static Long longNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Long.valueOf(s);
+	}
+
+	public static Float floatNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Float.valueOf(s);
+	}
+
+	public static Double doubleNull(String s) {
+		return StringUtils.isEmpty(s) ? null : Double.valueOf(s);
+	}
+
+	public static <T extends Enum<T>> T enumNull(Class<T> enumType, String s) {
+		return StringUtils.isEmpty(s) ? null : Enum.valueOf(enumType, s);
+	}
+
 }

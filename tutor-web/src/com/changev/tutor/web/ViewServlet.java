@@ -284,6 +284,7 @@ public class ViewServlet extends HttpServlet {
 		return model;
 	}
 
+	// 根模板模型
 	static class RootTemplateModel extends AttrTemplateModel {
 
 		static final String[] NAMES = { "Application", // 0
@@ -319,7 +320,7 @@ public class ViewServlet extends HttpServlet {
 			case 4:
 				return wrapper.wrap(context);
 			case 5:
-				return new MessagesHashModel(Messages.get(request));
+				return new MessagesHashModel(Messages.get(request, false));
 			case 6:
 				return new ParamHashModel(request.getParameterMap());
 			case 7:
@@ -351,6 +352,7 @@ public class ViewServlet extends HttpServlet {
 
 	}
 
+	// 属性模板模型
 	static class AttrTemplateModel implements TemplateHashModel {
 
 		HttpServletRequest request;
@@ -370,8 +372,10 @@ public class ViewServlet extends HttpServlet {
 
 		@Override
 		public TemplateModel get(String key) throws TemplateModelException {
-			TemplateModel model = map.get(key);
-			if (model == null) {
+			TemplateModel model = null;
+			if (map.containsKey(key)) {
+				model = map.get(key);
+			} else {
 				Object value = null;
 				if (request != null)
 					value = request.getAttribute(key);
@@ -379,7 +383,8 @@ public class ViewServlet extends HttpServlet {
 					value = session.getAttribute(key);
 				if (value == null && context != null)
 					value = context.getAttribute(key);
-				model = wrapper.wrap(value);
+				if (value != null)
+					model = wrapper.wrap(value);
 				if (map == Collections.EMPTY_MAP)
 					map = new HashMap<String, TemplateModel>();
 				map.put(key, model);
@@ -394,12 +399,13 @@ public class ViewServlet extends HttpServlet {
 
 	}
 
+	// 消息模板模型
 	static class MessagesHashModel implements TemplateHashModel {
 
 		Messages messages;
+		TemplateModel errorsModel;
 		TemplateModel messagesModel;
 		TemplateModel warningsModel;
-		TemplateModel errorsModel;
 
 		MessagesHashModel(Messages messages) {
 			this.messages = messages;
@@ -409,17 +415,20 @@ public class ViewServlet extends HttpServlet {
 		public TemplateModel get(String key) throws TemplateModelException {
 			if ("errors".equals(key)) {
 				if (errorsModel == null)
-					errorsModel = new MessageHashModel(messages.getErrors());
+					errorsModel = messages == null ? NOTHING
+							: new MessageHashModel(messages.getErrors());
 				return errorsModel;
 			}
 			if ("messages".equals(key)) {
 				if (messagesModel == null)
-					messagesModel = new MessageHashModel(messages.getMessages());
+					messagesModel = messages == null ? NOTHING
+							: new MessageHashModel(messages.getMessages());
 				return messagesModel;
 			}
 			if ("warnings".equals(key)) {
 				if (warningsModel == null)
-					warningsModel = new MessageHashModel(messages.getWarnings());
+					warningsModel = messages == null ? NOTHING
+							: new MessageHashModel(messages.getWarnings());
 				return warningsModel;
 			}
 			return null;
@@ -432,6 +441,7 @@ public class ViewServlet extends HttpServlet {
 
 	}
 
+	// 消息模板模型
 	static class MessageHashModel implements TemplateHashModelEx {
 
 		Map<String, String> message;
@@ -474,6 +484,7 @@ public class ViewServlet extends HttpServlet {
 
 	}
 
+	// 参数模板模型
 	static class ParamHashModel implements TemplateHashModel {
 
 		Map<String, String[]> params;
@@ -495,6 +506,7 @@ public class ViewServlet extends HttpServlet {
 
 	}
 
+	// 参数模板模型
 	static class ParamScalarModel implements TemplateScalarModel,
 			TemplateSequenceModel {
 
@@ -506,12 +518,13 @@ public class ViewServlet extends HttpServlet {
 
 		@Override
 		public String getAsString() throws TemplateModelException {
-			return values[0];
+			return values[0].toString();
 		}
 
 		@Override
 		public TemplateModel get(int index) throws TemplateModelException {
-			return new SimpleScalar(values[index]);
+			return index < 0 || index >= values.length ? null
+					: new SimpleScalar(values[index]);
 		}
 
 		@Override

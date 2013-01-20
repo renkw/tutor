@@ -272,7 +272,7 @@ public class ServiceServlet extends HttpServlet {
 		AuthInfo info;
 		if (StringUtils.isEmpty(auth)) {
 			// decrypt
-			String content;
+			String content="";
 			try {
 				Cipher cipher = Cipher.getInstance("AES");
 				cipher.init(Cipher.DECRYPT_MODE, Tutor.AES_KEY);

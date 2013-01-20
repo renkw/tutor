@@ -34,11 +34,11 @@
 <#-- 显示页码表 -->
 <#macro pager total pageno show=10>
 <#if pageno lte show>
-	<#assign start=1 end=show+1>
+	<#local start=1 end=show+1>
 <#else>
-	<#assign start=((pageno-1)/show)?int*show end=start+show+1>
+	<#local start=((pageno-1)/show)?int*show end=start+show+1>
 </#if>
-<#if end gt total><#assign end=total></#if>
+<#if end gt total><#local end=total></#if>
 <#if start != 1>
 	<a href="#1" title="第一页"><span class="ui-icon ui-icon-seek-first"></span></a>
 </#if>
@@ -78,10 +78,12 @@
 
 <#-- 多选按钮 -->
 <#macro checkbox id="" name="" value="" select="">
-<label><input type="checkbox" id="${id}" name="${name!}" value="${value!}" ${(select==value)?string('checked="checked"', '')} /><#nested></label>
+<#if select?is_sequence><#local checked=select?seq_contains(value)><#else><#local checked=select==value></#if>
+<label><input type="checkbox" id="${id}" name="${name!}" value="${value!}" ${checked?string('checked="checked"', '')} /><#nested></label>
 </#macro>
 
 <#-- 选项 -->
 <#macro option value="" select="">
-<option value="${value}" ${(select==value)?string('selected="selected"', '')} ><#nested></option>
+<#if select?is_sequence><#local checked=select?seq_contains(value)><#else><#local checked=select==value></#if>
+<option value="${value}" ${checked?string('selected="selected"', '')} ><#nested></option>
 </#macro>
