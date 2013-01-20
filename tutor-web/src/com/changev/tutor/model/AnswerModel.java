@@ -30,6 +30,11 @@ public class AnswerModel extends AbstractModel {
 	private QuestionModel question;
 	private String answer;
 	private List<AnswerDetailModel> details;
+	
+	/*
+	 *	添加问题id
+	 */
+	private String question_id;
 
 	@Override
 	public void objectOnActivate(ObjectContainer container) {
@@ -139,4 +144,11 @@ public class AnswerModel extends AbstractModel {
 		return details;
 	}
 
+	public String getQuestion_id() {
+		return question_id;
+	}
+	
+	public void setQuestion_id(String question_id) {
+		this.question_id = question_id;
+	}
 }

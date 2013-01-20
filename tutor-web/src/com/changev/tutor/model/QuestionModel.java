@@ -53,6 +53,10 @@ public class QuestionModel extends AbstractModel {
 	 * 问题类型
 	 */
 	private int type;
+	/*
+	 * 提问人的id
+	 */
+	private String user_id;
 
 	
 	@Override
@@ -344,5 +348,13 @@ public class QuestionModel extends AbstractModel {
 	
 	public void setType(int type) {
 		this.type = type;
+	}
+	
+	public String getUser_id() {
+		return user_id;
+	}
+	
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
 	}
 }
