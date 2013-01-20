@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.web.Service;
+import static com.changev.tutor.web.service.ServiceRender.*;
 
 /**
  * <p>家长登陆后返回自己的提问列表</p>
@@ -23,8 +24,9 @@ public class ListMyQuestionService implements Service<Map> {
 	
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {
-		// TODO Auto-generated method stub
-		return null;
+		
+		
+		return renderJson(null);
 	}
 	
 }

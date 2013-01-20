@@ -16,7 +16,14 @@ import com.db4o.config.annotations.Indexed;
  * <p>
  * 提问。
  * </p>
- * 
+ * <p>
+ * 2013-1-19 添加问题类型，第一期实现试卷类型<br>
+ * <ul>
+ * 	<li>试卷提问类型</li>
+ * 	<li>批改作业类型</li>
+ * 	<li></li>
+ * </ul>
+ * </p>
  * @author ren
  * 
  */
@@ -28,6 +35,7 @@ public class QuestionModel extends AbstractModel {
 	private UserModel questioner;
 	private StudentModel student;
 	private String province;
+	//XXX 有user的model为什么还需要城市这些？是不是可以去掉
 	private String city;
 	private String district;
 	private String subject;
@@ -41,7 +49,12 @@ public class QuestionModel extends AbstractModel {
 	private Date closedDateTime;
 	private TeacherModel finalAnswerer;
 	private List<String> uploadPictures;
+	/*
+	 * 问题类型
+	 */
+	private int type;
 
+	
 	@Override
 	public void objectOnActivate(ObjectContainer container) {
 		super.objectOnActivate(container);
@@ -324,5 +337,12 @@ public class QuestionModel extends AbstractModel {
 		}
 		return uploadPictures;
 	}
-
+	
+	public int getType() {
+		return type;
+	}
+	
+	public void setType(int type) {
+		this.type = type;
+	}
 }
