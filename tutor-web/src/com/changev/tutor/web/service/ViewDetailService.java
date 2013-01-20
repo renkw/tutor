@@ -3,15 +3,20 @@
  */
 package com.changev.tutor.web.service;
 
+import static com.changev.tutor.web.service.ServiceRender.renderJson;
+
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.web.Service;
 import com.db4o.ObjectSet;
+import com.db4o.query.Predicate;
 import com.db4o.query.Query;
-import static com.changev.tutor.web.service.ServiceRender.renderJson;
+import com.db4o.query.QueryComparator;
 
 /**
  * @author zhaoqing
@@ -29,11 +34,21 @@ public class ViewDetailService implements Service<Map> {
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {
 		Query q = Tutor.getCurrentContainer().query();
-		int index = Integer.parseInt(String.valueOf(input.get("index")));
-		AnswerModel answer = new AnswerModel();
-		answer.setQuestion_id(String.valueOf(input.get("questionId")));
+		final int index = Integer.parseInt(String.valueOf(input.get("index")));
+		final String qId = String.valueOf(input.get("questionId"));
 		
-		ObjectSet<AnswerModel> answers = q.descend("createDateTime").orderDescending().execute();
+		ObjectSet<AnswerModel> answers = Tutor.getCurrentContainer().query(new Predicate<AnswerModel>() {
+			@Override
+			public boolean match(AnswerModel candidate) {
+				return StringUtils.equals(qId, candidate.getQuestion_id()) && (candidate.getDeleted() == false);
+			}
+		}, 
+			new QueryComparator<AnswerModel>() {
+				public int compare(AnswerModel first, AnswerModel second) {
+					if(first.getCreateDateTime().after(second.getCreateDateTime())) return 1;
+					return -1;
+				}
+			}	);
 		if(answers.size() > index){
 			return renderJson(answers.get(index));
 		}

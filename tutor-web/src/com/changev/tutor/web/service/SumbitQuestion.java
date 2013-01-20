@@ -35,7 +35,7 @@ public class SumbitQuestion implements Service<Map> {
 		question.setType(0);
 		question.setSubject(String.valueOf(input.get("subject")));
 		Tutor.getCurrentContainer().store(question);
-		
+		Tutor.getCurrentContainer().commit();
 		return "提交成功";
 	}
 

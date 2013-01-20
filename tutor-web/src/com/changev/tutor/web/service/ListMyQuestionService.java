@@ -9,12 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.web.Service;
 import com.db4o.ObjectSet;
+import com.db4o.config.Compare;
+import com.db4o.query.Predicate;
 import com.db4o.query.Query;
+import com.db4o.query.QueryComparator;
 
 /**
  * <p>家长登陆后返回自己的提问列表</p>
@@ -33,12 +38,19 @@ public class ListMyQuestionService implements Service<Map> {
 	public String run(UserModel user, Map input) throws Throwable {
 		List result = new ArrayList();
 		int current_page = Integer.parseInt(input.get("current_page").toString());
-		Query q = Tutor.getCurrentContainer().query();
-		QuestionModel question = new QuestionModel();
-		question.setUser_id(user.getEmail());
-		question.setDeleted(false);
-		q.constrain(question);
-		ObjectSet<QuestionModel> questions = q.descend("createDateTime").orderDescending().execute();
+		final UserModel _user = user;
+		ObjectSet<QuestionModel> questions = Tutor.getCurrentContainer().query(new Predicate<QuestionModel>() {
+			@Override
+			public boolean match(QuestionModel candidate) {
+				return StringUtils.equals(_user.getEmail(), candidate.getUser_id()) && (candidate.getDeleted() == false);
+			}
+		}, 
+			new QueryComparator<QuestionModel>() {
+				public int compare(QuestionModel first, QuestionModel second) {
+					if(first.getCreateDateTime().after(second.getCreateDateTime())) return 1;
+					return -1;
+				}
+			}	);
 		//TODO add to cache{}
 		for(int index = 0; index < 10; index++){
 			result.add(questions.get(current_page * 10 + index));
