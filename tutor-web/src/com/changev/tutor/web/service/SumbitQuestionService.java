@@ -24,7 +24,7 @@ import com.changev.tutor.web.Service;
  *	</ul>
  *</p>
  */
-public class SumbitQuestion implements Service<Map> {
+public class SumbitQuestionService implements Service<Map> {
 
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {

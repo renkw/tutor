@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/util		http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       ">
+       
+      <!-- 远程服务 手机 --> 
+       <bean id="viewDetailService" class="com.changev.tutor.web.service.ViewDetailService">
+       </bean>
+       <bean id="sumbitQuestionService" class="com.changev.tutor.web.service.SumbitQuestionService">
+       </bean>
+       <bean id="loginService" class="com.changev.tutor.web.service.LoginService">
+       </bean>
+       <bean id="listMyQuestionService" class="com.changev.tutor.web.service.ListMyQuestionService">
+       </bean>
+</beans>       
