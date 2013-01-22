@@ -44,7 +44,7 @@ public class DataEditorView implements View {
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("submit")))
 			return submit(request, response);
-		setEditorList(request);
+		setEditorList(request, null);
 		return true;
 	}
 
@@ -72,109 +72,105 @@ public class DataEditorView implements View {
 		if (StringUtils.isNotEmpty(sId)) {
 			data = Tutor.getCurrentContainerExt().getByID(Long.parseLong(sId));
 		} else if (StringUtils.isNotEmpty(sType)) {
-			data = (AbstractModel) Class.forName(sType).newInstance();
+			data = (AbstractModel) Class.forName(
+					"com.changev.tutor.model." + sType).newInstance();
 		}
-		if (data != null) {
-			if (logger.isDebugEnabled())
-				logger.debug("[submit] id = " + sId);
 
-			data.activate(ActivationPurpose.WRITE);
-			Class<?> type = data.getClass();
-			do {
-				Field[] fields = type.getDeclaredFields();
-				for (int i = 0; i < fields.length; i++) {
-					if (Modifier.isStatic(fields[i].getModifiers())
-							|| Modifier.isTransient(fields[i].getModifiers()))
-						continue;
+		data.activate(ActivationPurpose.WRITE);
+		Class<?> type = data.getClass();
+		do {
+			Field[] fields = type.getDeclaredFields();
+			for (int i = 0; i < fields.length; i++) {
+				if (Modifier.isStatic(fields[i].getModifiers())
+						|| Modifier.isTransient(fields[i].getModifiers()))
+					continue;
 
-					fields[i].setAccessible(true);
-					String value = request.getParameter(fields[i].getName()
-							+ "_NULL");
-					if (Boolean.parseBoolean(value)) {
-						fields[i].set(data, null);
-						continue;
-					}
-
-					value = request.getParameter(fields[i].getName());
-					if (value == null)
-						continue;
-
-					Class<?> fieldType = fields[i].getType();
-					if (fieldType.isEnum()) {
-						fields[i].set(data,
-								Enum.valueOf((Class<Enum>) fieldType, value));
-					} else if (fieldType == String.class) {
-						fields[i].set(data, value);
-					} else if (fieldType == boolean.class
-							|| fieldType == Boolean.class) {
-						fields[i].set(data, Boolean.valueOf(value));
-					} else if (fieldType == byte.class
-							|| fieldType == Byte.class) {
-						fields[i].set(data, Byte.valueOf(value));
-					} else if (fieldType == short.class
-							|| fieldType == Short.class) {
-						fields[i].set(data, Short.valueOf(value));
-					} else if (fieldType == char.class
-							|| fieldType == Character.class) {
-						fields[i].set(data, value.charAt(0));
-					} else if (fieldType == int.class
-							|| fieldType == Integer.class) {
-						fields[i].set(data, Integer.valueOf(value));
-					} else if (fieldType == long.class
-							|| fieldType == Long.class) {
-						fields[i].set(data, Long.valueOf(value));
-					} else if (fieldType == float.class
-							|| fieldType == Float.class) {
-						fields[i].set(data, Float.valueOf(value));
-					} else if (fieldType == double.class
-							|| fieldType == Double.class) {
-						fields[i].set(data, Double.valueOf(value));
-					} else if (Date.class.isAssignableFrom(fieldType)) {
-						fields[i].set(
-								data,
-								DateUtils.parseDate(value, new String[] {
-										Tutor.DEFAULT_DATETIME_FORMAT,
-										Tutor.DEFAULT_DATE_FORMAT }));
-					}
+				fields[i].setAccessible(true);
+				String value = request.getParameter(fields[i].getName()
+						+ "_NULL");
+				if (Boolean.parseBoolean(value)) {
+					fields[i].set(data, null);
+					continue;
 				}
-			} while ((type = type.getSuperclass()) != Object.class);
-			// store
-			try {
-				Tutor.getCurrentContainer().store(data);
-				Tutor.commitCurrent();
-			} catch (Throwable t) {
-				Tutor.rollbackCurrent();
-				throw t;
+
+				value = request.getParameter(fields[i].getName());
+				if (value == null)
+					continue;
+
+				Class<?> fieldType = fields[i].getType();
+				if (fieldType.isEnum()) {
+					fields[i].set(data,
+							Enum.valueOf((Class<Enum>) fieldType, value));
+				} else if (fieldType == String.class) {
+					fields[i].set(data, value);
+				} else if (fieldType == boolean.class
+						|| fieldType == Boolean.class) {
+					fields[i].set(data, Boolean.valueOf(value));
+				} else if (fieldType == byte.class || fieldType == Byte.class) {
+					fields[i].set(data, Byte.valueOf(value));
+				} else if (fieldType == short.class || fieldType == Short.class) {
+					fields[i].set(data, Short.valueOf(value));
+				} else if (fieldType == char.class
+						|| fieldType == Character.class) {
+					fields[i].set(data, value.charAt(0));
+				} else if (fieldType == int.class || fieldType == Integer.class) {
+					fields[i].set(data, Integer.valueOf(value));
+				} else if (fieldType == long.class || fieldType == Long.class) {
+					fields[i].set(data, Long.valueOf(value));
+				} else if (fieldType == float.class || fieldType == Float.class) {
+					fields[i].set(data, Float.valueOf(value));
+				} else if (fieldType == double.class
+						|| fieldType == Double.class) {
+					fields[i].set(data, Double.valueOf(value));
+				} else if (Date.class.isAssignableFrom(fieldType)) {
+					fields[i].set(
+							data,
+							DateUtils.parseDate(value, new String[] {
+									Tutor.DEFAULT_DATETIME_FORMAT,
+									Tutor.DEFAULT_DATE_FORMAT }));
+				}
 			}
+		} while ((type = type.getSuperclass()) != Object.class);
+		// store
+		try {
+			Tutor.getCurrentContainer().store(data);
+			Tutor.commitCurrent();
+		} catch (Throwable t) {
+			Tutor.rollbackCurrent();
+			throw t;
 		}
 		// set editors
-		setEditorList(request);
+		setEditorList(request, data);
 		return true;
 	}
 
-	protected void setEditorList(HttpServletRequest request) throws Throwable {
+	protected void setEditorList(HttpServletRequest request, AbstractModel data)
+			throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[setEditorList] called");
 
 		List<Editor> editors = new ArrayList<Editor>();
-		Class<?> type = null;
-		AbstractModel data = null;
-
-		String sId = request.getParameter("id");
-		String sType = request.getParameter("type");
-		if (logger.isTraceEnabled()) {
-			logger.trace("[setEditorList] id = " + sId);
-			logger.trace("[setEditorList] type = " + sType);
+		if (data == null) {
+			String sId = request.getParameter("id");
+			String sType = request.getParameter("type");
+			if (logger.isTraceEnabled()) {
+				logger.trace("[setEditorList] id = " + sId);
+				logger.trace("[setEditorList] type = " + sType);
+			}
+			if (StringUtils.isNotEmpty(sId)) {
+				data = Tutor.getCurrentContainerExt().getByID(
+						Long.parseLong(sId));
+				data.activate(ActivationPurpose.READ);
+			} else if (StringUtils.isNotEmpty(sType)) {
+				data = (AbstractModel) Class.forName(
+						"com.changev.tutor.model." + sType).newInstance();
+			}
 		}
-		if (StringUtils.isNotEmpty(sId)) {
-			data = Tutor.getCurrentContainerExt().getByID(Long.parseLong(sId));
-			data.activate(ActivationPurpose.READ);
-			type = data.getClass();
-		} else if (StringUtils.isNotEmpty(sType)) {
-			type = Class.forName(sType);
-		}
 
+		Class<?> type = data.getClass();
+		request.setAttribute("id", Tutor.id(data));
 		request.setAttribute("type", type.getSimpleName());
+
 		if (type != null) {
 			do {
 				Field[] fields = type.getDeclaredFields();
@@ -186,13 +182,13 @@ public class DataEditorView implements View {
 					String name = fields[i].getName();
 					Class<?> fieldType = fields[i].getType();
 					fields[i].setAccessible(true);
-					Object value = data == null ? null : fields[i].get(data);
+					Object value = fields[i].get(data);
 
 					StringBuilder editor = new StringBuilder(
 							"<label><input type='checkbox' name='")
 							.append(name)
 							.append("_NULL' value='true' ")
-							.append(data != null && value == null ? "checked='checked' />"
+							.append(value == null ? "checked='checked' />"
 									: " />").append("NULL</label><br />");
 					if (fieldType.isEnum()) {
 						editor.append("<select name='").append(name)

@@ -246,8 +246,9 @@ public final class Tutor {
 	 * @param obj
 	 * @return
 	 */
-	public static long id(Object obj) {
-		return getCurrentContainerExt().getID(obj);
+	public static String id(Object obj) {
+		long id = getCurrentContainerExt().getID(obj);
+		return id == 0 ? null : Long.toString(id);
 	}
 
 	/**

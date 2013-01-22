@@ -17,6 +17,10 @@ function del(id) {
 	if (confirm("确定删除？"))
 		alert("NotImplemented");
 }
+function add() {
+	var type = document.getElementById("selType");
+	location.href = "dataEditor.html?type=" + type.options[type.selectedIndex].value;
+}
 //-->
 </script>
 </head>
@@ -27,7 +31,7 @@ function del(id) {
 		<tr>
 			<th>类型</th>
 			<td>
-				<select name="type">
+				<select name="type" id="selType">
 					<optgroup label="用户账户">
 						<option value="UserModel" selected="selected">全部用户</option>
 						<option value="ParentModel">家长用户</option>
@@ -37,6 +41,7 @@ function del(id) {
 						<option value="AdminModel">管理用户</option>
 					</optgroup>
 				</select>
+				<input type="button" value="添加" onclick="add()" />
 			</td>
 			<th>删除</th>
 			<td>

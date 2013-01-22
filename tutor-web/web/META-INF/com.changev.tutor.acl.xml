@@ -31,12 +31,10 @@
 					path="/public/contact.html" />
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
-	<!-- 
 	<rule pattern="/manage/.*">
 		<accept		role="Admin" />
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
-	 -->
 	<rule pattern="/files/.*">
 		<redirect	role="None"
 					path="/public/login.html?url={url}" />

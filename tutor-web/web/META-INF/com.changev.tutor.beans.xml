@@ -69,7 +69,7 @@
 				<entry key="Student" value="/front/member.html" />
 				<entry key="Organization" value="/back/member.html" />
 				<entry key="Teacher" value="/back/member.html" />
-				<entry key="Admin" value="/manage/member.html" />
+				<entry key="Admin" value="/manage/data.html" />
 			</map>
 		</property>
 	</bean>
