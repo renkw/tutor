@@ -90,14 +90,22 @@ $(function() {
 			}
 		});
 	});
+
+	if ($("#mailAddress").val() == "") {
+		$("#email").change(function() { $("#mailAddress").val(this.value); });
+	}
+	if ($("#contactName").val() == "") {
+		$("#name").change(function() { $("#contactName").val(this.value); });
+	}
+	if ($("#address1").val() == "") {
+		$("#province,#city,#district").change(function() {
+				$("#address1").val($("#province option:selected").text() 
+						+ $("#city option:selected").text() 
+						+ $("#district option:selected").text())
+		});
+	}
 	
-	$("#email").change(function() { $("#mailAddress").val(this.value); });
-	$("#name").change(function() { $("#contactName").val(this.value); });
-	$("#province,#city,#district").change(function() { 
-		$("#address1").val($("#province option:selected").text() + $("#city option:selected").text() + $("#district option:selected").text())
-	});
-	
-	$("#province,#birthYear,#grades input:radio").change();
+	$("#email,#name,#province,#birthYear,#grades input:radio").change();
 });
 //-->
 </script>
@@ -353,7 +361,7 @@ $(function() {
 								<@errmsg name="accountPrivacy" />
 							</td>
 							<td align="left">
-								<div class="alpha25">设置公开学生信息。</div>
+								<div class="alpha25">设置公开教师资料。</div>
 							</td>
 						</tr>
 						<tr>
@@ -365,7 +373,7 @@ $(function() {
 								<@errmsg name="contactPrivacy" />
 							</td>
 							<td align="left">
-								<div class="alpha25">设置公开联系信息。</div>
+								<div class="alpha25">设置公开联系资料。</div>
 							</td>
 						</tr>
 					</tbody>

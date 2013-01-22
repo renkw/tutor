@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.UserModel;
+import com.db4o.ObjectContainer;
 import com.db4o.ext.InvalidIDException;
 
 /**
@@ -110,14 +111,16 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void logout() {
 		if (loginUserId != null) {
+			ObjectContainer objc = Tutor.getRootContainer().openSession();
 			try {
-				UserModel user = getLoginUser();
+				UserModel user = objc.ext().getByID(loginUserId);
 				if (user != null) {
 					user.setLastLoginDateTime(loginDateTime);
-					Tutor.getCurrentContainer().store(user);
-					Tutor.commitCurrent();
+					objc.store(user);
+					objc.commit();
 				}
 			} finally {
+				objc.close();
 				loginUserId = null;
 				loginDateTime = null;
 				loginUser = null;

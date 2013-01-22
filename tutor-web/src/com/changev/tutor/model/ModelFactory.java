@@ -11,6 +11,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.changev.tutor.Tutor;
 
 /**
@@ -24,7 +26,8 @@ import com.changev.tutor.Tutor;
 public final class ModelFactory {
 
 	public static String getUserSemaphore(String email) {
-		return "com.changev.tutor.model.UserModel:" + email;
+		return StringUtils.isEmpty(email) ? null
+				: "com.changev.tutor.model.UserModel:" + email;
 	}
 
 	public static UserModel getUserExample(String email) {

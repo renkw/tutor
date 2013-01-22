@@ -1,5 +1,5 @@
 /*
- * File   ModifyTeacherView.java
+ * File   ModifyMemberView.java
  * Create 2013/01/20
  * Copyright (c) change-v.com 2012 
  */
@@ -19,7 +19,9 @@ import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserContactModel;
+import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserPrivacy;
+import com.changev.tutor.model.UserRole;
 import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
@@ -30,23 +32,21 @@ import com.google.gson.Gson;
 
 /**
  * <p>
- * 修改/添加教师
+ * 修改机构/教师资料。
  * </p>
  * 
  * @author ren
  * 
  */
-public class ModifyTeacherView implements View {
+public class ModifyMemberView implements View {
 
 	private static final Logger logger = Logger
-			.getLogger(ModifyTeacherView.class);
+			.getLogger(ModifyMemberView.class);
 
 	private ParamValidator submitValidator;
-	private ParamValidator deleteValidator;
 	private String duplicatedEmailMessage;
 	private String userLockedMessage;
-	private String submitSuccessPage;
-	private String deleteSuccessPage;
+	private String successPage;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -55,8 +55,6 @@ public class ModifyTeacherView implements View {
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("submit")))
 			return submit(request, response);
-		if (StringUtils.isNotEmpty(request.getParameter("delete")))
-			return delete(request, response);
 		setVariables(request);
 		return true;
 	}
@@ -77,33 +75,31 @@ public class ModifyTeacherView implements View {
 			logger.debug("[setVariables] id = " + sId);
 
 		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
-		// the teacher
-		TeacherModel teacherModel = StringUtils.isNotEmpty(sId) ? (TeacherModel) Tutor
-				.getCurrentContainerExt().getByID(Long.parseLong(sId))
-				: new TeacherModel();
-		request.setAttribute("teacher", teacherModel);
+		// the user
+		UserModel userModel = SessionContainer.getLoginUser(request);
+		request.setAttribute("user", userModel);
 		// contact
-		UserContactModel contactModel = teacherModel.getContact();
-		if (contactModel == null)
-			contactModel = SessionContainer.getLoginUser(request).getContact();
+		UserContactModel contactModel = userModel.getContact();
 		if (contactModel == null)
 			contactModel = new UserContactModel();
 		request.setAttribute("contact", contactModel);
-		// birthYear
-		request.setAttribute("birthYear",
-				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
 		// areas
 		request.setAttribute("areas", Tutor.getConstant("areas"));
 		request.setAttribute("areaJson",
 				gson.toJson(Tutor.getConstant("areas")));
-		// grades
-		request.setAttribute("grades", Tutor.getConstant("grades"));
-		request.setAttribute("gradeLevelJson",
-				gson.toJson(Tutor.getConstant("gradeLevels")));
 		// subjects
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
-		// specility
-		request.setAttribute("speciality", Tutor.getConstant("speciality"));
+		if (userModel.getRole() == UserRole.Teacher) {
+			// birthYear
+			request.setAttribute("birthYear",
+					Tutor.currentCalendar().get(Calendar.YEAR) - 1);
+			// grades
+			request.setAttribute("grades", Tutor.getConstant("grades"));
+			request.setAttribute("gradeLevelJson",
+					gson.toJson(Tutor.getConstant("gradeLevels")));
+			// specility
+			request.setAttribute("speciality", Tutor.getConstant("speciality"));
+		}
 	}
 
 	protected boolean submit(HttpServletRequest request,
@@ -112,9 +108,7 @@ public class ModifyTeacherView implements View {
 			logger.trace("[setVariables] called");
 
 		// basic
-		String id = request.getParameter("id");
 		String email = request.getParameter("email");
-		String password = request.getParameter("password");
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
@@ -141,13 +135,12 @@ public class ModifyTeacherView implements View {
 		String qq = request.getParameter("qq");
 		String weibo = request.getParameter("weibo");
 		String mailAddress = request.getParameter("mailAddress");
+		String[] pos = request.getParameterValues("pos");
 		// privacy
 		String accountPrivacy = request.getParameter("accountPrivacy");
 		String contactPrivacy = request.getParameter("contactPrivacy");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[submit] id = " + id);
 			logger.debug("[submit] email = " + email);
-			logger.debug("[submit] password = " + password);
 			logger.debug("[submit] name = " + name);
 			logger.debug("[submit] gender = " + gender);
 			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
@@ -173,6 +166,7 @@ public class ModifyTeacherView implements View {
 			logger.debug("[submit] qq = " + qq);
 			logger.debug("[submit] weibo = " + weibo);
 			logger.debug("[submit] mailAddress = " + mailAddress);
+			logger.debug("[submit] pos = " + Arrays.toString(pos));
 			logger.debug("[submit] accountPrivacy = " + accountPrivacy);
 			logger.debug("[submit] contactPrivacy = " + contactPrivacy);
 		}
@@ -181,30 +175,12 @@ public class ModifyTeacherView implements View {
 		if (submitValidator == null || submitValidator.validate(request)) {
 			ObjectContainer objc = Tutor.getCurrentContainer();
 
-			OrganizationModel orgModel = SessionContainer.getLoginUser(request);
-			TeacherModel teacherModel;
-			if (StringUtils.isNotEmpty(id)) {
-				teacherModel = objc.ext().getByID(Long.parseLong(id));
-				if (!orgModel.equals(teacherModel.getOrganization())) {
-					// other teacher
-					// TODO
-					response.sendError(HttpServletResponse.SC_FORBIDDEN);
-					return false;
-				}
-			} else {
-				teacherModel = new TeacherModel();
-				teacherModel.setOrganization(orgModel);
-			}
+			UserModel loginUser = SessionContainer.getLoginUser(request);
 			boolean emailChanged = !StringUtils.equals(email,
-					teacherModel.getEmail());
-			String orgLock = ModelFactory.getUserSemaphore(orgModel.getEmail());
-			String teacherLock = ModelFactory.getUserSemaphore(teacherModel
-					.getEmail());
+					loginUser.getEmail());
+			String lock = ModelFactory.getUserSemaphore(loginUser.getEmail());
 			String newLock = ModelFactory.getUserSemaphore(email);
-
-			if (objc.ext().setSemaphore(orgLock, 0)
-					&& (teacherLock == null || objc.ext().setSemaphore(
-							teacherLock, 0))) {
+			if (objc.ext().setSemaphore(lock, 0)) {
 				try {
 					if (emailChanged
 							&& (!objc.ext().setSemaphore(newLock, 0) || objc
@@ -214,57 +190,59 @@ public class ModifyTeacherView implements View {
 						Messages.addError(request, "email",
 								duplicatedEmailMessage);
 					} else {
-						// teacher info
-						teacherModel.setEmail(Tutor.emptyNull(email));
-						if (StringUtils.isNotEmpty(password)) {
-							teacherModel.setPassword(ModelFactory
-									.encryptPassword(password));
-						}
-						teacherModel.setName(Tutor.emptyNull(name));
-						teacherModel.setMale("Male".equals(gender));
-						teacherModel.setBirthday(StringUtils
-								.join(birthday, '-'));
-						teacherModel.setProvince(Tutor.emptyNull(province));
-						teacherModel.setCity(Tutor.emptyNull(city));
-						teacherModel.setDistrict(Tutor.emptyNull(district));
-						if (subjects != null) {
-							teacherModel.getSubjectsFor().clear();
-							for (String s : subjects) {
-								if (StringUtils.isEmpty(s))
-									continue;
-								teacherModel.getSubjectsFor().add(s);
+						loginUser.setEmail(Tutor.emptyNull(email));
+						loginUser.setName(Tutor.emptyNull(name));
+						loginUser.setProvince(Tutor.emptyNull(province));
+						loginUser.setCity(Tutor.emptyNull(city));
+						loginUser.setDistrict(Tutor.emptyNull(district));
+						if (loginUser instanceof OrganizationModel) {
+							// organization
+							OrganizationModel orgModel = (OrganizationModel) loginUser;
+							if (subjects != null) {
+								orgModel.getSubjectsFor().clear();
+								for (String s : subjects) {
+									if (StringUtils.isEmpty(s))
+										continue;
+									orgModel.getSubjectsFor().add(s);
+								}
 							}
-						}
-						teacherModel.setGrade(grade);
-						teacherModel.setGradeLevelFrom(Byte
-								.valueOf(gradeLevelFrom));
-						teacherModel
-								.setGradeLevelTo(Byte.valueOf(gradeLevelTo));
-						teacherModel.setEducation(Tutor.emptyNull(education));
-						teacherModel.setTeachedYears(Tutor
-								.byteNull(teachedYears));
-						if (speciality != null) {
-							teacherModel.getSpecialityFor().clear();
-							for (String s : speciality) {
-								if (StringUtils.isEmpty(s))
-									continue;
-								teacherModel.getSpecialityFor().add(s);
+							orgModel.setHomepage(Tutor.emptyNull(homepage));
+						} else if (loginUser instanceof TeacherModel) {
+							// teacher
+							TeacherModel teacherModel = (TeacherModel) loginUser;
+							teacherModel.setMale("Male".equals(gender));
+							teacherModel.setBirthday(StringUtils.join(birthday,
+									'-'));
+							teacherModel.setGrade(grade);
+							teacherModel.setGradeLevelFrom(Byte
+									.valueOf(gradeLevelFrom));
+							teacherModel.setGradeLevelTo(Byte
+									.valueOf(gradeLevelTo));
+							teacherModel.setEducation(Tutor
+									.emptyNull(education));
+							teacherModel.setTeachedYears(Tutor
+									.byteNull(teachedYears));
+							if (speciality != null) {
+								teacherModel.getSpecialityFor().clear();
+								for (String s : speciality) {
+									if (StringUtils.isEmpty(s))
+										continue;
+									teacherModel.getSpecialityFor().add(s);
+								}
 							}
+							teacherModel.setHomepage(Tutor.emptyNull(homepage));
 						}
-						teacherModel.setHomepage(Tutor.emptyNull(homepage));
-						teacherModel.setDescription(Tutor
-								.emptyNull(description));
-						teacherModel.setAccountPrivacy(Tutor.enumNull(
+						loginUser.setDescription(Tutor.emptyNull(description));
+						loginUser.setAccountPrivacy(Tutor.enumNull(
 								UserPrivacy.class, accountPrivacy));
-						teacherModel.setContactPrivacy(Tutor.enumNull(
+						loginUser.setContactPrivacy(Tutor.enumNull(
 								UserPrivacy.class, contactPrivacy));
-						teacherModel.setState(UserState.Activated);
+						loginUser.setState(UserState.Activated);
 						// contact
-						UserContactModel contactModel = teacherModel
-								.getContact();
+						UserContactModel contactModel = loginUser.getContact();
 						if (contactModel == null) {
 							contactModel = new UserContactModel();
-							teacherModel.setContact(contactModel);
+							loginUser.setContact(contactModel);
 						}
 						contactModel.setName(Tutor.emptyNull(contactName));
 						contactModel.setPostcode(Tutor.emptyNull(postcode));
@@ -277,20 +255,18 @@ public class ModifyTeacherView implements View {
 						contactModel.setWeibo(Tutor.emptyNull(weibo));
 						contactModel.setMailAddress(Tutor
 								.emptyNull(mailAddress));
-						// organization
-						if (StringUtils.isEmpty(id)) {
-							Integer count = orgModel.getTeacherCount();
-							orgModel.setTeacherCount(count == null ? 1
-									: count + 1);
+						if (pos != null) {
+							contactModel.setPosX(Tutor.doubleNull(pos[0]));
+							contactModel.setPosY(Tutor.doubleNull(pos[1]));
 						}
 						// save
-						objc.store(teacherModel);
+						objc.store(loginUser);
 						objc.commit();
 						if (logger.isDebugEnabled())
 							logger.debug("[submit] success. goto "
-									+ submitSuccessPage);
+									+ successPage);
 						response.sendRedirect(request.getContextPath()
-								+ submitSuccessPage);
+								+ successPage);
 						return false;
 					}
 				} catch (Throwable t) {
@@ -298,58 +274,12 @@ public class ModifyTeacherView implements View {
 					objc.rollback();
 					throw t;
 				} finally {
-					objc.ext().releaseSemaphore(orgLock);
-					if (teacherLock != null)
-						objc.ext().releaseSemaphore(teacherLock);
+					objc.ext().releaseSemaphore(lock);
 					if (emailChanged)
 						objc.ext().releaseSemaphore(newLock);
 				}
 			}
 			Messages.addError(request, "email", userLockedMessage);
-		}
-
-		setVariables(request);
-		return true;
-	}
-
-	protected boolean delete(HttpServletRequest request,
-			HttpServletResponse response) throws Throwable {
-		if (logger.isTraceEnabled())
-			logger.trace("[delete] called");
-
-		// parameters
-		String id = request.getParameter("id");
-		if (logger.isInfoEnabled())
-			logger.info("[delete] id = " + id);
-
-		// validation
-		if (deleteValidator == null || deleteValidator.validate(request)) {
-			ObjectContainer objc = Tutor.getCurrentContainer();
-
-			OrganizationModel orgModel = SessionContainer.getLoginUser(request);
-			TeacherModel teacherModel = objc.ext().getByID(Long.parseLong(id));
-			if (!orgModel.equals(teacherModel.getOrganization())) {
-				// other teacher
-				// TODO
-				response.sendError(HttpServletResponse.SC_FORBIDDEN);
-				return false;
-			}
-
-			String lock = ModelFactory.getUserSemaphore(orgModel.getEmail());
-			if (objc.ext().setSemaphore(lock, 0)) {
-				try {
-					teacherModel.setDeleted(Boolean.TRUE);
-					orgModel.setTeacherCount(orgModel.getTeacherCount() - 1);
-					objc.store(teacherModel);
-					objc.commit();
-				} catch (Throwable t) {
-					logger.error("[delete] failed.", t);
-					objc.rollback();
-					throw t;
-				} finally {
-					objc.ext().releaseSemaphore(lock);
-				}
-			}
 		}
 
 		setVariables(request);
@@ -369,21 +299,6 @@ public class ModifyTeacherView implements View {
 	 */
 	public void setSubmitValidator(ParamValidator submitValidator) {
 		this.submitValidator = submitValidator;
-	}
-
-	/**
-	 * @return the deleteValidator
-	 */
-	public ParamValidator getDeleteValidator() {
-		return deleteValidator;
-	}
-
-	/**
-	 * @param deleteValidator
-	 *            the deleteValidator to set
-	 */
-	public void setDeleteValidator(ParamValidator deleteValidator) {
-		this.deleteValidator = deleteValidator;
 	}
 
 	/**
@@ -417,33 +332,18 @@ public class ModifyTeacherView implements View {
 	}
 
 	/**
-	 * @return the submitSuccessPage
+	 * @return the successPage
 	 */
-	public String getSubmitSuccessPage() {
-		return submitSuccessPage;
+	public String getSuccessPage() {
+		return successPage;
 	}
 
 	/**
-	 * @param submitSuccessPage
-	 *            the submitSuccessPage to set
+	 * @param successPage
+	 *            the successPage to set
 	 */
-	public void setSubmitSuccessPage(String submitSuccessPage) {
-		this.submitSuccessPage = submitSuccessPage;
-	}
-
-	/**
-	 * @return the deleteSuccessPage
-	 */
-	public String getDeleteSuccessPage() {
-		return deleteSuccessPage;
-	}
-
-	/**
-	 * @param deleteSuccessPage
-	 *            the deleteSuccessPage to set
-	 */
-	public void setDeleteSuccessPage(String deleteSuccessPage) {
-		this.deleteSuccessPage = deleteSuccessPage;
+	public void setSuccessPage(String successPage) {
+		this.successPage = successPage;
 	}
 
 }
