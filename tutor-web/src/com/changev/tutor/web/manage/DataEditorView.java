@@ -94,9 +94,6 @@ public class DataEditorView implements View {
 				}
 
 				value = request.getParameter(fields[i].getName());
-				if (value == null)
-					continue;
-
 				Class<?> fieldType = fields[i].getType();
 				if (fieldType.isEnum()) {
 					fields[i].set(data,

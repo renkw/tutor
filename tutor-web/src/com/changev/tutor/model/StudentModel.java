@@ -39,8 +39,19 @@ public class StudentModel extends UserModel {
 		super.setRole(UserRole.Student);
 	}
 
-	@Override
-	public void setRole(UserRole role) {
+	public List<QuestionModel> getQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getUnclosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getClosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -63,19 +74,8 @@ public class StudentModel extends UserModel {
 		return (StudentModel) super.clone();
 	}
 
-	public List<QuestionModel> getQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
-	}
-
-	public List<QuestionModel> getUnclosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
-	}
-
-	public List<QuestionModel> getClosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+	@Override
+	public void setRole(UserRole role) {
 	}
 
 	/**

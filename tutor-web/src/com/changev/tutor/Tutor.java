@@ -247,8 +247,24 @@ public final class Tutor {
 	 * @return
 	 */
 	public static String id(Object obj) {
+		if (obj == null)
+			return "";
 		long id = getCurrentContainerExt().getID(obj);
-		return id == 0 ? null : Long.toString(id);
+		return id == 0 ? "" : Long.toString(id);
+	}
+
+	/**
+	 * <p>
+	 * 根据对象ID取得数据。
+	 * </p>
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static <T> T fromId(String id) {
+		if (StringUtils.isEmpty(id))
+			return null;
+		return getCurrentContainerExt().getByID(Long.parseLong(id));
 	}
 
 	/**
@@ -376,8 +392,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static Date currentDateTime() {
-		return currentCalendar().getTime();
+	public static java.sql.Timestamp currentTimestamp() {
+		return new java.sql.Timestamp(currentCalendar().getTimeInMillis());
 	}
 
 	/**
@@ -387,8 +403,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static Date currentDate() {
-		return currentDateCalendar().getTime();
+	public static java.sql.Date currentDate() {
+		return new java.sql.Date(currentDateCalendar().getTimeInMillis());
 	}
 
 	/**
@@ -398,8 +414,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static Date currentTime() {
-		return currentTimeCalendar().getTime();
+	public static java.sql.Time currentTime() {
+		return new java.sql.Time(currentTimeCalendar().getTimeInMillis());
 	}
 
 	/**
@@ -768,7 +784,26 @@ public final class Tutor {
 	 */
 	public static byte[] fromHex(String s) {
 		byte[] bytes = new byte[(s.length() + 1) / 2];
-		// TODO
+		for (int i = s.length() - 1; i >= 0; i -= 2) {
+			int c1 = s.charAt(i), c2 = i >= 1 ? s.charAt(i - 1) : '0';
+			if (c1 >= '0' && c1 <= '9')
+				c1 -= '0';
+			else if (c1 >= 'A' && c1 <= 'F')
+				c1 -= 'A' - 10;
+			else if (c1 >= 'a' && c1 <= 'f')
+				c1 -= 'a' - 10;
+			else
+				throw new NumberFormatException(s);
+			if (c2 >= '0' && c2 <= '9')
+				c2 -= '0';
+			else if (c2 >= 'A' && c2 <= 'F')
+				c2 -= 'A' - 10;
+			else if (c2 >= 'a' && c2 <= 'f')
+				c2 -= 'a' - 10;
+			else
+				throw new NumberFormatException(s);
+			bytes[i / 2] = (byte) ((c2 << 4) | (c1 & 0x0F));
+		}
 		return bytes;
 	}
 
@@ -783,9 +818,9 @@ public final class Tutor {
 	public static String toHex(byte[] bytes) {
 		char[] chars = new char[bytes.length * 2];
 		for (int i = 0; i < bytes.length; i++) {
-			int v = bytes[i] & 0x0F;
+			int v = (bytes[i] >>> 4) & 0x0F;
 			chars[i * 2] = (char) (v + (v < 10 ? '0' : 'a' - 10));
-			v = (bytes[i] >>> 4) & 0x0F;
+			v = bytes[i] & 0x0F;
 			chars[i * 2 + 1] = (char) (v + (v < 10 ? '0' : 'a' - 10));
 		}
 		return new String(chars);
@@ -828,40 +863,184 @@ public final class Tutor {
 		return values;
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static String emptyNull(String s) {
 		return StringUtils.isEmpty(s) ? null : s;
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Boolean boolNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Boolean.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Byte byteNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Byte.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Short shortNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Short.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Integer intNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Integer.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Long longNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Long.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Float floatNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Float.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static Double doubleNull(String s) {
 		return StringUtils.isEmpty(s) ? null : Double.valueOf(s);
 	}
 
+	/**
+	 * <p>
+	 * 如果参数为空，返回Null。
+	 * </p>
+	 * 
+	 * @param enumType
+	 * @param s
+	 * @return
+	 */
 	public static <T extends Enum<T>> T enumNull(Class<T> enumType, String s) {
 		return StringUtils.isEmpty(s) ? null : Enum.valueOf(enumType, s);
+	}
+
+	/**
+	 * <p>
+	 * 把字符串的指定位置后面部分替换为*。
+	 * </p>
+	 * 
+	 * @param s
+	 * @param off
+	 * @return
+	 */
+	public static String mask(String s, int off) {
+		char[] ca = s.toCharArray();
+		while (off < ca.length)
+			ca[off++] = '*';
+		return new String(ca);
+	}
+
+	/**
+	 * <p>
+	 * 把字符串的后半部分替换为*。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String mask(String s) {
+		return mask(s, s.length() / 2);
+	}
+
+	/**
+	 * <p>
+	 * 把邮件地址的指定位置后面部分替换为*。 保留@后一个字符和域名后缀。
+	 * </p>
+	 * 
+	 * @param s
+	 * @param off
+	 * @return
+	 */
+	public static String maskEmail(String s, int off) {
+		char[] ca = s.toCharArray();
+		int i1 = s.indexOf('@'), i2 = s.lastIndexOf('.');
+		if (i2 == -1)
+			i2 = s.length();
+		if (i1 == -1)
+			i1 = i2;
+		while (off < i1)
+			ca[off++] = '*';
+		off += 2;
+		while (off < i2)
+			ca[off++] = '*';
+		return new String(ca);
+	}
+
+	/**
+	 * <p>
+	 * 把邮件地址的开始2个字符后面部分替换为*。 保留@后一个字符和域名后缀。
+	 * </p>
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String maskEmail(String s) {
+		return maskEmail(s, 2);
+	}
+
+	private static final String[] NUM_WORD = { "零", "一", "二", "三", "四", "五",
+			"六", "七", "八", "九", "十" };
+
+	public static String numberWord(int n) {
+		return NUM_WORD[n % NUM_WORD.length];
 	}
 
 }

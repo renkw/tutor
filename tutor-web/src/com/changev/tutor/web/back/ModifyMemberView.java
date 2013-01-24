@@ -112,9 +112,7 @@ public class ModifyMemberView implements View {
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
-		String province = request.getParameter("province");
-		String city = request.getParameter("city");
-		String district = request.getParameter("district");
+		String[] area = request.getParameterValues("area");
 		String[] subjects = request.getParameterValues("subjects");
 		String grade = request.getParameter("grade");
 		String gradeLevelFrom = request.getParameter("gradeLevelFrom");
@@ -127,8 +125,7 @@ public class ModifyMemberView implements View {
 		// contact
 		String contactName = request.getParameter("name");
 		String postcode = request.getParameter("postcode");
-		String address1 = request.getParameter("address1");
-		String address2 = request.getParameter("address2");
+		String[] address = request.getParameterValues("address");
 		String telephone = request.getParameter("telephone");
 		String fax = request.getParameter("fax");
 		String cellphone = request.getParameter("cellphone");
@@ -144,9 +141,7 @@ public class ModifyMemberView implements View {
 			logger.debug("[submit] name = " + name);
 			logger.debug("[submit] gender = " + gender);
 			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
-			logger.debug("[submit] province = " + province);
-			logger.debug("[submit] city = " + city);
-			logger.debug("[submit] district = " + district);
+			logger.debug("[submit] area = " + Arrays.toString(area));
 			logger.debug("[submit] subjects = " + Arrays.toString(subjects));
 			logger.debug("[submit] grade = " + grade);
 			logger.debug("[submit] gradeLevelFrom = " + gradeLevelFrom);
@@ -158,8 +153,7 @@ public class ModifyMemberView implements View {
 			logger.debug("[submit] description = " + description);
 			logger.debug("[submit] contactName = " + contactName);
 			logger.debug("[submit] postcode = " + postcode);
-			logger.debug("[submit] address1 = " + address1);
-			logger.debug("[submit] address2 = " + address2);
+			logger.debug("[submit] address = " + Arrays.toString(address));
 			logger.debug("[submit] telephone = " + telephone);
 			logger.debug("[submit] fax = " + fax);
 			logger.debug("[submit] cellphone = " + cellphone);
@@ -173,6 +167,9 @@ public class ModifyMemberView implements View {
 
 		// validation
 		if (submitValidator == null || submitValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[submit] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
 
 			UserModel loginUser = SessionContainer.getLoginUser(request);
@@ -192,14 +189,17 @@ public class ModifyMemberView implements View {
 					} else {
 						loginUser.setEmail(Tutor.emptyNull(email));
 						loginUser.setName(Tutor.emptyNull(name));
-						loginUser.setProvince(Tutor.emptyNull(province));
-						loginUser.setCity(Tutor.emptyNull(city));
-						loginUser.setDistrict(Tutor.emptyNull(district));
+						loginUser.setProvince(area == null ? null : Tutor
+								.emptyNull(area[0]));
+						loginUser.setCity(area == null ? null : Tutor
+								.emptyNull(area[1]));
+						loginUser.setDistrict(area == null ? null : Tutor
+								.emptyNull(area[2]));
 						if (loginUser instanceof OrganizationModel) {
 							// organization
 							OrganizationModel orgModel = (OrganizationModel) loginUser;
+							orgModel.getSubjectsFor().clear();
 							if (subjects != null) {
-								orgModel.getSubjectsFor().clear();
 								for (String s : subjects) {
 									if (StringUtils.isEmpty(s))
 										continue;
@@ -222,8 +222,8 @@ public class ModifyMemberView implements View {
 									.emptyNull(education));
 							teacherModel.setTeachedYears(Tutor
 									.byteNull(teachedYears));
+							teacherModel.getSpecialityFor().clear();
 							if (speciality != null) {
-								teacherModel.getSpecialityFor().clear();
 								for (String s : speciality) {
 									if (StringUtils.isEmpty(s))
 										continue;
@@ -246,8 +246,10 @@ public class ModifyMemberView implements View {
 						}
 						contactModel.setName(Tutor.emptyNull(contactName));
 						contactModel.setPostcode(Tutor.emptyNull(postcode));
-						contactModel.setAddress1(Tutor.emptyNull(address1));
-						contactModel.setAddress2(Tutor.emptyNull(address2));
+						contactModel.setAddress1(address == null ? null : Tutor
+								.emptyNull(address[0]));
+						contactModel.setAddress2(address == null ? null : Tutor
+								.emptyNull(address[1]));
 						contactModel.setTelephone(Tutor.emptyNull(telephone));
 						contactModel.setFax(Tutor.emptyNull(fax));
 						contactModel.setCellphone(Tutor.emptyNull(cellphone));
@@ -255,10 +257,10 @@ public class ModifyMemberView implements View {
 						contactModel.setWeibo(Tutor.emptyNull(weibo));
 						contactModel.setMailAddress(Tutor
 								.emptyNull(mailAddress));
-						if (pos != null) {
-							contactModel.setPosX(Tutor.doubleNull(pos[0]));
-							contactModel.setPosY(Tutor.doubleNull(pos[1]));
-						}
+						contactModel.setPosX(pos == null ? null : Tutor
+								.doubleNull(pos[0]));
+						contactModel.setPosY(pos == null ? null : Tutor
+								.doubleNull(pos[1]));
 						// save
 						objc.store(loginUser);
 						objc.commit();
@@ -274,9 +276,9 @@ public class ModifyMemberView implements View {
 					objc.rollback();
 					throw t;
 				} finally {
-					objc.ext().releaseSemaphore(lock);
 					if (emailChanged)
 						objc.ext().releaseSemaphore(newLock);
+					objc.ext().releaseSemaphore(lock);
 				}
 			}
 			Messages.addError(request, "email", userLockedMessage);

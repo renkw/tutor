@@ -7,8 +7,36 @@
 <#include "/_inc/head.html">
 </head>
 <body>
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
 <#include "/_inc/bar.html">
-<h1 style="color:red">发生错误啦！！</h1>
+<tbody>
+	<tr>
+		<td height="100%" align="left" valign="top">
+			<!-- REPLACE HERE　WITH　ASSISTANT -->
+			<div class="box-assist ui-widget-content ui-corner-all">
+				<div class="box-title ui-state-default ui-corner-top">错误</div>
+				<div class="box-subtitle ui-widget-content">联系我们</div>
+				<div class="box-content ui-widget-content">
+					<@contactus />
+				</div>
+			</div>
+		</td>
+		<td align="left" valign="top">
+			<!-- REPLACE HERE WITH CONTENT -->
+			<div class="box-body ui-widget-content ui-corner-all">
+				<div class="box-title navbar ui-state-default ui-corner-top">
+					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">错误</a>
+				</div>
+				<div class="box-content ui-widget-content">
+					<h1>出错啦！！</h1>
+				</div>
+			</div>
+		</td>
+	</tr>
+</tbody>
 <#include "/_inc/foot.html">
+</table>
 </body>
 </html>

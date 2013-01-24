@@ -36,7 +36,7 @@ $(function() {
 <#include "/_inc/bar.html">
 <tbody>
 	<tr>
-		<td height="99%" align="left" valign="top">
+		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
@@ -47,14 +47,14 @@ $(function() {
 					<table border="0" cellspacing="2" cellpadding="0">
 					<tbody>
 						<tr>
-							<td rowspan="4" align="left" valign="top"><img src="../images/school.jpg" width="80" /></td>
-							<td>${tutor.loginUser.email}</td>
+							<td rowspan="4" align="left" valign="top"><@face user=tutor.loginUser width=75 /></td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.email}</div></td>
 						</tr>
 						<tr>
-							<td>${tutor.loginUser.name}</td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.name}</div></td>
 						</tr>
 						<tr>
-							<td>${tutor.loginUser.location}</td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.location}</div></td>
 						</tr>
 						<tr>
 							<td>

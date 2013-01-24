@@ -8,12 +8,13 @@ package com.changev.tutor.model;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Date;
+import java.sql.Timestamp;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
 import com.db4o.activation.ActivationPurpose;
 import com.db4o.activation.Activator;
+import com.db4o.config.annotations.Indexed;
 import com.db4o.ta.Activatable;
 
 /**
@@ -29,11 +30,14 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 
 	private static final long serialVersionUID = 4390399593602862270L;
 
-	private Date createDateTime;
-	private Date updateDateTime;
 	private Boolean deleted;
+	@Indexed
+	private long createTimestamp;
+	private long updateTimestamp;
 
 	private transient Activator activator;
+	private transient Timestamp createDateTime;
+	private transient Timestamp updateDateTime;
 
 	@Override
 	public final void bind(Activator activator) {
@@ -82,9 +86,9 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param container
 	 */
 	public void objectOnNew(ObjectContainer container) {
-		Date date = Tutor.currentDateTime();
-		setCreateDateTime(date);
-		setUpdateDateTime(date);
+		long timesatmp = Tutor.timestamp();
+		setCreateTimestamp(timesatmp);
+		setUpdateTimestamp(timesatmp);
 		setDeleted(Boolean.FALSE);
 	}
 
@@ -96,7 +100,7 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param container
 	 */
 	public void objectOnUpdate(ObjectContainer container) {
-		setUpdateDateTime(Tutor.currentDateTime());
+		setUpdateTimestamp(Tutor.timestamp());
 	}
 
 	@Override
@@ -143,8 +147,10 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	/**
 	 * @return the createDateTime
 	 */
-	public Date getCreateDateTime() {
+	public Timestamp getCreateDateTime() {
 		beforeGet();
+		if (createDateTime == null && createTimestamp != 0)
+			createDateTime = new Timestamp(createTimestamp);
 		return createDateTime;
 	}
 
@@ -152,16 +158,20 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param createDateTime
 	 *            the createDateTime to set
 	 */
-	public void setCreateDateTime(Date createDateTime) {
+	public void setCreateDateTime(Timestamp createDateTime) {
 		beforeSet();
 		this.createDateTime = createDateTime;
+		this.createTimestamp = createDateTime == null ? 0 : createDateTime
+				.getTime();
 	}
 
 	/**
 	 * @return the updateDateTime
 	 */
-	public Date getUpdateDateTime() {
+	public Timestamp getUpdateDateTime() {
 		beforeGet();
+		if (updateDateTime == null && updateTimestamp != 0)
+			updateDateTime = new Timestamp(updateTimestamp);
 		return updateDateTime;
 	}
 
@@ -169,9 +179,11 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param updateDateTime
 	 *            the updateDateTime to set
 	 */
-	public void setUpdateDateTime(Date updateDateTime) {
+	public void setUpdateDateTime(Timestamp updateDateTime) {
 		beforeSet();
 		this.updateDateTime = updateDateTime;
+		this.updateTimestamp = updateDateTime == null ? 0 : updateDateTime
+				.getTime();
 	}
 
 	/**
@@ -189,6 +201,42 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	public void setDeleted(Boolean deleted) {
 		beforeSet();
 		this.deleted = deleted;
+	}
+
+	/**
+	 * @return the createTimestamp
+	 */
+	public long getCreateTimestamp() {
+		beforeGet();
+		return createTimestamp;
+	}
+
+	/**
+	 * @param createTimestamp
+	 *            the createTimestamp to set
+	 */
+	public void setCreateTimestamp(long createTimestamp) {
+		beforeSet();
+		this.createTimestamp = createTimestamp;
+		this.createDateTime = null;
+	}
+
+	/**
+	 * @return the updateTimestamp
+	 */
+	public long getUpdateTimestamp() {
+		beforeGet();
+		return updateTimestamp;
+	}
+
+	/**
+	 * @param updateTimestamp
+	 *            the updateTimestamp to set
+	 */
+	public void setUpdateTimestamp(long updateTimestamp) {
+		beforeSet();
+		this.updateTimestamp = updateTimestamp;
+		this.updateDateTime = null;
 	}
 
 }

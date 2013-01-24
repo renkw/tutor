@@ -46,9 +46,10 @@
 .blue-button { border: 1px solid darkblue; }
 .gray-button, .gray-button a { background-color: lightgray; color: gray; text-decoration: none; }
 .gray-button { border: 1px solid gray; }
+.ellipsis { width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 BODY, TH, TD, DIV, SPAN, P, LI { font: 12px sans-serif; line-height: 16px; }
 BODY { margin: 2px; padding: 0; overflow: auto; }
-#box { border-width: 0 2px 0 0 !important; float:left; display: none; }
+#box { border-width: 0 2px 0 0 !important; display: none; width: 975px; }
 .box-title, .box-subtitle { padding: 4px; white-space: nowrap; }
 .box-title { font-size: 14px; font-weight: bold; border-width: 0 !important; height: 18px; }
 .box-subtitle { background: #eeeeee; border-width: 1px 0 0 0 !important; }
@@ -81,17 +82,15 @@ BODY { margin: 2px; padding: 0; overflow: auto; }
 function go2(path) { location.href = path; }
 function addq(/*...*/) {
 	var s = "";
-	var m = (/([^?&=]+)=([^&=]*)/g).exec(location.search);
-	if (m) {
-		OUT:for (var i = 1; i < m.length; i += 2) {
-			for (var j = 0; j < arguments.length; j += 2) {
-				if (m[i] == arguments[j]) continue OUT;
-			}
-			s = (s == "" ? "?" : "&") + encodeURIComponent(m[i]) + "=" + encodeURIComponent(m[i + 1]);
+	var regex = /[?&]?([^=]+)=([^&]*)/g, m;
+	OUT:while (m = regex.exec(location.search)) {
+		for (var j = 0; j < arguments.length; j += 2) {
+			if (m[1] == arguments[j]) continue OUT;
 		}
+		s += (s == "" ? "?" : "&") + encodeURIComponent(m[1]) + "=" + encodeURIComponent(m[2]);
 	}
 	for (var i = 0; i < arguments.length; i += 2)
-		s = (s == "" ? "?" : "&") + encodeURIComponent(arguments[i]) + "=" + encodeURIComponent(arguments[i + 1]);
+		s += (s == "" ? "?" : "&") + encodeURIComponent(arguments[i]) + "=" + encodeURIComponent(arguments[i + 1]);
 	location.search = s;
 }
 

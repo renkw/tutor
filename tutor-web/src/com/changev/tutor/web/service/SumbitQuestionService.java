@@ -3,7 +3,6 @@
  */
 package com.changev.tutor.web.service;
 
-import java.util.Date;
 import java.util.Map;
 
 import com.changev.tutor.Tutor;
@@ -29,7 +28,7 @@ public class SumbitQuestionService implements Service<Map> {
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {
 		QuestionModel question = new QuestionModel();
-		question.setCreateDateTime(new Date());
+		question.setCreateDateTime(Tutor.currentTimestamp());
 		question.setUser_id(user.getEmail());
 		question.setTitle(String.valueOf(input.get("title")));
 		question.setType(0);

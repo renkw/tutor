@@ -5,6 +5,8 @@
  */
 package com.changev.tutor.web.front;
 
+import java.util.Arrays;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -64,8 +66,7 @@ public class RegisterCompleteView implements View {
 		// get parameters
 		String name = request.getParameter("name");
 		String postcode = request.getParameter("postcode");
-		String address1 = request.getParameter("address1");
-		String address2 = request.getParameter("address2");
+		String[] address = request.getParameterValues("address");
 		String telephone = request.getParameter("telephone");
 		String cellphone = request.getParameter("cellphone");
 		String qq = request.getParameter("qq");
@@ -76,8 +77,8 @@ public class RegisterCompleteView implements View {
 		if (logger.isDebugEnabled()) {
 			logger.debug("[registerComplete] name = " + name);
 			logger.debug("[registerComplete] postcode = " + postcode);
-			logger.debug("[registerComplete] address1 = " + address1);
-			logger.debug("[registerComplete] address2 = " + address2);
+			logger.debug("[registerComplete] address = "
+					+ Arrays.toString(address));
 			logger.debug("[registerComplete] telephone = " + telephone);
 			logger.debug("[registerComplete] cellphone = " + cellphone);
 			logger.debug("[registerComplete] qq = " + qq);
@@ -90,6 +91,9 @@ public class RegisterCompleteView implements View {
 		}
 		// validation
 		if (registerValidator == null || registerValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[registerComplete] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
 			UserModel parentModel = SessionContainer.getLoginUser(request);
 			StudentModel studentModel = Tutor.one(objc
@@ -111,15 +115,17 @@ public class RegisterCompleteView implements View {
 						parentModel.setContact(contactModel);
 					}
 
-					contactModel.setName(name);
-					contactModel.setPostcode(postcode);
-					contactModel.setAddress1(address1);
-					contactModel.setAddress2(address2);
-					contactModel.setTelephone(telephone);
-					contactModel.setCellphone(cellphone);
-					contactModel.setQQ(qq);
-					contactModel.setWeibo(weibo);
-					contactModel.setMailAddress(mailAddress);
+					contactModel.setName(Tutor.emptyNull(name));
+					contactModel.setPostcode(Tutor.emptyNull(postcode));
+					contactModel.setAddress1(address == null ? null : Tutor
+							.emptyNull(address[0]));
+					contactModel.setAddress2(address == null ? null : Tutor
+							.emptyNull(address[1]));
+					contactModel.setTelephone(Tutor.emptyNull(telephone));
+					contactModel.setCellphone(Tutor.emptyNull(cellphone));
+					contactModel.setQQ(Tutor.emptyNull(qq));
+					contactModel.setWeibo(Tutor.emptyNull(weibo));
+					contactModel.setMailAddress(Tutor.emptyNull(mailAddress));
 
 					UserPrivacy acc = UserPrivacy.valueOf(accountPrivacy);
 					UserPrivacy con = UserPrivacy.valueOf(contactPrivacy);

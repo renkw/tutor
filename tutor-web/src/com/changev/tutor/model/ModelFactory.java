@@ -30,6 +30,18 @@ public final class ModelFactory {
 				: "com.changev.tutor.model.UserModel:" + email;
 	}
 
+	public static <T extends AbstractModel> T getModelExample(Class<T> type) {
+		try {
+			T example = type.newInstance();
+			example.setDeleted(Boolean.FALSE);
+			return example;
+		} catch (InstantiationException e) {
+			throw new UnsupportedOperationException(e);
+		} catch (IllegalAccessException e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
 	public static UserModel getUserExample(String email) {
 		UserModel userExample = new UserModel();
 		userExample.setEmail(email);
@@ -66,11 +78,41 @@ public final class ModelFactory {
 	public static TeacherModel getOrganizationTeacherExample(String email) {
 		OrganizationModel organizationExample = new OrganizationModel();
 		organizationExample.setEmail(email);
-		TeacherModel model = new TeacherModel();
-		model.setRole(UserRole.Teacher);
-		model.setOrganization(organizationExample);
-		model.setDeleted(Boolean.FALSE);
-		return model;
+		TeacherModel teacherExample = new TeacherModel();
+		teacherExample.setRole(UserRole.Teacher);
+		teacherExample.setOrganization(organizationExample);
+		teacherExample.setDeleted(Boolean.FALSE);
+		return teacherExample;
+	}
+
+	public static AnswerModel getTeacherAnswerExample(String email) {
+		TeacherModel teacherExample = new TeacherModel();
+		teacherExample.setEmail(email);
+		AnswerModel answerExample = new AnswerModel();
+		answerExample.setAnswerer(teacherExample);
+		answerExample.setDeleted(Boolean.FALSE);
+		return answerExample;
+	}
+
+	public static AnswerModel getAcceptedAnswerExample(String email) {
+		TeacherModel teacherExample = new TeacherModel();
+		teacherExample.setEmail(email);
+		QuestionModel questionExample = new QuestionModel();
+		questionExample.setClosed(Boolean.TRUE);
+		questionExample.setFinalAnswerer(teacherExample);
+		AnswerModel answerExample = new AnswerModel();
+		answerExample.setQuestion(questionExample);
+		answerExample.setDeleted(Boolean.FALSE);
+		return answerExample;
+	}
+
+	public static QuestionModel getAssignedQuestionExample(String email) {
+		TeacherModel teacherExample = new TeacherModel();
+		teacherExample.setEmail(email);
+		QuestionModel questionExample = new QuestionModel();
+		questionExample.setClosed(Boolean.FALSE);
+		questionExample.setSpecifiedAnswerer(teacherExample);
+		return questionExample;
 	}
 
 	public static String encryptPassword(String password) {

@@ -24,10 +24,6 @@ public class AdminModel extends UserModel {
 	}
 
 	@Override
-	public void setRole(UserRole role) {
-	}
-
-	@Override
 	public void objectOnActivate(ObjectContainer container) {
 		super.objectOnActivate(container);
 	}
@@ -45,6 +41,10 @@ public class AdminModel extends UserModel {
 	@Override
 	public AdminModel clone() {
 		return (AdminModel) super.clone();
+	}
+
+	@Override
+	public void setRole(UserRole role) {
 	}
 
 }

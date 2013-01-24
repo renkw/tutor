@@ -23,6 +23,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -125,6 +126,8 @@ public class AuthFilter implements Filter {
 				Attribute state = elem.getAttributeByName(new QName("state"));
 				Attribute path = elem.getAttributeByName(new QName("path"));
 				Attribute code = elem.getAttributeByName(new QName("code"));
+				Attribute inv = elem
+						.getAttributeByName(new QName("invalidate"));
 				if (logger.isDebugEnabled()) {
 					logger.debug("[parseRule] "
 							+ name
@@ -135,7 +138,9 @@ public class AuthFilter implements Filter {
 							+ (state == null ? "*" : StringUtils
 									.defaultIfEmpty(state.getValue(), "*"))
 							+ (path == null ? "" : " path = " + path.getValue())
-							+ (code == null ? "" : " code = " + code.getValue()));
+							+ (code == null ? "" : " code = " + code.getValue())
+							+ (inv == null ? "" : " invalidate = "
+									+ inv.getValue()));
 				}
 
 				if (item == null)
@@ -156,12 +161,16 @@ public class AuthFilter implements Filter {
 								"attribute path is required");
 					item.forward = true;
 					item.path = path.getValue();
+					item.invalidate = inv != null
+							&& "true".equals(inv.getValue());
 				} else if ("redirect".equals(name)) {
 					if (path == null)
 						throw new XMLStreamException(
 								"attribute path is required");
 					item.forward = false;
 					item.path = path.getValue();
+					item.invalidate = inv != null
+							&& "true".equals(inv.getValue());
 				} else if ("error".equals(name)) {
 					if (code == null)
 						throw new XMLStreamException(
@@ -254,6 +263,12 @@ public class AuthFilter implements Filter {
 					return;
 				}
 				if (item.path != null && !item.path.equals(reqPath)) {
+					// invalidate
+					if (item.invalidate) {
+						HttpSession session = request.getSession(false);
+						if (session != null)
+							session.invalidate();
+					}
 					// goto the specified page
 					String path = getForwardPath(item.path,
 							request.getRequestURI(), request.getQueryString());
@@ -327,6 +342,7 @@ public class AuthFilter implements Filter {
 		String path;
 		boolean forward;
 		int errorCode;
+		boolean invalidate;
 		AccessControlRuleItem next;
 
 		@Override

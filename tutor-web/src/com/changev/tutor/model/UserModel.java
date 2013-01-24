@@ -43,6 +43,11 @@ public class UserModel extends AbstractModel {
 	private UserPrivacy accountPrivacy;
 	private UserPrivacy contactPrivacy;
 
+	@SuppressWarnings("unchecked")
+	public <T extends UserModel> T as(UserRole role) {
+		return role == this.role ? (T) this : null;
+	}
+
 	@Override
 	public void objectOnActivate(ObjectContainer container) {
 		super.objectOnActivate(container);

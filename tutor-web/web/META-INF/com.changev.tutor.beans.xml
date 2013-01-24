@@ -41,6 +41,7 @@
 				p:simpleMapWrapper="true"
 			/>
 		</property>
+		<property name="templateExceptionHandler" value="#{T(freemarker.template.TemplateExceptionHandler).IGNORE_HANDLER}" />
 	</bean>
 	
 	<!-- UserFileManager -->
@@ -132,6 +133,8 @@
 				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
 				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
@@ -181,6 +184,8 @@
 				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
 				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
@@ -236,6 +241,8 @@
 				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
 				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
@@ -263,6 +270,8 @@
 		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
 		<property name="successPage" value="/back/member.html" />
 	</bean>
+	
+	<bean id="back.questionListView" class="com.changev.tutor.web.back.QuestionListView" />
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 	

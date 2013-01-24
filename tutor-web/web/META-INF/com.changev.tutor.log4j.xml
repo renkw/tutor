@@ -8,15 +8,56 @@
       <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
     </layout>
   </appender>
+  <!-- 
+  <appender name="default" class="org.apache.log4j.DailyRollingFileAppender">
+  	<param name="File" value="/data/wendaoo/logs/default" />
+  	<param name="DatePattern" value="'-'yyyyMMdd'.log'" />
+  	<layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
+    </layout>
+  </appender>
   
+  <appender name="auth" class="org.apache.log4j.DailyRollingFileAppender">
+  	<param name="File" value="/data/wendaoo/logs/auth" />
+  	<param name="DatePattern" value="'-'yyyyMMdd'.log'" />
+  	<layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
+    </layout>
+  </appender>
+  
+  <appender name="performance" class="org.apache.log4j.DailyRollingFileAppender">
+  	<param name="File" value="/data/wendaoo/logs/performance" />
+  	<param name="DatePattern" value="'-'yyyyMMdd'.log'" />
+  	<layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
+    </layout>
+  </appender>
+   -->
   <!-- Loggers -->
-  <logger name="com.changev.tutor">
+  <!-- 
+  <logger name="com.changev.tutor.AUTH" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="auth" />
+  </logger>
+  
+  <logger name="com.changev.tutor.PERFORMANCE" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="performance" />
+  </logger>
+  
+  <logger name="com.changev.tutor" additivity="false">
     <level value="TRACE" />
+    <appender-ref ref="default" />
+  </logger>
+   -->
+  <logger name="com.changev.tutor" additivity="false">
+    <level value="TRACE" />
+    <appender-ref ref="console" />
   </logger>
   
   <!-- Root Logger -->
   <root>
-    <level value="INFO" />
+    <priority value="INFO" />
     <appender-ref ref="console" />
   </root>
   

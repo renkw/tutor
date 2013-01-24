@@ -33,6 +33,7 @@
 
 <#-- 显示页码表 -->
 <#macro pager total pageno show=10>
+<#if total==0>&nbsp;没有记录&nbsp;<#return></#if>
 <#if pageno lte show>
 	<#local start=1 end=show+1>
 <#else>
@@ -69,6 +70,29 @@
 	<tr><th align="left">地址</th><td align="left">&nbsp;&nbsp;XXXXXX</td></tr>
 </tbody>
 </table>
+</#macro>
+
+<#-- 头像 -->
+<#macro face user width=0 height=0>
+<#if user.role=="Organization">
+	<#if user.logoPicture??>
+		<#local picture="/files/${Tutor.id(user)}/${user.logoPicture}">
+	<#else>
+		<#local picture="/images/organization.png">
+	</#if>
+	<img src="${pathrel}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+<#elseif user.role=="Student">
+	<#if user.facePicture??>
+		<#local picture="/files/${Tutor.id(user)}/${user.facePicture}">
+	<#else>
+		<#local picture="/images/student.png">
+	</#if>
+	<img src="${pathrel}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+<#elseif user.male==true>
+	<img src="${pathrel}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+<#else>
+	<img src="${pathrel}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+</#if>
 </#macro>
 
 <#-- 单选按钮 -->

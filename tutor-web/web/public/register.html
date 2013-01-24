@@ -50,9 +50,7 @@
 									<input type="text" name="name" value="${params.name!}" size="30" />
 									<@errmsg name="name" />
 								</td>
-								<td align="left">
-									<div class="alpha25">输入您的姓名。</div>
-								</td>
+								<td align="left" class="alpha25">输入您的姓名。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">登录邮箱<span class="required">*</span></th>
@@ -60,9 +58,7 @@
 									<input type="text" name="email" value="${params.email!}" size="30" />
 									<@errmsg name="email" />
 								</td>
-								<td align="left">
-									<div class="alpha25">此邮箱地址将作为登录用户名，和发送激活或更改密码时使用。</div>
-								</td>
+								<td align="left" class="alpha25">此邮箱地址将作为登录用户名，和发送激活或更改密码时使用。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">登录密码<span class="required">*</span></th>
@@ -70,9 +66,7 @@
 									<input type="password" name="password" value="" size="30" maxlength="10" />
 									<@errmsg name="password" />
 								</td>
-								<td align="left">
-									<div class="alpha25">登录密码由6-10位任意文字组成。</div>
-								</td>
+								<td align="left" class="alpha25">登录密码由6-10位任意文字组成。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">确认密码<span class="required">*</span></th>
@@ -80,9 +74,7 @@
 									<input type="password" name="confirmPassword" value="" size="30" maxlength="10" />
 									<@errmsg name="confirmPassword" />
 								</td>
-								<td align="left">
-									<div class="alpha25">为防止拼写错误，请再输入一次密码。</div>
-								</td>
+								<td align="left" class="alpha25">为防止拼写错误，请再输入一次密码。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">验证码<span class="required">*</span></th>
@@ -93,9 +85,7 @@
 										onclick="this.src='${pathrel}/random.gif?t='+new Date().getTime()" />
 									<@errmsg name="checkCode" />
 								</td>
-								<td align="left">
-									<div class="alpha25">请输入图片中的文字。</div>
-								</td>
+								<td align="left" class="alpha25">请输入图片中的文字。</td>
 							</tr>
 						</tbody>
 						<tfoot>

@@ -20,6 +20,7 @@ import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserContactModel;
 import com.changev.tutor.model.UserPrivacy;
+import com.changev.tutor.model.UserRole;
 import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
@@ -118,9 +119,7 @@ public class ModifyTeacherView implements View {
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
-		String province = request.getParameter("province");
-		String city = request.getParameter("city");
-		String district = request.getParameter("district");
+		String[] area = request.getParameterValues("area");
 		String[] subjects = request.getParameterValues("subjects");
 		String grade = request.getParameter("grade");
 		String gradeLevelFrom = request.getParameter("gradeLevelFrom");
@@ -133,8 +132,7 @@ public class ModifyTeacherView implements View {
 		// contact
 		String contactName = request.getParameter("name");
 		String postcode = request.getParameter("postcode");
-		String address1 = request.getParameter("address1");
-		String address2 = request.getParameter("address2");
+		String[] address = request.getParameterValues("address");
 		String telephone = request.getParameter("telephone");
 		String fax = request.getParameter("fax");
 		String cellphone = request.getParameter("cellphone");
@@ -151,9 +149,7 @@ public class ModifyTeacherView implements View {
 			logger.debug("[submit] name = " + name);
 			logger.debug("[submit] gender = " + gender);
 			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
-			logger.debug("[submit] province = " + province);
-			logger.debug("[submit] city = " + city);
-			logger.debug("[submit] district = " + district);
+			logger.debug("[submit] area = " + Arrays.toString(area));
 			logger.debug("[submit] subjects = " + Arrays.toString(subjects));
 			logger.debug("[submit] grade = " + grade);
 			logger.debug("[submit] gradeLevelFrom = " + gradeLevelFrom);
@@ -165,8 +161,7 @@ public class ModifyTeacherView implements View {
 			logger.debug("[submit] description = " + description);
 			logger.debug("[submit] contactName = " + contactName);
 			logger.debug("[submit] postcode = " + postcode);
-			logger.debug("[submit] address1 = " + address1);
-			logger.debug("[submit] address2 = " + address2);
+			logger.debug("[submit] address = " + Arrays.toString(address));
 			logger.debug("[submit] telephone = " + telephone);
 			logger.debug("[submit] fax = " + fax);
 			logger.debug("[submit] cellphone = " + cellphone);
@@ -179,9 +174,13 @@ public class ModifyTeacherView implements View {
 
 		// validation
 		if (submitValidator == null || submitValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[submit] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
 
-			OrganizationModel orgModel = SessionContainer.getLoginUser(request);
+			OrganizationModel orgModel = SessionContainer.getLoginUser(request)
+					.as(UserRole.Organization);
 			TeacherModel teacherModel;
 			if (StringUtils.isNotEmpty(id)) {
 				teacherModel = objc.ext().getByID(Long.parseLong(id));
@@ -224,11 +223,14 @@ public class ModifyTeacherView implements View {
 						teacherModel.setMale("Male".equals(gender));
 						teacherModel.setBirthday(StringUtils
 								.join(birthday, '-'));
-						teacherModel.setProvince(Tutor.emptyNull(province));
-						teacherModel.setCity(Tutor.emptyNull(city));
-						teacherModel.setDistrict(Tutor.emptyNull(district));
+						teacherModel.setProvince(area == null ? null : Tutor
+								.emptyNull(area[0]));
+						teacherModel.setCity(area == null ? null : Tutor
+								.emptyNull(area[1]));
+						teacherModel.setDistrict(area == null ? null : Tutor
+								.emptyNull(area[2]));
+						teacherModel.getSubjectsFor().clear();
 						if (subjects != null) {
-							teacherModel.getSubjectsFor().clear();
 							for (String s : subjects) {
 								if (StringUtils.isEmpty(s))
 									continue;
@@ -243,8 +245,8 @@ public class ModifyTeacherView implements View {
 						teacherModel.setEducation(Tutor.emptyNull(education));
 						teacherModel.setTeachedYears(Tutor
 								.byteNull(teachedYears));
+						teacherModel.getSpecialityFor().clear();
 						if (speciality != null) {
-							teacherModel.getSpecialityFor().clear();
 							for (String s : speciality) {
 								if (StringUtils.isEmpty(s))
 									continue;
@@ -268,8 +270,10 @@ public class ModifyTeacherView implements View {
 						}
 						contactModel.setName(Tutor.emptyNull(contactName));
 						contactModel.setPostcode(Tutor.emptyNull(postcode));
-						contactModel.setAddress1(Tutor.emptyNull(address1));
-						contactModel.setAddress2(Tutor.emptyNull(address2));
+						contactModel.setAddress1(address == null ? null : Tutor
+								.emptyNull(address[0]));
+						contactModel.setAddress2(address == null ? null : Tutor
+								.emptyNull(address[1]));
 						contactModel.setTelephone(Tutor.emptyNull(telephone));
 						contactModel.setFax(Tutor.emptyNull(fax));
 						contactModel.setCellphone(Tutor.emptyNull(cellphone));
@@ -278,11 +282,8 @@ public class ModifyTeacherView implements View {
 						contactModel.setMailAddress(Tutor
 								.emptyNull(mailAddress));
 						// organization
-						if (StringUtils.isEmpty(id)) {
-							Integer count = orgModel.getTeacherCount();
-							orgModel.setTeacherCount(count == null ? 1
-									: count + 1);
-						}
+						if (StringUtils.isEmpty(id))
+							orgModel.setTeacherCount(orgModel.getTeacherCount() + 1);
 						// save
 						objc.store(teacherModel);
 						objc.commit();
@@ -298,11 +299,11 @@ public class ModifyTeacherView implements View {
 					objc.rollback();
 					throw t;
 				} finally {
-					objc.ext().releaseSemaphore(orgLock);
-					if (teacherLock != null)
-						objc.ext().releaseSemaphore(teacherLock);
 					if (emailChanged)
 						objc.ext().releaseSemaphore(newLock);
+					if (teacherLock != null)
+						objc.ext().releaseSemaphore(teacherLock);
+					objc.ext().releaseSemaphore(orgLock);
 				}
 			}
 			Messages.addError(request, "email", userLockedMessage);
@@ -324,9 +325,13 @@ public class ModifyTeacherView implements View {
 
 		// validation
 		if (deleteValidator == null || deleteValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[delete] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
 
-			OrganizationModel orgModel = SessionContainer.getLoginUser(request);
+			OrganizationModel orgModel = SessionContainer.getLoginUser(request)
+					.as(UserRole.Organization);
 			TeacherModel teacherModel = objc.ext().getByID(Long.parseLong(id));
 			if (!orgModel.equals(teacherModel.getOrganization())) {
 				// other teacher
@@ -342,6 +347,11 @@ public class ModifyTeacherView implements View {
 					orgModel.setTeacherCount(orgModel.getTeacherCount() - 1);
 					objc.store(teacherModel);
 					objc.commit();
+					if (logger.isDebugEnabled())
+						logger.debug("[delete] success. goto "
+								+ deleteSuccessPage);
+					response.sendRedirect(request.getContextPath()
+							+ deleteSuccessPage);
 				} catch (Throwable t) {
 					logger.error("[delete] failed.", t);
 					objc.rollback();

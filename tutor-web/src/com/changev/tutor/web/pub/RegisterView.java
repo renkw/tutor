@@ -111,6 +111,9 @@ public class RegisterView implements View {
 		}
 		// validation
 		if (registerValidator == null || registerValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[register] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
 			String lock = ModelFactory.getUserSemaphore(email);
 			if (objc.ext().setSemaphore(lock, 0)) {
@@ -119,8 +122,8 @@ public class RegisterView implements View {
 							.queryByExample(ModelFactory.getUserExample(email));
 					if (!userSet.hasNext()) {
 						// register
-						userModel.setName(name);
-						userModel.setEmail(email);
+						userModel.setName(Tutor.emptyNull(name));
+						userModel.setEmail(Tutor.emptyNull(email));
 						userModel.setPassword(ModelFactory
 								.encryptPassword(password));
 						objc.store(userModel);

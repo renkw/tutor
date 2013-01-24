@@ -11,7 +11,7 @@ $(function() {
 	var areas = ${areaJson};
 	$("#province").change(function() {
 		var value = this.options[this.selectedIndex].value;
-		var city = $("#city option:selected").val() || "${params.city!}";
+		var city = $("#city option:selected").val() || "${(params.area[1])!teacher.city!}";
 		var cities = areas[value];
 		$("#city").empty();
 		if (cities) {
@@ -28,7 +28,7 @@ $(function() {
 	$("#city").change(function() {
 		var value = this.options[this.selectedIndex].value;
 		var prov = $("#province option:selected").val();
-		var dist = $("#district option:selected").val() || "${params.district!}";
+		var dist = $("#district option:selected").val() || "${(params.area[2])!teacher.district!}";
 		var dists = areas[prov][value];
 		$("#district").empty();
 		if (dists) {
@@ -115,7 +115,7 @@ $(function() {
 <#include "/_inc/bar.html">
 <tbody>
 	<tr>
-		<td height="99%" align="left" valign="top">
+		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
@@ -146,26 +146,34 @@ $(function() {
 							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址<span class="required">*</span></th>
 							<td width="300" align="left">
 								<input type="text" name="email" id="email" value="${params.email!teacher.email!}" />
+								<@errmsg name="email" />
 							</td>
+							<td align="left" class="alpha25">请输入登录邮件地址。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">密码</th>
 							<td align="left">
 								<input type="password" name="password" />
+								<@errmsg name="password" />
 							</td>
+							<td align="left" class="alpha25">6-10位任意字符。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
 							<td align="left">
 								<input type="text" name="name" id="name" value="${params.name!teacher.name!}" />
+								<@errmsg name="name" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师姓名。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">性别</th>
 							<td align="left">
 								<@radio name="gender" value="Male" select=params.gender!(teacher.male?string("Male", "Female"))!"Male">男</@radio>
 								<@radio name="gender" value="Female" select=params.gender!(teacher.male?string("Male", "Female"))!>女</@radio>
+								<@errmsg name="gender" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师性别。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">生日</th>
@@ -187,19 +195,21 @@ $(function() {
 								</select>日
 								<@errmsg name="birthday" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师生日。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
 							<td align="left">
-								<select name="province" id="province">
+								<select name="area" id="province">
 								<#list areas?keys as province>
-									<@option value=province select=params.province>${province}</@option>
+									<@option value=province select=(params.area[0])!teacher.province>${province}</@option>
 								</#list>
 								</select>
-								<select name="city" id="city"></select>
-								<select name="district" id="district"></select>
+								<select name="area" id="city"></select>
+								<select name="area" id="district"></select>
 								<@errmsg name="area" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师所在地区。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
@@ -207,7 +217,9 @@ $(function() {
 							<#list subjects?keys as subject>
 								<@checkbox name="subjects" value=subject select=params.subjects!teacher.subjects>${subjects[subject]}</@checkbox>
 							</#list>
+								<@errmsg name="subjects" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师担任学科。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
@@ -215,26 +227,32 @@ $(function() {
 								<div id="grades">
 									<#list grades?keys as grade>
 										<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
-									</#list>
+									</#list><br />
 									<select name="gradeLevelFrom">
 									</select>
 									～
 									<select name="gradeLevelTo">
 									</select>
 								</div>
+								<@errmsg name="grade" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师担任学年。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学历</th>
 							<td align="left">
 								<input type="text" name="education" value="${params.education!teacher.education!}" />
+								<@errmsg name="education" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师的学历。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">教龄</th>
 							<td align="left">
 								<input type="text" name="teachedYears" value="${params.teachedYears!teacher.teachedYears!}" size="2" />年
+								<@errmsg name="teachedYears" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师的教龄。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">特长</th>
@@ -242,19 +260,25 @@ $(function() {
 							<#list speciality?keys as spec>
 								<@checkbox name="speciality" value=spec select=params.speciality!teacher.speciality>${speciality[spec]}</@checkbox>
 							</#list>
+								<@errmsg name="speciality" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师的特长。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">个人主页</th>
 							<td align="left">
 								<input type="text" name="homepage" value="${params.homepage!teacher.homepage!}" />
+								<@errmsg name="homepage" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师的个人主页。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">个人描述</th>
 							<td align="left">
 								<textarea name="description" rows="5" cols="30">${params.description!teacher.description!}</textarea>
+								<@errmsg name="description" />
 							</td>
+							<td align="left" class="alpha25">请输入该教师的个人描述。</td>
 						</tr>
 					</tbody>
 					</table>
@@ -267,23 +291,19 @@ $(function() {
 							<th width="80" align="center" class="ui-widget-header noborder">姓名</th>
 							<td width="300" align="left">
 								<input type="text" name="contactName" id="contactName" value="${params.contactName!contact.name!}" />
-								<@errmsg name="name" />
+								<@errmsg name="contactName" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人姓名。</div>
-							</td>
+							<td align="left" class="alpha25">联系人姓名。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">地址</th>
 							<td align="left">
 								〒<input type="text" name="postcode" value="${params.postcode!contact.postcode!}" size="7" /><br />
-								<input type="text" name="address1" id="address1" value="${params.address1!contact.address1!}" /><br />
-								<input type="text" name="address2" value="${params.address2!contact.address2!}" /><br />
+								<input type="text" name="address" id="address1" value="${(params.address[0])!contact.address1!}" /><br />
+								<input type="text" name="address" value="${(params.address[1])!contact.address2!}" /><br />
 								<@errmsg name="address" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人邮编和地址。</div>
-							</td>
+							<td align="left" class="alpha25">联系人邮编和地址。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">固定电话</th>
@@ -291,9 +311,7 @@ $(function() {
 								<input type="text" name="telephone" value="${params.telephone!contact.telephone!}" />
 								<@errmsg name="telephone" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人固定电话。</div>
-							</td>
+							<td align="left" class="alpha25">联系人固定电话。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">传真</th>
@@ -301,9 +319,7 @@ $(function() {
 								<input type="text" name="fax" value="${params.fax!contact.fax!}" />
 								<@errmsg name="fax" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人传真。</div>
-							</td>
+							<td align="left" class="alpha25">联系人传真。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">移动电话</th>
@@ -311,9 +327,7 @@ $(function() {
 								<input type="text" name="cellphone" value="${params.cellphone!contact.cellphone!}" />
 								<@errmsg name="cellphone" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人移动电话。</div>
-							</td>
+							<td align="left" class="alpha25">联系人移动电话。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">QQ</th>
@@ -321,9 +335,7 @@ $(function() {
 								<input type="text" name="qq" value="${params.qq!contact.QQ!}" />
 								<@errmsg name="qq" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人QQ号码。</div>
-							</td>
+							<td align="left" class="alpha25">联系人QQ号码。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">微博地址</th>
@@ -331,9 +343,7 @@ $(function() {
 								<input type="text" name="weibo" value="${params.weibo!contact.weibo!}" />
 								<@errmsg name="weibo" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人微博地址。</div>
-							</td>
+							<td align="left" class="alpha25">联系人微博地址。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">Email</th>
@@ -341,9 +351,7 @@ $(function() {
 								<input type="text" name="mailAddress" id="mailAddress" value="${params.mailAddress!contact.mailAddress!}" />
 								<@errmsg name="mailAddress" />
 							</td>
-							<td align="left">
-								<div class="alpha25">联系人Email。</div>
-							</td>
+							<td align="left" class="alpha25">联系人Email。</td>
 						</tr>
 					</tbody>
 					</table>
@@ -360,9 +368,7 @@ $(function() {
 								<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!teacher.accountPrivacy!"Public">全部公开</@radio>
 								<@errmsg name="accountPrivacy" />
 							</td>
-							<td align="left">
-								<div class="alpha25">设置公开教师资料。</div>
-							</td>
+							<td align="left" class="alpha25">设置公开教师资料。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">联系资料</th>
@@ -372,9 +378,7 @@ $(function() {
 								<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!teacher.contactPrivacy!"Public">全部公开</@radio>
 								<@errmsg name="contactPrivacy" />
 							</td>
-							<td align="left">
-								<div class="alpha25">设置公开联系资料。</div>
-							</td>
+							<td align="left" class="alpha25">设置公开联系资料。</td>
 						</tr>
 					</tbody>
 					<tfoot>

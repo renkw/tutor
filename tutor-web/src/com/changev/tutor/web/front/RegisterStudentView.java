@@ -7,6 +7,7 @@ package com.changev.tutor.web.front;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,9 +92,7 @@ public class RegisterStudentView implements View {
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
-		String province = request.getParameter("province");
-		String city = request.getParameter("city");
-		String district = request.getParameter("district");
+		String[] area = request.getParameterValues("area");
 		String school = request.getParameter("school");
 		String grade = request.getParameter("grade");
 		String gradeLevel = request.getParameter("gradeLevel");
@@ -106,9 +105,7 @@ public class RegisterStudentView implements View {
 			logger.debug("[registerStudent] gender = " + gender);
 			logger.debug("[registerStudent] birthday = "
 					+ Arrays.toString(birthday));
-			logger.debug("[registerStudent] province = " + province);
-			logger.debug("[registerStudent] city = " + city);
-			logger.debug("[registerStudent] district = " + district);
+			logger.debug("[registerStudent] area = " + Arrays.toString(area));
 			logger.debug("[registerStudent] school = " + school);
 			logger.debug("[registerStudent] grade = " + grade);
 			logger.debug("[registerStudent] gradeLevel = " + gradeLevel);
@@ -121,13 +118,17 @@ public class RegisterStudentView implements View {
 		}
 		// validation
 		if (registerValidator == null || registerValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[registerStudent] validation passed");
+
 			ObjectContainer objc = Tutor.getCurrentContainer();
-			UserModel parentModel = SessionContainer.getLoginUser(request);
-			if (parentModel.getRole() != UserRole.Parent
+			ParentModel parentModel = SessionContainer.getLoginUser(request)
+					.as(UserRole.Parent);
+			if (parentModel == null
 					|| parentModel.getState() != UserState.Incomplete) {
 				// no need register
 				if (logger.isDebugEnabled())
-					logger.debug("[registerStudent] no need register. goto /home.html");
+					logger.debug("[registerStudent] no need register. goto /");
 				response.sendRedirect(request.getContextPath() + "/");
 				return false;
 			}
@@ -136,30 +137,45 @@ public class RegisterStudentView implements View {
 			if (objc.ext().setSemaphore(lock, 0)) {
 				try {
 					StudentModel studentModel = new StudentModel();
-					studentModel.setName(name);
+					studentModel.setName(Tutor.emptyNull(name));
 					studentModel.setMale("Male".equals(gender));
 					studentModel.setBirthday(StringUtils.join(birthday, '-'));
-					studentModel.setProvince(province);
-					studentModel.setCity(city);
-					studentModel.setDistrict(district);
-					studentModel.setSchool(school);
-					studentModel.setGrade(grade);
-					studentModel.setGradeLevel(Byte.valueOf(gradeLevel));
-					studentModel.setHobby(hobby);
-					studentModel.setDescription(description);
-					studentModel.setParent((ParentModel) parentModel);
+					studentModel.setProvince(area == null ? null : Tutor
+							.emptyNull(area[0]));
+					studentModel.setCity(area == null ? null : Tutor
+							.emptyNull(area[1]));
+					studentModel.setDistrict(area == null ? null : Tutor
+							.emptyNull(area[2]));
+					studentModel.setSchool(Tutor.emptyNull(school));
+					studentModel.setGrade(Tutor.emptyNull(grade));
+					studentModel.setGradeLevel(Tutor.byteNull(gradeLevel));
+					studentModel.setHobby(Tutor.emptyNull(hobby));
+					studentModel.setDescription(Tutor.emptyNull(description));
+					studentModel.setParent(parentModel);
 					// studentModel.setState(UserState.Unavailable);
 					studentModel.setState(UserState.Incomplete);
-					for (int i = 0; i < subject.length && i < answerer.length; i++) {
-						if (StringUtils.isNotEmpty(answerer[i])) {
-							studentModel.getDefaultAnswererFor().put(
-									subject[i], answerer[i]);
+					studentModel.getDefaultAnswererFor().clear();
+					parentModel.getContactersFor().clear();
+					if (subject != null && answerer != null) {
+						for (int i = 0; i < subject.length
+								&& i < answerer.length; i++) {
+							if (StringUtils.isNotEmpty(answerer[i])) {
+								studentModel.getDefaultAnswererFor().put(
+										subject[i], answerer[i]);
+								List<UserModel> teacher = objc
+										.queryByExample(ModelFactory
+												.getUserExample(answerer[i]));
+								parentModel.getContactersFor().addAll(teacher);
+							}
 						}
 					}
 
-					parentModel.setProvince(province);
-					parentModel.setCity(city);
-					parentModel.setDistrict(district);
+					parentModel.setProvince(area == null ? null : Tutor
+							.emptyNull(area[0]));
+					parentModel.setCity(area == null ? null : Tutor
+							.emptyNull(area[1]));
+					parentModel.setDistrict(area == null ? null : Tutor
+							.emptyNull(area[2]));
 					// parentModel.setState(UserState.NotActivated);
 					parentModel.setState(UserState.Activated);
 

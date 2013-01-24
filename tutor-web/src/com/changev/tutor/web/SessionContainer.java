@@ -7,11 +7,13 @@ package com.changev.tutor.web;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.UserModel;
 import com.db4o.ObjectContainer;
 import com.db4o.ext.InvalidIDException;
@@ -75,11 +77,9 @@ public final class SessionContainer implements Serializable {
 	 * @param request
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends UserModel> T getLoginUser(
-			HttpServletRequest request) {
+	public static UserModel getLoginUser(HttpServletRequest request) {
 		SessionContainer container = get(request, false);
-		return container == null ? null : (T) container.getLoginUser();
+		return container == null ? null : container.getLoginUser();
 	}
 
 	private Long loginUserId;
@@ -88,6 +88,7 @@ public final class SessionContainer implements Serializable {
 	private String checkCode;
 
 	private transient UserModel loginUser;
+	private transient List<QuestionModel> questionList;
 
 	SessionContainer() {
 	}
@@ -101,7 +102,7 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void login(long loginUserId) {
 		this.loginUserId = loginUserId;
-		this.loginDateTime = Tutor.currentDateTime();
+		this.loginDateTime = Tutor.currentTimestamp();
 	}
 
 	/**
@@ -131,8 +132,7 @@ public final class SessionContainer implements Serializable {
 	/**
 	 * @return the loginUser
 	 */
-	@SuppressWarnings("unchecked")
-	public <T extends UserModel> T getLoginUser() {
+	public UserModel getLoginUser() {
 		if (loginUserId == null)
 			return null;
 		if (loginUser == null
@@ -146,7 +146,7 @@ public final class SessionContainer implements Serializable {
 				throw e;
 			}
 		}
-		return (T) loginUser;
+		return loginUser;
 	}
 
 	/**
@@ -193,6 +193,21 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void setCheckCode(String checkCode) {
 		this.checkCode = checkCode;
+	}
+
+	/**
+	 * @return the questionList
+	 */
+	public List<QuestionModel> getQuestionList() {
+		return questionList;
+	}
+
+	/**
+	 * @param questionList
+	 *            the questionList to set
+	 */
+	public void setQuestionList(List<QuestionModel> questionList) {
+		this.questionList = questionList;
 	}
 
 }

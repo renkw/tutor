@@ -8,6 +8,7 @@ package com.changev.tutor.model;
 import java.util.List;
 import java.util.Set;
 
+import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
 import com.db4o.collections.ActivatableHashSet;
 import com.db4o.config.annotations.Indexed;
@@ -34,18 +35,15 @@ public class TeacherModel extends UserModel {
 	private String education;
 	private Byte teachedYears;
 	private Set<String> speciality;
-	private Integer score;
 	private String homepage;
 	private Boolean supervisor;
+	private Set<UserModel> contacters;
 	@Indexed
 	private OrganizationModel organization;
+	private int score;
 
 	public TeacherModel() {
 		super.setRole(UserRole.Teacher);
-	}
-
-	@Override
-	public void setRole(UserRole role) {
 	}
 
 	@Override
@@ -68,19 +66,23 @@ public class TeacherModel extends UserModel {
 		return (TeacherModel) super.clone();
 	}
 
+	@Override
+	public void setRole(UserRole role) {
+	}
+
 	public List<QuestionModel> getAssignedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getAssignedQuestionExample(getEmail()));
 	}
 
 	public List<AnswerModel> getAnswers() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getTeacherAnswerExample(getEmail()));
 	}
 
 	public List<AnswerModel> getAcceptAnswers() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getAcceptedAnswerExample(getEmail()));
 	}
 
 	/**
@@ -245,7 +247,7 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the score
 	 */
-	public Integer getScore() {
+	public int getScore() {
 		beforeGet();
 		return score;
 	}
@@ -254,7 +256,7 @@ public class TeacherModel extends UserModel {
 	 * @param score
 	 *            the score to set
 	 */
-	public void setScore(Integer score) {
+	public void setScore(int score) {
 		beforeSet();
 		this.score = score;
 	}
@@ -289,6 +291,26 @@ public class TeacherModel extends UserModel {
 	 */
 	public void setSupervisor(Boolean supervisor) {
 		this.supervisor = supervisor;
+	}
+
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContacters() {
+		beforeGet();
+		return contacters;
+	}
+
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContactersFor() {
+		beforeGet();
+		if (contacters == null) {
+			beforeSet();
+			contacters = new ActivatableHashSet<UserModel>();
+		}
+		return contacters;
 	}
 
 	/**

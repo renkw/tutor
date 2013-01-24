@@ -28,7 +28,8 @@
 					state="Activated" />
 		<redirect	role="Organization"
 					state="Incomplete"
-					path="/public/contact.html" />
+					path="/public/contact.html"
+					invalidate="true" />
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
 	<rule pattern="/manage/.*">

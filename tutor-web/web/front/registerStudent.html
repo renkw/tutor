@@ -11,7 +11,7 @@ $(function() {
 	var areas = ${areaJson};
 	$("#province").change(function() {
 		var value = this.options[this.selectedIndex].value;
-		var city = $("#city option:selected").val() || "${params.city!}";
+		var city = $("#city option:selected").val() || "${(params.area[1])!}";
 		var cities = areas[value];
 		$("#city").empty();
 		if (cities) {
@@ -28,7 +28,7 @@ $(function() {
 	$("#city").change(function() {
 		var value = this.options[this.selectedIndex].value;
 		var prov = $("#province option:selected").val();
-		var dist = $("#district option:selected").val() || "${params.district!}";
+		var dist = $("#district option:selected").val() || "${(params.area[2])!}";
 		var dists = areas[prov][value];
 		$("#district").empty();
 		if (dists) {
@@ -152,9 +152,7 @@ $(function() {
 									<input type="text" name="name" value="${params.name!}" size="30" />
 									<@errmsg name="name" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生真实姓名。</div>
-								</td>
+								<td align="left" class="alpha25">学生真实姓名。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">性别</th>
@@ -163,9 +161,7 @@ $(function() {
 									<@radio name="gender" value="Female" select=params.gender>女</@radio>
 									<@errmsg name="gender" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生性别。</div>
-								</td>
+								<td align="left" class="alpha25">学生性别。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">生日</th>
@@ -187,25 +183,21 @@ $(function() {
 									</select>日
 									<@errmsg name="birthday" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生生日。</div>
-								</td>
+								<td align="left" class="alpha25">学生生日。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
 								<td align="left">
-									<select name="province" id="province">
+									<select name="area" id="province">
 									<#list areas?keys as province>
-										<@option value=province select=params.province>${province}</@option>
+										<@option value=province select=(params.area[0])!>${province}</@option>
 									</#list>
 									</select>
-									<select name="city" id="city"></select>
-									<select name="district" id="district"></select>
+									<select name="area" id="city"></select>
+									<select name="area" id="district"></select>
 									<@errmsg name="area" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生所在地区。</div>
-								</td>
+								<td align="left" class="alpha25">学生所在地区。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">学校</th>
@@ -213,9 +205,7 @@ $(function() {
 									<input type="text" name="school" value="${params.school!}" />
 									<@errmsg name="school" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生就读学校名。</div>
-								</td>
+								<td align="left" class="alpha25">学生就读学校名。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
@@ -228,9 +218,7 @@ $(function() {
 									</div>
 									<@errmsg name="grade" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生年级。</div>
-								</td>
+								<td align="left" class="alpha25">学生年级。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">兴趣爱好</th>
@@ -238,9 +226,7 @@ $(function() {
 									<input type="text" name="hobby" value="${params.hobby!}" />
 									<@errmsg name="hobby" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生兴趣爱好。</div>
-								</td>
+								<td align="left" class="alpha25">学生兴趣爱好。</td>
 							</tr>
 							<tr>
 								<th align="center" class="ui-widget-header noborder">个人描述</th>
@@ -248,9 +234,7 @@ $(function() {
 									<textarea name="description" rows="5" cols="30">${params.description!}</textarea>
 									<@errmsg name="description" />
 								</td>
-								<td align="left">
-									<div class="alpha25">学生个人描述。</div>
-								</td>
+								<td align="left" class="alpha25">学生个人描述。</td>
 							</tr>
 							<tr>
 								<th width="80" align="center" class="ui-widget-header noborder">指定解答<span class="required">*</span></th>
@@ -266,9 +250,7 @@ $(function() {
 									</div>
 									<@errmsg name="answerer" />
 								</td>
-								<td align="left">
-									<div class="alpha25">设置指定回答的机构或教师。</div>
-								</td>
+								<td align="left" class="alpha25">设置指定回答的机构或教师。</td>
 							</tr>
 						</tbody>
 						<tfoot>

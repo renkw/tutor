@@ -6,9 +6,11 @@
 package com.changev.tutor.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableHashSet;
 
 /**
  * <p>
@@ -22,12 +24,30 @@ public class ParentModel extends UserModel {
 
 	private static final long serialVersionUID = 5756233700028997499L;
 
+	private Set<UserModel> contacters;
+
 	public ParentModel() {
 		super.setRole(UserRole.Parent);
 	}
 
-	@Override
-	public void setRole(UserRole role) {
+	public List<StudentModel> getChildren() {
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getParentStudentExample(getEmail()));
+	}
+
+	public List<QuestionModel> getQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getUnclosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	public List<QuestionModel> getClosedQuestions() {
+		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -50,24 +70,28 @@ public class ParentModel extends UserModel {
 		return (ParentModel) super.clone();
 	}
 
-	public List<StudentModel> getChildren() {
-		return Tutor.getCurrentContainer().queryByExample(
-				ModelFactory.getParentStudentExample(getEmail()));
+	@Override
+	public void setRole(UserRole role) {
 	}
 
-	public List<QuestionModel> getQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContacters() {
+		beforeGet();
+		return contacters;
 	}
 
-	public List<QuestionModel> getUnclosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
-	}
-
-	public List<QuestionModel> getClosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContactersFor() {
+		beforeGet();
+		if (contacters == null) {
+			beforeSet();
+			contacters = new ActivatableHashSet<UserModel>();
+		}
+		return contacters;
 	}
 
 }

@@ -23,9 +23,8 @@ function relayout(boxh) {
 $(function() {
 	$("#pagebar a").click(function() {
 		var pn = $(this).attr("href");
-		if (pn != "#") {
-			addq("pageno", pn.slice(1));
-		}
+		if (pn != "#") 
+			addq("pageno", pn.slice(1), "search", "");
 		return false;
 	});
 });
@@ -37,7 +36,7 @@ $(function() {
 <#include "/_inc/bar.html">
 <tbody>
 	<tr>
-		<td height="99%" align="left" valign="top">
+		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
@@ -45,9 +44,8 @@ $(function() {
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
-					<a href="#">指定提问 (100)</a><br />
-					<a href="#">公开提问 (200)</a><br />
-					<a href="#">解答历史 (50)</a><br />
+					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
+					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
 				</div>
 			</div>
 		</td>
@@ -59,191 +57,54 @@ $(function() {
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">提问列表</a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">指定提问</a>
+					<a href="#" class="nav-link float-left">
+					<#switch params.range!>
+						<#case "week">最近一周<#break>
+						<#case "month">最近一个月<#break>
+						<#case "quarter">最近三个月<#break>
+						<#case "half">最近半年<#break>
+						<#case "all">全部<#break>
+					</#switch>
+						的
+					<#switch params.sort!>
+						<#case "new">未解答提问<#break>
+						<#case "old">已解答提问<#break>
+					</#switch>
+						(${total})
+					</a>
 				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="alpha50">
-						<a href="#">最近一周</a> |
-						<a href="#">最近一个月</a> |
-						<a href="#">最近三个月</a> |
-						<a href="#">最近半年</a> |
-						<a href="#">全部</a>
+						<a href="#" onclick="addq('range','week','search','s');return false;">最近一周</a> |
+						<a href="#" onclick="addq('range','month','search','s');return false;">最近一个月</a> |
+						<a href="#" onclick="addq('range','quarter','search','s');return false;">最近三个月</a> |
+						<a href="#" onclick="addq('range','half','search','s');return false;">最近半年</a> |
+						<a href="#" onclick="addq('range','all','search','s');return false;">全部</a>
 					</div>
 				</div>
 				<div id="questionList" class="box-content ui-widget-content">
-					<div class="odd">
+				<#list questions as q>
+					<#assign style=(q_index%2==0)?string("odd", "even")>
+					<div class="${style}">
 						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
+							<@face user=q.student width=90 />
+							<div class="${q.subject!}">${(question.grade?substring(0, 1))!}${Tutor.numberWord(question.gradeLevel)}</div>
 						</div>
 						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
+							<p class="sb14">${q.title!}</p>
 						</div>
 						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
+							<small>${q.createDateTime!}</small><br />
+							<div><a href="#" class="float-right">${(q.questioner.name)!}</a><div class="ui-icon ui-icon-person float-right"></div></div>
 							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
+							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?id=${Tutor.id(q)}')" />
 						</div>
 						<br class="clear-both" />
 					</div>
-					<div class="even">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="odd">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="even">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="odd">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="even">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="odd">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="even">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="odd">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
-					<div class="even">
-						<div class="row-head">
-							<img src="../images/student.jpg" width="90" height="90" alt="头像" />
-							<div class="语文">小三</div>
-						</div>
-						<div class="row-content">
-							<p class="sb14">标题</p>
-							<p>内容</p>
-						</div>
-						<div class="row-tail">
-							<small>2013/01/03 19:51</small><br />
-							<div><a href="#" class="float-right">张女士</a><div class="ui-icon ui-icon-person float-right"></div></div>
-							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?qid=1')" />
-						</div>
-						<br class="clear-both" />
-					</div>
+				</#list>
 				</div>
 				<div id="pagebar" class="pagebar ui-state-default ui-corner-bottom float-right" style="margin-right:2px">
-					<@pager total=100 pageno=Tutor.parseInt(params.pageno!1) />
+					<@pager total=totalPages pageno=Tutor.parseInt(params.pageno!1) />
 				</div>
 			</div>
 		</td>
@@ -251,16 +112,5 @@ $(function() {
 </tbody>
 <#include "/_inc/foot.html">
 </table>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-<tbody>
-	<tr>
-		<td width="99%" align="left" valign="top">
-			
-		</td>
-		<td width="300" align="left" valign="top"><#include "/_inc/ad.html"></td>
-	</tr>
-</tbody>
-</table>
-
 </body>
 </html>
