@@ -220,7 +220,7 @@ $(function() {
 							<td align="left">
 								<div id="grades">
 									<#list grades?keys as grade>
-										<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
+										<@radio name="grade" value=grade select=params.grade!user.grade!"小学">${grades[grade]}</@radio>
 									</#list><br />
 									<select name="gradeLevelFrom">
 									</select>

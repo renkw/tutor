@@ -19,6 +19,19 @@ public class UserContactModel extends AbstractModel {
 
 	private static final long serialVersionUID = -8284576676920188592L;
 
+	public static final String NAME = "name";
+	public static final String ADDRESS1 = "address1";
+	public static final String ADDRESS2 = "address2";
+	public static final String POSTCODE = "postcode";
+	public static final String TELEPHONE = "telephone";
+	public static final String CELLPHONE = "cellphone";
+	public static final String FAX = "fax";
+	public static final String QQ_ID = "QQ";
+	public static final String WEIBO = "weibo";
+	public static final String MAIL_ADDRESS = "mailAddress";
+	public static final String POS_X = "posX";
+	public static final String POS_Y = "posY";
+
 	private String name;
 	private String address1;
 	private String address2;

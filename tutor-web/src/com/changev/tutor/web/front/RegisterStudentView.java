@@ -7,7 +7,6 @@ package com.changev.tutor.web.front;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +18,7 @@ import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.ParentModel;
 import com.changev.tutor.model.StudentModel;
-import com.changev.tutor.model.UserModel;
+import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
 import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
@@ -159,14 +158,14 @@ public class RegisterStudentView implements View {
 					if (subject != null && answerer != null) {
 						for (int i = 0; i < subject.length
 								&& i < answerer.length; i++) {
-							if (StringUtils.isNotEmpty(answerer[i])) {
-								studentModel.getDefaultAnswererFor().put(
-										subject[i], answerer[i]);
-								List<UserModel> teacher = objc
-										.queryByExample(ModelFactory
-												.getUserExample(answerer[i]));
-								parentModel.getContactersFor().addAll(teacher);
-							}
+							if (StringUtils.isEmpty(answerer[i]))
+								continue;
+							TeacherModel teacher = Tutor.one(objc
+									.queryByExample(ModelFactory
+											.getUserExample(answerer[i])));
+							studentModel.getDefaultAnswererFor().put(
+									subject[i], teacher);
+							parentModel.getContactersFor().add(teacher);
 						}
 					}
 

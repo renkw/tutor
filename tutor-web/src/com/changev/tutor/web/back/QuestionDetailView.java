@@ -5,7 +5,6 @@
  */
 package com.changev.tutor.web.back;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,10 +21,10 @@ import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.db4o.ObjectContainer;
-import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -109,7 +108,6 @@ public class QuestionDetailView implements View {
 		return true;
 	}
 
-	@SuppressWarnings("serial")
 	protected void setVariables(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
@@ -118,39 +116,35 @@ public class QuestionDetailView implements View {
 		if (logger.isDebugEnabled())
 			logger.debug("[setVariables] id = " + id);
 
-		final TeacherModel loginUser = SessionContainer.getLoginUser(request)
-				.as(UserRole.Teacher);
-		final QuestionModel questionModel = Tutor.fromId(id);
-		AnswerModel answerModel = Tutor.one(Tutor.getCurrentContainer().query(
-				new Predicate<AnswerModel>() {
-					@Override
-					public boolean match(AnswerModel candidate) {
-						return candidate.getAnswerer() == loginUser
-								&& candidate.getQuestion() == questionModel
-								&& candidate.getDeleted() == Boolean.FALSE;
-					}
-				}));
-
+		TeacherModel loginUser = SessionContainer.getLoginUser(request).as(
+				UserRole.Teacher);
+		QuestionModel questionModel = Tutor.fromId(id);
+		AnswerModel answerModel = Tutor.one(new QueryBuilder<AnswerModel>()
+				.eq(loginUser, AnswerModel.ANSWERER)
+				.eq(questionModel, AnswerModel.QUESTION)
+				.isFalse(AnswerModel.DELETED).execute());
 		request.setAttribute("question", questionModel);
 		request.setAttribute("answer", answerModel);
 		List<AnswerDetailModel> detailList = Collections.emptyList();
-		if (answerModel != null && answerModel.getDetails() != null
-				&& !answerModel.getDetails().isEmpty()) {
-			detailList = new ArrayList<AnswerDetailModel>(
-					answerModel.getDetails());
-		}
+		if (answerModel != null && answerModel.getDetails() != null)
+			detailList = Tutor.listDesc(answerModel.getDetails());
 		AnswerDetailModel lastModel;
 		if (detailList.isEmpty()) {
 			lastModel = new AnswerDetailModel();
 			lastModel.setQuestion(questionModel.getTitle());
 			lastModel.setCreateDateTime(questionModel.getCreateDateTime());
-			lastModel.setUpdateDateTime(Tutor.currentTimestamp());
+			if (answerModel != null) {
+				lastModel.setAnswer(answerModel.getAnswer());
+				lastModel.setUpdateDateTime(answerModel.getUpdateDateTime());
+				request.setAttribute("answerId", Tutor.id(answerModel));
+			} else {
+				lastModel.setUpdateDateTime(Tutor.currentDateTime());
+			}
 		} else {
-			lastModel = detailList.remove(detailList.size() - 1);
+			lastModel = detailList.remove(0);
 			request.setAttribute("answerId", Tutor.id(lastModel));
 		}
 		request.setAttribute("lastAnswer", lastModel);
-		Collections.reverse(detailList);
 		request.setAttribute("details", detailList);
 	}
 

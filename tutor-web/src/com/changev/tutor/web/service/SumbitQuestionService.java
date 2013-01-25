@@ -28,7 +28,7 @@ public class SumbitQuestionService implements Service<Map> {
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {
 		QuestionModel question = new QuestionModel();
-		question.setCreateDateTime(Tutor.currentTimestamp());
+		question.setCreateDateTime(Tutor.currentDateTime());
 		question.setUser_id(user.getEmail());
 		question.setTitle(String.valueOf(input.get("title")));
 		question.setType(0);

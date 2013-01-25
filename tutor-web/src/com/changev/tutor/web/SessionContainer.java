@@ -102,7 +102,7 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void login(long loginUserId) {
 		this.loginUserId = loginUserId;
-		this.loginDateTime = Tutor.currentTimestamp();
+		this.loginDateTime = Tutor.currentDateTime();
 	}
 
 	/**

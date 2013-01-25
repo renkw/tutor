@@ -8,6 +8,7 @@ package com.changev.tutor.model;
 import java.util.List;
 import java.util.Map;
 
+import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
 import com.db4o.collections.ActivatableHashMap;
 import com.db4o.config.annotations.Indexed;
@@ -24,6 +25,16 @@ public class StudentModel extends UserModel {
 
 	private static final long serialVersionUID = 7524370787816259509L;
 
+	public static final String FACE_PICTURE = "facePicture";
+	public static final String MALE = "male";
+	public static final String BIRTHDAY = "birthday";
+	public static final String SCHOOL = "school";
+	public static final String GRADE = "grade";
+	public static final String GRADE_LEVEL = "gradeLevel";
+	public static final String HOBBY = "hobby";
+	public static final String DEFAULT_ANSWERER = "defaultAnswerer";
+	public static final String PARENT = "parent";
+
 	private String facePicture;
 	private Boolean male;
 	private String birthday;
@@ -31,7 +42,7 @@ public class StudentModel extends UserModel {
 	private String grade;
 	private Byte gradeLevel;
 	private String hobby;
-	private Map<String, String> defaultAnswerer;
+	private Map<String, TeacherModel> defaultAnswerer;
 	@Indexed
 	private ParentModel parent;
 
@@ -40,18 +51,22 @@ public class StudentModel extends UserModel {
 	}
 
 	public List<QuestionModel> getQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getStudentQuestionExample(getEmail()));
 	}
 
 	public List<QuestionModel> getUnclosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		QuestionModel example = ModelFactory
+				.getStudentQuestionExample(getEmail());
+		example.setClosed(Boolean.FALSE);
+		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	public List<QuestionModel> getClosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		QuestionModel example = ModelFactory
+				.getStudentQuestionExample(getEmail());
+		example.setClosed(Boolean.TRUE);
+		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	@Override
@@ -200,7 +215,7 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, String> getDefaultAnswerer() {
+	public Map<String, TeacherModel> getDefaultAnswerer() {
 		beforeGet();
 		return defaultAnswerer;
 	}
@@ -208,11 +223,11 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, String> getDefaultAnswererFor() {
+	public Map<String, TeacherModel> getDefaultAnswererFor() {
 		beforeGet();
 		if (defaultAnswerer == null) {
 			beforeSet();
-			defaultAnswerer = new ActivatableHashMap<String, String>();
+			defaultAnswerer = new ActivatableHashMap<String, TeacherModel>();
 		}
 		return defaultAnswerer;
 	}

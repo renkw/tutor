@@ -88,7 +88,7 @@
 		<#local picture="/images/student.png">
 	</#if>
 	<img src="${pathrel}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
-<#elseif user.male==true>
+<#elseif user.male??&&user.male>
 	<img src="${pathrel}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
 <#else>
 	<img src="${pathrel}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />

@@ -5,6 +5,15 @@
  */
 package com.changev.tutor.web.back;
 
+import static com.changev.tutor.model.AbstractModel.DELETED;
+import static com.changev.tutor.model.QuestionModel.ASSIGN_TO;
+import static com.changev.tutor.model.QuestionModel.CITY;
+import static com.changev.tutor.model.QuestionModel.CLOSED;
+import static com.changev.tutor.model.QuestionModel.GRADE;
+import static com.changev.tutor.model.QuestionModel.GRADE_LEVEL;
+import static com.changev.tutor.model.QuestionModel.PROVINCE;
+import static com.changev.tutor.model.QuestionModel.SUBJECT;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +26,10 @@ import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.util.QueryBuilder;
+import com.changev.tutor.util.QueryBuilder.SubQuery;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
-import com.db4o.query.Predicate;
-import com.db4o.query.QueryComparator;
 
 /**
  * <p>
@@ -51,7 +60,6 @@ public class MemberView implements View {
 			logger.trace("[postRender] called");
 	}
 
-	@SuppressWarnings("serial")
 	protected void setVariables(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
@@ -60,32 +68,27 @@ public class MemberView implements View {
 		UserModel loginUser = SessionContainer.getLoginUser(request);
 		if (loginUser.getRole() == UserRole.Teacher) {
 			final TeacherModel teacher = (TeacherModel) loginUser;
-			List<QuestionModel> questions = Tutor.getCurrentContainer().query(
-					new Predicate<QuestionModel>() {
+			QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
+			q.isFalse(CLOSED).isFalse(DELETED).or(new SubQuery() {
+				@Override
+				public void query(QueryBuilder<?> q) {
+					q.eq(teacher, ASSIGN_TO).and(new SubQuery() {
 						@Override
-						public boolean match(QuestionModel candidate) {
-							return (candidate.getSpecifiedAnswerer() == teacher || (candidate.getProvince() == teacher.getProvince()
-									&& candidate.getCity() == teacher.getCity()
-									&& candidate.getDistrict() == teacher.getDistrict()
-									&& candidate.getGrade() == teacher.getGrade()
-									&& candidate.getGradeLevel() >= teacher.getGradeLevelFrom()
-									&& candidate.getGradeLevel() <= teacher.getGradeLevelTo() && teacher
-									.getSubjects().contains(
-											candidate.getSubject())))
-									&& !candidate.getClosed()
-									&& !candidate.getDeleted();
-						}
-					}, new QueryComparator<QuestionModel>() {
-						@Override
-						public int compare(QuestionModel first,
-								QuestionModel second) {
-							return second.getCreateDateTime().compareTo(
-									first.getCreateDateTime());
+						public void query(QueryBuilder<?> q) {
+							q.eq(teacher.getProvince(), PROVINCE)
+									.eq(teacher.getCity(), CITY)
+									.eq(teacher.getGrade(), GRADE)
+									.range(teacher.getGradeLevelFrom(),
+											teacher.getGradeLevelTo(),
+											GRADE_LEVEL)
+									.in(teacher.getSubjects(), SUBJECT);
 						}
 					});
-			if (questions.size() > 20)
-				questions = questions.subList(0, 20);
-			request.setAttribute("questions", questions);
+				}
+			});
+			List<QuestionModel> questionList = Tutor.listDesc(q.execute(), 20);
+			request.setAttribute("questions", questionList);
 		}
 	}
+
 }

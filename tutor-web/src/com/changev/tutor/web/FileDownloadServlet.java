@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.model.UserModel;
 import com.changev.tutor.web.util.UserFileManager;
 
 /**
@@ -69,8 +70,11 @@ public class FileDownloadServlet extends HttpServlet {
 				logger.debug("[download] filename = " + file);
 			}
 
+			UserModel userModel = Tutor.fromId(user);
+			// TODO privacy
 			InputStream input = Tutor.getBeanFactory()
-					.getBean(UserFileManager.class).read(user, file);
+					.getBean(UserFileManager.class)
+					.read(userModel.getEmail(), file);
 			String ctype = getServletContext().getMimeType(file);
 			resp.setContentType(StringUtils.defaultString(ctype,
 					DEFAULT_MIME_TYPE));

@@ -25,6 +25,20 @@ public class TeacherModel extends UserModel {
 
 	private static final long serialVersionUID = -5724580114977645750L;
 
+	public static final String MALE = "male";
+	public static final String BIRTHDAY = "birthday";
+	public static final String SUBJECTS = "subjects";
+	public static final String GRADE = "grade";
+	public static final String GRADE_LEVEL_FROM = "gradeLevelFrom";
+	public static final String GRADE_LEVEL_TO = "gradeLevelTo";
+	public static final String EDUCATION = "education";
+	public static final String TEACHED_YEARS = "teachedYears";
+	public static final String SPECIALITY = "speciality";
+	public static final String HOMEPAGE = "homepage";
+	public static final String CONTACTERS = "contacters";
+	public static final String ORGANIZATION = "organization";
+	public static final String SCORE = "score";
+
 	private Boolean male;
 	private String birthday;
 	@Indexed
@@ -36,38 +50,18 @@ public class TeacherModel extends UserModel {
 	private Byte teachedYears;
 	private Set<String> speciality;
 	private String homepage;
-	private Boolean supervisor;
 	private Set<UserModel> contacters;
 	@Indexed
 	private OrganizationModel organization;
-	private int score;
+	private Integer score;
 
 	public TeacherModel() {
 		super.setRole(UserRole.Teacher);
 	}
 
-	@Override
-	public void objectOnActivate(ObjectContainer container) {
-		super.objectOnActivate(container);
-	}
-
-	@Override
-	public void objectOnNew(ObjectContainer container) {
-		super.objectOnNew(container);
-	}
-
-	@Override
-	public void objectOnUpdate(ObjectContainer container) {
-		super.objectOnUpdate(container);
-	}
-
-	@Override
-	public TeacherModel clone() {
-		return (TeacherModel) super.clone();
-	}
-
-	@Override
-	public void setRole(UserRole role) {
+	public String getFullName() {
+		return new StringBuilder().append(getOrganization().getName())
+				.append(' ').append(getName()).toString();
 	}
 
 	public List<QuestionModel> getAssignedQuestions() {
@@ -83,6 +77,31 @@ public class TeacherModel extends UserModel {
 	public List<AnswerModel> getAcceptAnswers() {
 		return Tutor.getCurrentContainer().queryByExample(
 				ModelFactory.getAcceptedAnswerExample(getEmail()));
+	}
+
+	@Override
+	public void objectOnActivate(ObjectContainer container) {
+		super.objectOnActivate(container);
+	}
+
+	@Override
+	public void objectOnNew(ObjectContainer container) {
+		super.objectOnNew(container);
+		setScore(Integer.valueOf(0));
+	}
+
+	@Override
+	public void objectOnUpdate(ObjectContainer container) {
+		super.objectOnUpdate(container);
+	}
+
+	@Override
+	public TeacherModel clone() {
+		return (TeacherModel) super.clone();
+	}
+
+	@Override
+	public void setRole(UserRole role) {
 	}
 
 	/**
@@ -247,7 +266,7 @@ public class TeacherModel extends UserModel {
 	/**
 	 * @return the score
 	 */
-	public int getScore() {
+	public Integer getScore() {
 		beforeGet();
 		return score;
 	}
@@ -256,7 +275,7 @@ public class TeacherModel extends UserModel {
 	 * @param score
 	 *            the score to set
 	 */
-	public void setScore(int score) {
+	public void setScore(Integer score) {
 		beforeSet();
 		this.score = score;
 	}
@@ -276,21 +295,6 @@ public class TeacherModel extends UserModel {
 	public void setHomepage(String homepage) {
 		beforeSet();
 		this.homepage = homepage;
-	}
-
-	/**
-	 * @return the supervisor
-	 */
-	public Boolean getSupervisor() {
-		return supervisor;
-	}
-
-	/**
-	 * @param supervisor
-	 *            the supervisor to set
-	 */
-	public void setSupervisor(Boolean supervisor) {
-		this.supervisor = supervisor;
 	}
 
 	/**

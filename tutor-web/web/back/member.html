@@ -21,7 +21,8 @@ $(function() {
 		// TODO
 	});
 	$("#questionList td").click(function() {
-		// TODO
+		var id = $(this).parent().attr("id");
+		if (id) location.href = "questionDetail.html?id=" + id;
 	});
 	$("#teacherList td").click(function() {
 		var id = $(this).parent().attr("id");
@@ -65,14 +66,13 @@ $(function() {
 					</tbody>
 					</table>
 				</div>
-				<#if tutor.loginUser.role=="Parent">
+				<#if tutor.loginUser.role=="Teacher">
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
-					<a href="#">指定提问 (100)</a><br />
-					<a href="#">公开提问 (200)</a><br />
-					<a href="#">解答历史 (50)</a><br />
+					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
+					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
 				</div>
 				</#if>
 				<#--
@@ -150,10 +150,10 @@ $(function() {
 							<td class="${style}">${(q.questioner.male?string("男","女"))!}</td>
 							<td class="${style}">${q.location!}</td>
 							<td class="${style}">${q.subject!}</td>
-							<td class="${style}">${q.grade!}${q.gradeLevel!}</td>
-							<td class="${style}">${q.subject!}</td>
-							<td class="${style}"><input type="checkbox" ${q.specifiedAnswerer???string('checked="checked"','')} disabled="disabled" /></td>
-							<td class="${style}">${q.createDateTime}</td>
+							<td class="${style}">${q.grade!}${q.gradeLevel!}年级</td>
+							<td class="${style}">${q.title!}</td>
+							<td class="${style}"><input type="checkbox" ${q.assignTo???string('checked="checked"','')} disabled="disabled" /></td>
+							<td class="${style}">${q.createDateTime?datetime}</td>
 						</tr>
 					</#list>
 					</tbody>

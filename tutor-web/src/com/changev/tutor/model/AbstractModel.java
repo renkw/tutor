@@ -8,7 +8,7 @@ package com.changev.tutor.model;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.Timestamp;
+import java.util.Date;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
@@ -30,14 +30,16 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 
 	private static final long serialVersionUID = 4390399593602862270L;
 
+	public static final String DELETED = "deleted";
+	public static final String CREATE_DATE_TIME = "createDateTime";
+	public static final String UPDATE_DATE_TIME = "updateDateTime";
+
 	private Boolean deleted;
 	@Indexed
-	private long createTimestamp;
-	private long updateTimestamp;
+	private Date createDateTime;
+	private Date updateDateTime;
 
 	private transient Activator activator;
-	private transient Timestamp createDateTime;
-	private transient Timestamp updateDateTime;
 
 	@Override
 	public final void bind(Activator activator) {
@@ -86,9 +88,9 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param container
 	 */
 	public void objectOnNew(ObjectContainer container) {
-		long timesatmp = Tutor.timestamp();
-		setCreateTimestamp(timesatmp);
-		setUpdateTimestamp(timesatmp);
+		Date date = Tutor.currentDateTime();
+		setCreateDateTime(date);
+		setUpdateDateTime(date);
 		setDeleted(Boolean.FALSE);
 	}
 
@@ -100,7 +102,7 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param container
 	 */
 	public void objectOnUpdate(ObjectContainer container) {
-		setUpdateTimestamp(Tutor.timestamp());
+		setUpdateDateTime(Tutor.currentDateTime());
 	}
 
 	@Override
@@ -147,10 +149,8 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	/**
 	 * @return the createDateTime
 	 */
-	public Timestamp getCreateDateTime() {
+	public Date getCreateDateTime() {
 		beforeGet();
-		if (createDateTime == null && createTimestamp != 0)
-			createDateTime = new Timestamp(createTimestamp);
 		return createDateTime;
 	}
 
@@ -158,20 +158,16 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param createDateTime
 	 *            the createDateTime to set
 	 */
-	public void setCreateDateTime(Timestamp createDateTime) {
+	public void setCreateDateTime(Date createDateTime) {
 		beforeSet();
 		this.createDateTime = createDateTime;
-		this.createTimestamp = createDateTime == null ? 0 : createDateTime
-				.getTime();
 	}
 
 	/**
 	 * @return the updateDateTime
 	 */
-	public Timestamp getUpdateDateTime() {
+	public Date getUpdateDateTime() {
 		beforeGet();
-		if (updateDateTime == null && updateTimestamp != 0)
-			updateDateTime = new Timestamp(updateTimestamp);
 		return updateDateTime;
 	}
 
@@ -179,11 +175,9 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	 * @param updateDateTime
 	 *            the updateDateTime to set
 	 */
-	public void setUpdateDateTime(Timestamp updateDateTime) {
+	public void setUpdateDateTime(Date updateDateTime) {
 		beforeSet();
 		this.updateDateTime = updateDateTime;
-		this.updateTimestamp = updateDateTime == null ? 0 : updateDateTime
-				.getTime();
 	}
 
 	/**
@@ -201,42 +195,6 @@ public abstract class AbstractModel implements Serializable, Cloneable,
 	public void setDeleted(Boolean deleted) {
 		beforeSet();
 		this.deleted = deleted;
-	}
-
-	/**
-	 * @return the createTimestamp
-	 */
-	public long getCreateTimestamp() {
-		beforeGet();
-		return createTimestamp;
-	}
-
-	/**
-	 * @param createTimestamp
-	 *            the createTimestamp to set
-	 */
-	public void setCreateTimestamp(long createTimestamp) {
-		beforeSet();
-		this.createTimestamp = createTimestamp;
-		this.createDateTime = null;
-	}
-
-	/**
-	 * @return the updateTimestamp
-	 */
-	public long getUpdateTimestamp() {
-		beforeGet();
-		return updateTimestamp;
-	}
-
-	/**
-	 * @param updateTimestamp
-	 *            the updateTimestamp to set
-	 */
-	public void setUpdateTimestamp(long updateTimestamp) {
-		beforeSet();
-		this.updateTimestamp = updateTimestamp;
-		this.updateDateTime = null;
 	}
 
 }

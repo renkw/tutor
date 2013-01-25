@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
 import com.db4o.ext.ExtObjectContainer;
 
 /**
@@ -276,8 +275,41 @@ public final class Tutor {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T one(ObjectSet<?> set) {
-		return set.hasNext() ? (T) set.next() : null;
+	public static <T> T one(List<?> set) {
+		return set.isEmpty() ? null : (T) set.get(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> listAsc(List<?> set, int off, int len) {
+		List<T> list = new ArrayList<T>(len);
+		int size = set.size();
+		for (int i = 0; i < len && off < size; i++)
+			list.add((T) set.get(off++));
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> listDesc(List<?> set, int off, int len) {
+		List<T> list = new ArrayList<T>(len);
+		for (int i = 0; i < len && off >= 0; i++)
+			list.add((T) set.get(off--));
+		return list;
+	}
+
+	public static <T> List<T> listAsc(List<?> set, int len) {
+		return listAsc(set, 0, len);
+	}
+
+	public static <T> List<T> listDesc(List<?> set, int len) {
+		return listDesc(set, set.size() - 1, len);
+	}
+
+	public static <T> List<T> listAsc(List<?> set) {
+		return listAsc(set, 0, set.size());
+	}
+
+	public static <T> List<T> listDesc(List<?> set) {
+		return listDesc(set, set.size() - 1, set.size());
 	}
 
 	private static volatile Map<String, Object> constants = Collections
@@ -392,8 +424,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static java.sql.Timestamp currentTimestamp() {
-		return new java.sql.Timestamp(currentCalendar().getTimeInMillis());
+	public static Date currentDateTime() {
+		return currentCalendar().getTime();
 	}
 
 	/**
@@ -403,8 +435,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static java.sql.Date currentDate() {
-		return new java.sql.Date(currentDateCalendar().getTimeInMillis());
+	public static Date currentDate() {
+		return currentDateCalendar().getTime();
 	}
 
 	/**
@@ -414,8 +446,8 @@ public final class Tutor {
 	 * 
 	 * @return
 	 */
-	public static java.sql.Time currentTime() {
-		return new java.sql.Time(currentTimeCalendar().getTimeInMillis());
+	public static Date currentTime() {
+		return currentTimeCalendar().getTime();
 	}
 
 	/**

@@ -24,6 +24,21 @@ public class UserModel extends AbstractModel {
 
 	private static final long serialVersionUID = -360438261627805753L;
 
+	public static final String EMAIL = "email";
+	public static final String PASSWORD = "password";
+	public static final String NAME = "name";
+	public static final String PROVINCE = "province";
+	public static final String CITY = "city";
+	public static final String DISTRICT = "district";
+	public static final String DESCRIPTION = "description";
+	public static final String ROLE = "role";
+	public static final String STATE = "state";
+	public static final String LAST_LOGIN_DATE_TIME = "lastLoginDateTime";
+	public static final String SECURE_CODE = "secureCode";
+	public static final String CONTACT = "contact";
+	public static final String ACCOUNT_PRIVACY = "accountPrivacy";
+	public static final String CONTACT_PRIVACY = "contactPrivacy";
+
 	@Indexed
 	private String email;
 	private String password;

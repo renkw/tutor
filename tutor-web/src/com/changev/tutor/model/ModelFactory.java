@@ -111,7 +111,26 @@ public final class ModelFactory {
 		teacherExample.setEmail(email);
 		QuestionModel questionExample = new QuestionModel();
 		questionExample.setClosed(Boolean.FALSE);
-		questionExample.setSpecifiedAnswerer(teacherExample);
+		questionExample.setAssignTo(teacherExample);
+		questionExample.setDeleted(Boolean.FALSE);
+		return questionExample;
+	}
+
+	public static QuestionModel getUserQuestionExample(String email) {
+		UserModel userExample = new UserModel();
+		userExample.setEmail(email);
+		QuestionModel questionExample = new QuestionModel();
+		questionExample.setQuestioner(userExample);
+		questionExample.setDeleted(Boolean.FALSE);
+		return questionExample;
+	}
+
+	public static QuestionModel getStudentQuestionExample(String email) {
+		StudentModel studentExample = new StudentModel();
+		studentExample.setEmail(email);
+		QuestionModel questionExample = new QuestionModel();
+		questionExample.setStudent(studentExample);
+		questionExample.setDeleted(Boolean.FALSE);
 		return questionExample;
 	}
 

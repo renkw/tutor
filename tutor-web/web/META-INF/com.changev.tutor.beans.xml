@@ -156,6 +156,9 @@
 		<property name="successPage" value="/front/member.html" />
 	</bean>
 	
+	<bean id="front.memberView" class="com.changev.tutor.web.front.MemberView">
+	</bean>
+	
 	<bean id="back.memberView" class="com.changev.tutor.web.back.MemberView">
 	</bean>
 	
@@ -272,6 +275,8 @@
 	</bean>
 	
 	<bean id="back.questionListView" class="com.changev.tutor.web.back.QuestionListView" />
+	
+	<bean id="back.questionDetailView" class="com.changev.tutor.web.back.QuestionDetailView" />
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 	

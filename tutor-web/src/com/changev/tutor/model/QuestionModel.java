@@ -5,12 +5,13 @@
  */
 package com.changev.tutor.model;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
 import com.db4o.collections.ActivatableArrayList;
 import com.db4o.config.annotations.Indexed;
@@ -35,6 +36,22 @@ public class QuestionModel extends AbstractModel {
 
 	private static final long serialVersionUID = -1143983407388574974L;
 
+	public static final String QUESTIONER = "questioner";
+	public static final String STUDENT = "student";
+	public static final String PROVINCE = "province";
+	public static final String CITY = "city";
+	public static final String DISTRICT = "district";
+	public static final String SUBJECT = "subject";
+	public static final String GRADE = "grade";
+	public static final String GRADE_LEVEL = "gradeLevel";
+	public static final String TITLE = "title";
+	public static final String ASSIGN_TO = "assignTo";
+	public static final String FINAL_ANSWERER = "finalAnswerer";
+	public static final String CLOSED = "closed";
+	public static final String EXPIRATION_DATE = "expirationDate";
+	public static final String CLOSED_DATE_TIME = "closedDateTime";
+	public static final String UPLOAD_PICTURES = "uploadPictures";
+
 	@Indexed
 	private UserModel questioner;
 	private StudentModel student;
@@ -47,12 +64,12 @@ public class QuestionModel extends AbstractModel {
 	private Byte gradeLevel;
 	private String title;
 	@Indexed
-	private TeacherModel specifiedAnswerer;
+	private TeacherModel assignTo;
 	private TeacherModel finalAnswerer;
 	private Boolean closed;
+	private Date expirationDate;
+	private Date closedDateTime;
 	@Indexed
-	private long expirationTimestamp;
-	private long closedTimestamp;
 	private List<String> uploadPictures;
 	/*
 	 * 问题类型
@@ -63,8 +80,12 @@ public class QuestionModel extends AbstractModel {
 	 */
 	private String user_id;
 
-	private transient Date expirationDate;
-	private transient Timestamp closedDateTime;
+	public String getLocation() {
+		beforeGet();
+		return new StringBuilder().append(StringUtils.defaultString(province))
+				.append(StringUtils.defaultString(city))
+				.append(StringUtils.defaultString(district)).toString();
+	}
 
 	@Override
 	public void objectOnActivate(ObjectContainer container) {
@@ -74,6 +95,15 @@ public class QuestionModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
+		setProvince(student.getProvince());
+		setCity(student.getCity());
+		setDistrict(student.getDistrict());
+		setGrade(student.getGrade());
+		setGradeLevel(student.getGradeLevel());
+		setClosed(Boolean.FALSE);
+		Calendar today = Tutor.currentDateCalendar();
+		today.add(Calendar.MONTH, 1);
+		setExpirationDate(today.getTime());
 	}
 
 	@Override
@@ -84,13 +114,6 @@ public class QuestionModel extends AbstractModel {
 	@Override
 	public QuestionModel clone() {
 		return (QuestionModel) super.clone();
-	}
-
-	public String getLocation() {
-		beforeGet();
-		return new StringBuilder().append(StringUtils.defaultString(province))
-				.append(StringUtils.defaultString(city))
-				.append(StringUtils.defaultString(district)).toString();
 	}
 
 	/**
@@ -247,56 +270,20 @@ public class QuestionModel extends AbstractModel {
 	}
 
 	/**
-	 * @return the specifiedAnswerer
+	 * @return the assignTo
 	 */
-	public TeacherModel getSpecifiedAnswerer() {
+	public TeacherModel getAssignTo() {
 		beforeGet();
-		return specifiedAnswerer;
+		return assignTo;
 	}
 
 	/**
-	 * @param specifiedAnswerer
-	 *            the specifiedAnswerer to set
+	 * @param assignTo
+	 *            the assignTo to set
 	 */
-	public void setSpecifiedAnswerer(TeacherModel specifiedAnswerer) {
+	public void setAssignTo(TeacherModel assignTo) {
 		beforeSet();
-		this.specifiedAnswerer = specifiedAnswerer;
-	}
-
-	/**
-	 * @return the expirationTimestamp
-	 */
-	public long getExpirationTimestamp() {
-		beforeGet();
-		return expirationTimestamp;
-	}
-
-	/**
-	 * @param expirationTimestamp
-	 *            the expirationTimestamp to set
-	 */
-	public void setExpirationTimestamp(long expirationTimestamp) {
-		beforeSet();
-		this.expirationTimestamp = expirationTimestamp;
-		this.expirationDate = null;
-	}
-
-	/**
-	 * @return the closedTimestamp
-	 */
-	public long getClosedTimestamp() {
-		beforeGet();
-		return closedTimestamp;
-	}
-
-	/**
-	 * @param closedTimestamp
-	 *            the closedTimestamp to set
-	 */
-	public void setClosedTimestamp(long closedTimestamp) {
-		beforeSet();
-		this.closedTimestamp = closedTimestamp;
-		this.closedDateTime = null;
+		this.assignTo = assignTo;
 	}
 
 	/**
@@ -304,8 +291,6 @@ public class QuestionModel extends AbstractModel {
 	 */
 	public Date getExpirationDate() {
 		beforeGet();
-		if (expirationDate == null && expirationTimestamp != 0)
-			expirationDate = new Date(expirationTimestamp);
 		return expirationDate;
 	}
 
@@ -316,17 +301,13 @@ public class QuestionModel extends AbstractModel {
 	public void setExpirationDate(Date expirationDate) {
 		beforeSet();
 		this.expirationDate = expirationDate;
-		this.expirationTimestamp = expirationDate == null ? 0 : expirationDate
-				.getTime();
 	}
 
 	/**
 	 * @return the closedDateTime
 	 */
-	public Timestamp getClosedDateTime() {
+	public Date getClosedDateTime() {
 		beforeGet();
-		if (closedDateTime == null && closedTimestamp != 0)
-			closedDateTime = new Timestamp(closedTimestamp);
 		return closedDateTime;
 	}
 
@@ -334,11 +315,9 @@ public class QuestionModel extends AbstractModel {
 	 * @param closedDateTime
 	 *            the closedDateTime to set
 	 */
-	public void setClosedDateTime(Timestamp closedDateTime) {
+	public void setClosedDateTime(Date closedDateTime) {
 		beforeSet();
 		this.closedDateTime = closedDateTime;
-		this.closedTimestamp = closedDateTime == null ? 0 : closedDateTime
-				.getTime();
 	}
 
 	/**

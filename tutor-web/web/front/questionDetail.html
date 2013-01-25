@@ -3,8 +3,35 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Insert title here</title>
+<title>提问</title>
 <#include "/_inc/head.html">
+<style type="text/css">
+<!--
+.row-head { float: left; width: 100px; }
+.row-tail { float: right; width: 320px; }
+.row-content { float: left; width: 300px; }
+.row-content .ui-widget-content { border-left-width: 0; }
+.table-row { border-top-width: 0; }
+#answerList { overflow: auto; }
+-->
+</style>
+<script type="text/javascript">
+<!--
+function relayout(boxh) {
+	$("#answerList").css("height", boxh < 800 ? "auto" : (boxh - 600) + "px");
+}
+
+$(function() {
+	$("#pagebar a").click(function() {
+		var pn = $(this).attr("href");
+		if (pn != "#") {
+			addq("pageno", pn.slice(1));
+		}
+		return false;
+	});
+});
+//-->
+</script>
 </head>
 <body>
 <table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
@@ -15,12 +42,8 @@
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
-					<div class="ui-icon ui-icon-pin-s float-left"></div>消息
-				</div>
-				<div class="box-subtitle ui-widget-content">
-					<div class="ui-icon ui-icon-person float-left"></div>基本资料
-				</div>
-				<div class="box-content ui-widget-content">
+					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
+					<a href="#" onclick="history.go(-1);return false;">返回列表</a><br />
 				</div>
 			</div>
 		</td>
@@ -30,11 +53,100 @@
 				<div class="box-title navbar ui-state-default ui-corner-top">
 					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">用户主页</a>
+					<a href="#" class="nav-link float-left">提问列表</a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">解答</a>
 				</div>
-				<div class="box-content ui-widget-content">
-					<h1>稍等，马上就有……</h1>
+				<div class="box-subtitle ui-widget-content">提问解答</div>
+				<div class="box-content ui-state-active">
+					<div class="row-head">
+						<@face user=question.student width=90 />
+						<div class="${question.subject!}">${(question.grade?substring(0, 1))!}${Tutor.numberWord(question.gradeLevel)}</div>
+					</div>
+					<table border="0" cellspacing="0" cellpadding="5" class="row-content">
+					<tbody>
+						<tr>
+							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header ui-corner-tl">姓名</th>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content ui-corner-tr">${(question.student.name)!} (<a href="#">${Tutor.maskEmail(question.questioner.email)}</a>)</td>
+						</tr>
+						<tr>
+							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">地区</th>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${(question.student.location)!}</td>
+						</tr>
+						<tr>
+							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">学科</th>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${question.subject!}</td>
+						</tr>
+						<tr>
+							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">年级</th>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${question.grade} ${question.gradeLevel}年级</td>
+						</tr>
+						<tr>
+							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header ui-corner-bl table-row">提问</th>
+							<td align="left" valign="top" width="250" class="ui-widget-content ui-corner-br table-row">${question.title!}</td>
+						</tr>
+					</tbody>
+					</table>
+					<div class="row-tail">
+					<#list question.uploadPictures as pic>
+						<a href="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" target="_blank">
+							<img src="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" width="112" height="112" border="0" />
+						</a>
+					</#list>
+					</div>
+					<br class="clear-both" />
+					<form method="post">
+						<div>
+							<div class="ui-icon ui-icon-help float-left"></div>
+							<small>${lastAnswer.createDateTime!}</small>
+							<div class="strange sb14">${lastAnswer.question!}</div>
+						</div>
+						<div>
+							<div class="ui-icon ui-icon-pencil float-left"></div>
+							<small>${lastAnswer.updateDateTime!}</small>
+							<div><textarea name="answer" rows="6" cols="80">${params.answer!lastAnswer.answer!}</textarea></div>
+							<div>
+								<input type="submit" name="submit" value="提交解答" class="green-button small-button s12" />
+								<span class="sweet s12">（最多500字）</span>
+							</div>
+						</div>
+						<input type="hidden" name="id" value="${params.id!}" />
+						<input type="hidden" name="answerId" value="${answerId!}" />
+					</form>
 				</div>
+				<#--
+				<div class="box-subtitle ui-widget-content">追问记录</div>
+				<div id="answerList" class="box-content ui-widget-content">
+				<#list details as detail>
+					<div class="${(detail_index%2==0)?string('odd', 'even')}">
+						<div>
+							<div class="ui-icon ui-icon-help float-left"></div>
+							<small>${detail.createDateTime!}</small>
+							<div class="darker clear-left">${detail.question!}</div>
+						</div>
+						<div>
+							<div class="ui-icon ui-icon-pencil float-left"></div>
+							<small>${detail.updateDateTime!}</small>
+							<div class="darker clear-left">${detail.answer!}</div>
+						</div>
+					</div>
+				</#list>
+				<#if answer??>
+					<div class="${(detailCount%2==0)?string('odd', 'even')}">
+						<div>
+							<div class="ui-icon ui-icon-help float-left"></div>
+							<small>${question.createDateTime!}</small>
+							<div class="darker clear-left">${question.title!}</div>
+						</div>
+						<div>
+							<div class="ui-icon ui-icon-pencil float-left"></div>
+							<small>${answer.updateDateTime!}</small>
+							<div class="darker clear-left">${answer.answer!}</div>
+						</div>
+					</div>
+				</#if>
+				</div>
+				-->
 			</div>
 		</td>
 	</tr>

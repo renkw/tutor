@@ -19,6 +19,9 @@ public class AnswerDetailModel extends AbstractModel {
 
 	private static final long serialVersionUID = 1491587760914605595L;
 
+	public static final String QUESTION = "question";
+	public static final String ANSWER = "answer";
+
 	private String question;
 	private String answer;
 

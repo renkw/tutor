@@ -8,7 +8,7 @@
 <style type="text/css">
 <!--
 .row-head { float: left; width: 100px; }
-.row-tail { float: right; width: 320px; }
+.row-tail { float: right; width: 320px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; }
 .row-content { float: left; width: 300px; }
 .row-content .ui-widget-content { border-left-width: 0; }
 .table-row { border-top-width: 0; }
@@ -43,8 +43,9 @@ $(function() {
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
 					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
-					<a href="#" onclick="history.go(-1);return false;">返回列表</a><br />
+					<a href="#" onclick="history.go(-1);return false;">返回</a><br />
 				</div>
+				<div class="box-content ui-widget-content"></div>
 			</div>
 		</td>
 		<td align="left" valign="top">
@@ -90,7 +91,7 @@ $(function() {
 					<div class="row-tail">
 					<#list question.uploadPictures as pic>
 						<a href="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" target="_blank">
-							<img src="${pathrel}/files/${Tutor.id(question.questioner)}/small-${pic}" width="112" height="112" border="0" />
+							<img src="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" width="112" height="112" border="0" />
 						</a>
 					</#list>
 					</div>
@@ -98,12 +99,12 @@ $(function() {
 					<form method="post">
 						<div>
 							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${lastAnswer.createDateTime!}</small>
+							<small>${lastAnswer.createDateTime?datetime}</small>
 							<div class="strange sb14">${lastAnswer.question!}</div>
 						</div>
 						<div>
 							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${lastAnswer.updateDateTime!}</small>
+							<small>${lastAnswer.updateDateTime?datetime}</small>
 							<div><textarea name="answer" rows="6" cols="80">${params.answer!lastAnswer.answer!}</textarea></div>
 							<div>
 								<input type="submit" name="submit" value="提交解答" class="green-button small-button s12" />
@@ -121,12 +122,12 @@ $(function() {
 					<div class="${(detail_index%2==0)?string('odd', 'even')}">
 						<div>
 							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${detail.createDateTime!}</small>
+							<small>${detail.createDateTime?datetime}</small>
 							<div class="darker clear-left">${detail.question!}</div>
 						</div>
 						<div>
 							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${detail.updateDateTime!}</small>
+							<small>${detail.updateDateTime?datetime}</small>
 							<div class="darker clear-left">${detail.answer!}</div>
 						</div>
 					</div>
@@ -135,12 +136,12 @@ $(function() {
 					<div class="${(detailCount%2==0)?string('odd', 'even')}">
 						<div>
 							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${question.createDateTime!}</small>
+							<small>${question.createDateTime?datetime}</small>
 							<div class="darker clear-left">${question.title!}</div>
 						</div>
 						<div>
 							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${answer.updateDateTime!}</small>
+							<small>${answer.updateDateTime?datetime}</small>
 							<div class="darker clear-left">${answer.answer!}</div>
 						</div>
 					</div>

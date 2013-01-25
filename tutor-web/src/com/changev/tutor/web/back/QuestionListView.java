@@ -5,9 +5,20 @@
  */
 package com.changev.tutor.web.back;
 
+import static com.changev.tutor.model.AbstractModel.CREATE_DATE_TIME;
+import static com.changev.tutor.model.AbstractModel.DELETED;
+import static com.changev.tutor.model.QuestionModel.ASSIGN_TO;
+import static com.changev.tutor.model.QuestionModel.CITY;
+import static com.changev.tutor.model.QuestionModel.CLOSED;
+import static com.changev.tutor.model.QuestionModel.EXPIRATION_DATE;
+import static com.changev.tutor.model.QuestionModel.GRADE;
+import static com.changev.tutor.model.QuestionModel.GRADE_LEVEL;
+import static com.changev.tutor.model.QuestionModel.PROVINCE;
+import static com.changev.tutor.model.QuestionModel.SUBJECT;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +32,10 @@ import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.util.QueryBuilder;
+import com.changev.tutor.util.QueryBuilder.SubQuery;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
-import com.db4o.ObjectContainer;
-import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -38,8 +49,6 @@ public class QuestionListView implements View {
 
 	private static final Logger logger = Logger
 			.getLogger(QuestionListView.class);
-	private static final Logger performance = Logger
-			.getLogger(Tutor.PERFORMANCE_LOGGER_NAME);
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -57,7 +66,6 @@ public class QuestionListView implements View {
 			logger.trace("[postRender] called");
 	}
 
-	@SuppressWarnings("serial")
 	protected void searchQuestions(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[searchQuestions] called");
@@ -78,7 +86,8 @@ public class QuestionListView implements View {
 		}
 
 		SessionContainer container = SessionContainer.get(request);
-		TeacherModel loginUser = container.getLoginUser().as(UserRole.Teacher);
+		final TeacherModel loginUser = container.getLoginUser().as(
+				UserRole.Teacher);
 		List<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isNotEmpty(search)) {
 			if (logger.isDebugEnabled())
@@ -96,9 +105,8 @@ public class QuestionListView implements View {
 			else if ("all".equals(range))
 				calendar.clear();
 
-			ObjectContainer objc = Tutor.getCurrentContainer();
-			final long timestamp = calendar.getTimeInMillis();
-			final long now = Tutor.timestamp();
+			Date toDate = calendar.getTime();
+			Date now = Tutor.currentDateTime();
 			// get answered questions
 			List<AnswerModel> answerList = loginUser.getAnswers();
 			List<QuestionModel> answeredList = new ArrayList<QuestionModel>(
@@ -108,30 +116,31 @@ public class QuestionListView implements View {
 			if ("old".equals(sort)) {
 				questionList = answeredList;
 			} else {
-				questionList = new ArrayList<QuestionModel>();
-				for (QuestionModel questionModel : objc
-						.query(new Predicate<QuestionModel>() {
+				QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
+				q.isFalse(CLOSED).isFalse(DELETED).ge(toDate, CREATE_DATE_TIME)
+						.gt(now, EXPIRATION_DATE).or(new SubQuery() {
 							@Override
-							public boolean match(QuestionModel candidate) {
-								return candidate.getCreateTimestamp() >= timestamp
-										&& candidate.getExpirationTimestamp() > now
-										&& candidate.getDeleted() == Boolean.FALSE
-										&& candidate.getClosed() == Boolean.FALSE;
+							public void query(QueryBuilder<?> q) {
+								q.eq(loginUser, ASSIGN_TO).and(new SubQuery() {
+									@Override
+									public void query(QueryBuilder<?> q) {
+										q.eq(loginUser.getProvince(), PROVINCE)
+												.eq(loginUser.getCity(), CITY)
+												.eq(loginUser.getGrade(), GRADE)
+												.range(loginUser
+														.getGradeLevelFrom(),
+														loginUser
+																.getGradeLevelTo(),
+														GRADE_LEVEL)
+												.in(loginUser.getSubjects(),
+														SUBJECT);
+									}
+								});
 							}
-						})) {
-					if (!answeredList.contains(questionList))
-						questionList.add(questionModel);
-				}
+						});
+				questionList = q.execute();
+				container.setQuestionList(questionList);
 			}
-			if (performance.isInfoEnabled()) {
-				performance.info("[searchQuestions] search questions(sort="
-						+ sort + ",range=" + range + ",records="
-						+ questionList.size() + ") : "
-						+ (Tutor.timestamp() - now));
-			}
-
-			Collections.reverse(questionList);
-			container.setQuestionList(questionList);
 		}
 
 		// set variables
@@ -141,7 +150,6 @@ public class QuestionListView implements View {
 		request.setAttribute("total", size);
 		request.setAttribute("totalPages", (size + items - 1) / items);
 		request.setAttribute("questions",
-				questionList.subList(start, Math.min(size, start + items)));
+				Tutor.listDesc(questionList, size - start - 1, items));
 	}
-
 }

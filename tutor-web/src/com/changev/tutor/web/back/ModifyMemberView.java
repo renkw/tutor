@@ -222,6 +222,14 @@ public class ModifyMemberView implements View {
 									.emptyNull(education));
 							teacherModel.setTeachedYears(Tutor
 									.byteNull(teachedYears));
+							teacherModel.getSubjectsFor().clear();
+							if (subjects != null) {
+								for (String s : subjects) {
+									if (StringUtils.isEmpty(s))
+										continue;
+									teacherModel.getSubjectsFor().add(s);
+								}
+							}
 							teacherModel.getSpecialityFor().clear();
 							if (speciality != null) {
 								for (String s : speciality) {

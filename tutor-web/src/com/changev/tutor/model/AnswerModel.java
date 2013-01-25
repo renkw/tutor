@@ -23,6 +23,12 @@ public class AnswerModel extends AbstractModel {
 
 	private static final long serialVersionUID = 8353464399050892383L;
 
+	public static final String ANSWERER = "answerer";
+	public static final String ORGANIZATION = "organization";
+	public static final String QUESTION = "question";
+	public static final String ANSWER = "answer";
+	public static final String DETAILS = "details";
+
 	@Indexed
 	private TeacherModel answerer;
 	private OrganizationModel organization;
@@ -44,6 +50,7 @@ public class AnswerModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
+		setOrganization(answerer.getOrganization());
 	}
 
 	@Override
@@ -94,6 +101,7 @@ public class AnswerModel extends AbstractModel {
 	 * @return the question
 	 */
 	public QuestionModel getQuestion() {
+		beforeGet();
 		return question;
 	}
 
@@ -102,6 +110,7 @@ public class AnswerModel extends AbstractModel {
 	 *            the question to set
 	 */
 	public void setQuestion(QuestionModel question) {
+		beforeSet();
 		this.question = question;
 	}
 

@@ -24,6 +24,8 @@ public class ParentModel extends UserModel {
 
 	private static final long serialVersionUID = 5756233700028997499L;
 
+	public static final String CONTACTERS = "contacters";
+
 	private Set<UserModel> contacters;
 
 	public ParentModel() {
@@ -36,18 +38,20 @@ public class ParentModel extends UserModel {
 	}
 
 	public List<QuestionModel> getQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return Tutor.getCurrentContainer().queryByExample(
+				ModelFactory.getUserQuestionExample(getEmail()));
 	}
 
 	public List<QuestionModel> getUnclosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		QuestionModel example = ModelFactory.getUserQuestionExample(getEmail());
+		example.setClosed(Boolean.FALSE);
+		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	public List<QuestionModel> getClosedQuestions() {
-		// TODO
-		throw new UnsupportedOperationException();
+		QuestionModel example = ModelFactory.getUserQuestionExample(getEmail());
+		example.setClosed(Boolean.TRUE);
+		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	@Override

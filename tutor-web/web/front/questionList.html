@@ -3,8 +3,33 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Insert title here</title>
+<title>提问列表</title>
 <#include "/_inc/head.html">
+<style type="text/css">
+<!--
+#questionList { overflow: auto; }
+#questionList .odd, #questionList .even { height: 118px; }
+#questionList .row-head { float: left; width: 100px; }
+#questionList .row-tail { float: right; width: 100px; text-align: right; }
+#questionList .row-content { float: left; width: 500px; }
+-->
+</style>
+<script type="text/javascript">
+<!--
+function relayout(boxh) {
+	$("#questionList").css("height", boxh < 450 ? "auto" : (boxh - 250) + "px");
+}
+
+$(function() {
+	$("#pagebar a").click(function() {
+		var pn = $(this).attr("href");
+		if (pn != "#") 
+			addq("pageno", pn.slice(1), "search", "");
+		return false;
+	});
+});
+//-->
+</script>
 </head>
 <body>
 <table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
@@ -14,13 +39,13 @@
 		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
-				<div class="box-title ui-state-default ui-corner-top">
-					<div class="ui-icon ui-icon-pin-s float-left"></div>消息
-				</div>
+				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
 				<div class="box-subtitle ui-widget-content">
-					<div class="ui-icon ui-icon-person float-left"></div>基本资料
+					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
+					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
+					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
 				</div>
 			</div>
 		</td>
@@ -30,10 +55,56 @@
 				<div class="box-title navbar ui-state-default ui-corner-top">
 					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">用户主页</a>
+					<a href="#" class="nav-link float-left">提问列表</a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">
+					<#switch params.range!>
+						<#case "week">最近一周<#break>
+						<#case "month">最近一个月<#break>
+						<#case "quarter">最近三个月<#break>
+						<#case "half">最近半年<#break>
+						<#case "all">全部<#break>
+					</#switch>
+						的
+					<#switch params.sort!>
+						<#case "new">未解答提问<#break>
+						<#case "old">已解答提问<#break>
+					</#switch>
+						(${total})
+					</a>
 				</div>
-				<div class="box-content ui-widget-content">
-					<h1>稍等，马上就有……</h1>
+				<div class="box-subtitle ui-widget-content">
+					<div class="alpha50">
+						<a href="#" onclick="addq('range','week','search','s');return false;">最近一周</a> |
+						<a href="#" onclick="addq('range','month','search','s');return false;">最近一个月</a> |
+						<a href="#" onclick="addq('range','quarter','search','s');return false;">最近三个月</a> |
+						<a href="#" onclick="addq('range','half','search','s');return false;">最近半年</a> |
+						<a href="#" onclick="addq('range','all','search','s');return false;">全部</a>
+					</div>
+				</div>
+				<div id="questionList" class="box-content ui-widget-content">
+				<#list questions as q>
+					<#assign style=(q_index%2==0)?string("odd", "even")>
+					<div class="${style}">
+						<div class="row-head">
+							<@face user=q.student width=90 />
+							<div class="${q.subject!}">${(question.grade?substring(0, 1))!}${Tutor.numberWord(question.gradeLevel)}</div>
+						</div>
+						<div class="row-content">
+							<p class="sb14">${q.title!}</p>
+						</div>
+						<div class="row-tail">
+							<small>${q.createDateTime!}</small><br />
+							<div><a href="#" class="float-right">${(q.questioner.name)!}</a><div class="ui-icon ui-icon-person float-right"></div></div>
+							<br /><br />
+							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?id=${Tutor.id(q)}')" />
+						</div>
+						<br class="clear-both" />
+					</div>
+				</#list>
+				</div>
+				<div id="pagebar" class="pagebar ui-state-default ui-corner-bottom float-right" style="margin-right:2px">
+					<@pager total=totalPages pageno=Tutor.parseInt(params.pageno!1) />
 				</div>
 			</div>
 		</td>

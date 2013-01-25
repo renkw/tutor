@@ -8,6 +8,8 @@ package com.changev.tutor;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.apache.log4j.Logger;
+
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.ext.DatabaseClosedException;
@@ -35,6 +37,9 @@ import com.db4o.query.QueryComparator;
 public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 
 	private static final long serialVersionUID = -6221167529547830146L;
+
+	private static final Logger performance = Logger
+			.getLogger(Tutor.PERFORMANCE_LOGGER_NAME);
 
 	protected transient ObjectContainer original;
 
@@ -92,7 +97,21 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 	@Override
 	public <T> ObjectSet<T> queryByExample(Object template)
 			throws Db4oIOException, DatabaseClosedException {
-		return original().queryByExample(template);
+		long time = System.currentTimeMillis();
+		ObjectSet<T> set = original().queryByExample(template);
+		if (performance.isDebugEnabled()) {
+			time = System.currentTimeMillis() - time;
+			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+			if (elems.length > 2) {
+				performance.debug(new StringBuilder("[Example] ")
+						.append(elems[2].getClassName()).append('#')
+						.append(elems[2].getMethodName()).append('@')
+						.append(elems[2].getLineNumber()).append("=")
+						.append(set.size()).append(" : ").append(time)
+						.append("ms").toString());
+			}
+		}
+		return set;
 	}
 
 	@Override
@@ -103,14 +122,42 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 	@Override
 	public <TargetType> ObjectSet<TargetType> query(Class<TargetType> clazz)
 			throws Db4oIOException, DatabaseClosedException {
-		return original().query(clazz);
+		long time = System.currentTimeMillis();
+		ObjectSet<TargetType> set = original().query(clazz);
+		if (performance.isDebugEnabled()) {
+			time = System.currentTimeMillis() - time;
+			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+			if (elems.length > 2) {
+				performance.debug(new StringBuilder("[Class] ")
+						.append(elems[2].getClassName()).append('#')
+						.append(elems[2].getMethodName()).append('@')
+						.append(elems[2].getLineNumber()).append("=")
+						.append(set.size()).append(" : ").append(time)
+						.append("ms").toString());
+			}
+		}
+		return set;
 	}
 
 	@Override
 	public <TargetType> ObjectSet<TargetType> query(
 			Predicate<TargetType> predicate) throws Db4oIOException,
 			DatabaseClosedException {
-		return original().query(predicate);
+		long time = System.currentTimeMillis();
+		ObjectSet<TargetType> set = original().query(predicate);
+		if (performance.isDebugEnabled()) {
+			time = System.currentTimeMillis() - time;
+			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+			if (elems.length > 2) {
+				performance.debug(new StringBuilder("[NativeQuery] ")
+						.append(elems[2].getClassName()).append('#')
+						.append(elems[2].getMethodName()).append('@')
+						.append(elems[2].getLineNumber()).append("=")
+						.append(set.size()).append(" : ").append(time)
+						.append("ms").toString());
+			}
+		}
+		return set;
 	}
 
 	@Override
@@ -118,14 +165,42 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			Predicate<TargetType> predicate,
 			QueryComparator<TargetType> comparator) throws Db4oIOException,
 			DatabaseClosedException {
-		return original().query(predicate, comparator);
+		long time = System.currentTimeMillis();
+		ObjectSet<TargetType> set = original().query(predicate, comparator);
+		if (performance.isDebugEnabled()) {
+			time = System.currentTimeMillis() - time;
+			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+			if (elems.length > 2) {
+				performance.debug(new StringBuilder("[NativeQuerySort] ")
+						.append(elems[2].getClassName()).append('#')
+						.append(elems[2].getMethodName()).append('@')
+						.append(elems[2].getLineNumber()).append("=")
+						.append(set.size()).append(" : ").append(time)
+						.append("ms").toString());
+			}
+		}
+		return set;
 	}
 
 	@Override
 	public <TargetType> ObjectSet<TargetType> query(
 			Predicate<TargetType> predicate, Comparator<TargetType> comparator)
 			throws Db4oIOException, DatabaseClosedException {
-		return original().query(predicate, comparator);
+		long time = System.currentTimeMillis();
+		ObjectSet<TargetType> set = original().query(predicate, comparator);
+		if (performance.isDebugEnabled()) {
+			time = System.currentTimeMillis() - time;
+			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+			if (elems.length > 2) {
+				performance.debug(new StringBuilder("[NativeQuerySort] ")
+						.append(elems[2].getClassName()).append('#')
+						.append(elems[2].getMethodName()).append('@')
+						.append(elems[2].getLineNumber()).append("=")
+						.append(set.size()).append(" : ").append(time)
+						.append("ms").toString());
+			}
+		}
+		return set;
 	}
 
 	@Override

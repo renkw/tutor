@@ -25,12 +25,19 @@ public class OrganizationModel extends UserModel {
 
 	private static final long serialVersionUID = -8527838031223751954L;
 
+	public static final String LOGO_PICTURE = "logoPicture";
+	public static final String SUBJECTS = "subjects";
+	public static final String HOMEPAGE = "homepage";
+	public static final String TEACHER_COUNT = "teacherCount";
+	public static final String SCORE = "score";
+	public static final String ACCOUNT_LEVEL = "accountLevel";
+
 	private String logoPicture;
 	private Set<String> subjects;
-	private int teacherCount;
 	private String homepage;
-	private int score;
-	private int accountLevel;
+	private Integer teacherCount;
+	private Integer score;
+	private Integer accountLevel;
 
 	public OrganizationModel() {
 		super.setRole(UserRole.Organization);
@@ -56,6 +63,9 @@ public class OrganizationModel extends UserModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
+		setTeacherCount(Integer.valueOf(0));
+		setScore(Integer.valueOf(0));
+		setAccountLevel(Integer.valueOf(0));
 	}
 
 	@Override
@@ -112,7 +122,7 @@ public class OrganizationModel extends UserModel {
 	/**
 	 * @return the teacherCount
 	 */
-	public int getTeacherCount() {
+	public Integer getTeacherCount() {
 		beforeGet();
 		return teacherCount;
 	}
@@ -121,7 +131,7 @@ public class OrganizationModel extends UserModel {
 	 * @param teacherCount
 	 *            the teacherCount to set
 	 */
-	public void setTeacherCount(int teacherCount) {
+	public void setTeacherCount(Integer teacherCount) {
 		beforeSet();
 		this.teacherCount = teacherCount;
 	}
@@ -146,7 +156,7 @@ public class OrganizationModel extends UserModel {
 	/**
 	 * @return the score
 	 */
-	public int getScore() {
+	public Integer getScore() {
 		beforeGet();
 		return score;
 	}
@@ -155,7 +165,7 @@ public class OrganizationModel extends UserModel {
 	 * @param score
 	 *            the score to set
 	 */
-	public void setScore(int score) {
+	public void setScore(Integer score) {
 		beforeSet();
 		this.score = score;
 	}
@@ -163,7 +173,7 @@ public class OrganizationModel extends UserModel {
 	/**
 	 * @return the accountLevel
 	 */
-	public int getAccountLevel() {
+	public Integer getAccountLevel() {
 		beforeGet();
 		return accountLevel;
 	}
@@ -172,7 +182,7 @@ public class OrganizationModel extends UserModel {
 	 * @param accountLevel
 	 *            the accountLevel to set
 	 */
-	public void setAccountLevel(int accountLevel) {
+	public void setAccountLevel(Integer accountLevel) {
 		beforeSet();
 		this.accountLevel = accountLevel;
 	}
