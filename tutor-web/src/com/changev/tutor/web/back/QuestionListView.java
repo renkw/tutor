@@ -16,7 +16,6 @@ import static com.changev.tutor.model.QuestionModel.GRADE_LEVEL;
 import static com.changev.tutor.model.QuestionModel.PROVINCE;
 import static com.changev.tutor.model.QuestionModel.SUBJECT;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +65,7 @@ public class QuestionListView implements View {
 			logger.trace("[postRender] called");
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void searchQuestions(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[searchQuestions] called");
@@ -86,7 +86,7 @@ public class QuestionListView implements View {
 		}
 
 		SessionContainer container = SessionContainer.get(request);
-		final TeacherModel loginUser = container.getLoginUser().as(
+		final TeacherModel teacher = container.getLoginUser().as(
 				UserRole.Teacher);
 		List<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isNotEmpty(search)) {
@@ -108,48 +108,58 @@ public class QuestionListView implements View {
 			Date toDate = calendar.getTime();
 			Date now = Tutor.currentDateTime();
 			// get answered questions
-			List<AnswerModel> answerList = loginUser.getAnswers();
-			List<QuestionModel> answeredList = new ArrayList<QuestionModel>(
-					answerList.size());
-			for (AnswerModel answerModel : answerList)
-				answeredList.add(answerModel.getQuestion());
 			if ("old".equals(sort)) {
-				questionList = answeredList;
+				List<?> list = new QueryBuilder<AnswerModel>().isFalse(DELETED)
+						.eq(teacher, AnswerModel.ANSWERER)
+						.isTrue(AnswerModel.QUESTION, CLOSED)
+						.execute(AnswerModel.QUESTION);
+				questionList = (List<QuestionModel>) list;
 			} else {
 				QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
 				q.isFalse(CLOSED).isFalse(DELETED).ge(toDate, CREATE_DATE_TIME)
 						.gt(now, EXPIRATION_DATE).or(new SubQuery() {
 							@Override
 							public void query(QueryBuilder<?> q) {
-								q.eq(loginUser, ASSIGN_TO).and(new SubQuery() {
+								q.eq(teacher, ASSIGN_TO).and(new SubQuery() {
 									@Override
 									public void query(QueryBuilder<?> q) {
-										q.eq(loginUser.getProvince(), PROVINCE)
-												.eq(loginUser.getCity(), CITY)
-												.eq(loginUser.getGrade(), GRADE)
-												.range(loginUser
+										q.isNull(ASSIGN_TO)
+												.eq(teacher.getProvince(),
+														PROVINCE)
+												.eq(teacher.getCity(), CITY)
+												.eq(teacher.getGrade(), GRADE)
+												.range(teacher
 														.getGradeLevelFrom(),
-														loginUser
-																.getGradeLevelTo(),
+														teacher.getGradeLevelTo(),
 														GRADE_LEVEL)
-												.in(loginUser.getSubjects(),
+												.in(teacher.getSubjects(),
 														SUBJECT);
 									}
 								});
 							}
 						});
 				questionList = q.execute();
-				container.setQuestionList(questionList);
 			}
+			container.setQuestionList(questionList);
 		}
 
 		// set variables
 		final int items = 10;
 		int size = questionList.size(), start = items
 				* (Integer.parseInt(pageno) - 1);
+		questionList = Tutor.listDesc(questionList, size - start - 1, items);
+		if (!"old".equals(sort)) {
+			List<?> oldQuestionList = new QueryBuilder<AnswerModel>()
+					.isFalse(DELETED).isFalse(AnswerModel.QUESTION, CLOSED)
+					.eq(teacher, AnswerModel.ANSWERER)
+					.execute(AnswerModel.QUESTION);
+			for (QuestionModel question : questionList)
+				question.setNewFlag(!oldQuestionList.contains(question));
+		}
+
 		request.setAttribute("total", size);
 		request.setAttribute("totalPages", (size + items - 1) / items);
-		request.setAttribute("questions",
-				Tutor.listDesc(questionList, size - start - 1, items));
+		request.setAttribute("questions", questionList);
 	}
+
 }

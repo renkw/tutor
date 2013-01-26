@@ -23,6 +23,7 @@
 .required { color: red !important; }
 .optional { color: skyblue !important; }
 .noborder { border-width: 0 !important; }
+.nobg { background: none !important; }
 .float-left { float: left; }
 .float-right { float: right; }
 .clear-left { clear: left; }
@@ -89,8 +90,11 @@ function addq(/*...*/) {
 		}
 		s += (s == "" ? "?" : "&") + encodeURIComponent(m[1]) + "=" + encodeURIComponent(m[2]);
 	}
-	for (var i = 0; i < arguments.length; i += 2)
+	for (var i = 0; i < arguments.length; i += 2) {
+		if (arguments[i + 1] === null || arguments[i + 1] === undefined)
+			continue;
 		s += (s == "" ? "?" : "&") + encodeURIComponent(arguments[i]) + "=" + encodeURIComponent(arguments[i + 1]);
+	}
 	location.search = s;
 }
 

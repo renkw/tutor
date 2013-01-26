@@ -21,11 +21,8 @@ $(function() {
 		// TODO
 	});
 	$("#questionList td").click(function() {
-		// TODO
-	});
-	$("#teacherList td").click(function() {
 		var id = $(this).parent().attr("id");
-		if (id) location.href = "modifyTeacher.html?id=" + id;
+		if (id) location.href = "questionDetail.html?id=" + id;
 	});
 	var answerers = ${answererJson};
 	$("#student, #subject").change(function() {
@@ -76,6 +73,7 @@ $(function() {
 					</tbody>
 					</table>
 				</div>
+				<#--
 				<#if tutor.loginUser.role=="Parent">
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
@@ -85,7 +83,6 @@ $(function() {
 					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
 				</div>
 				</#if>
-				<#--
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-contact float-left"></div>联系人
 				</div>
@@ -171,7 +168,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">标题</th>
 							<td align="left">
-								<textarea name="title" rows="5" cols="20"></textarea>
+								<textarea name="title" rows="5" cols="20">${params.title!}</textarea>
 								<@errmsg name="title" />
 							</td>
 							<td align="left" class="alpha25">请不要超过200个字。</td>
@@ -211,11 +208,13 @@ $(function() {
 					<table id="questionList" width="100%" border="0" cellspacing="0" cellpadding="3">
 					<thead>
 						<tr>
-							<th>学生姓名</th>
-							<th>学科</th>
-							<th>指定解答</th>
-							<th>标题</th>
+							<th>&nbsp;</th>
 							<th>提问时间</th>
+							<th>姓名</th>
+							<th>学科</th>
+							<th>标题</th>
+							<th>指定解答</th>
+							<th>最终解答</th>
 							<th>过期时间</th>
 						</tr>
 					</thead>
@@ -223,11 +222,13 @@ $(function() {
 					<#list questions as q>
 						<#assign style=(q_index%2==0)?string('odd', 'even')>
 						<tr id="${Tutor.id(q)}">
-							<td class="${style}">${(q.student.name)!}</td>
-							<td class="${style}">${q.subject!}</td>
-							<td class="${style}">${(q.specifiedAnswerer.name)!}</td>
-							<td class="${style}">${q.title!}</td>
+							<td class="${style}"><#if q.closed><div class="ui-icon ui-icon-check"></div></#if></td>
 							<td class="${style}">${q.createDateTime?datetime}</td>
+							<td class="${style}">${(q.student.name)!}</td>
+							<td class="${style}">${q.grade?substring(0,1)!}${Tutor.numberWord(q.gradeLevel)!} ${q.subject!}</td>
+							<td class="${style}">${q.title!}</td>
+							<td class="${style}">${(q.assignTo.fullName)!}</td>
+							<td class="${style}">${(q.finalAnswerer.fullName)!}</td>
 							<td class="${style}">${q.expirationDate?date}</td>
 						</tr>
 					</#list>

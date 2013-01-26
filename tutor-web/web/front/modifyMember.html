@@ -3,8 +3,114 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Insert title here</title>
+<title>教师基本资料</title>
 <#include "/_inc/head.html">
+<script type="text/javascript">
+<!--
+$(function() {
+	var areas = ${areaJson};
+	$("#province").change(function() {
+		var value = this.options[this.selectedIndex].value;
+		var city = $("#city option:selected").val() || "${(params.area[1])!user.city!}";
+		var cities = areas[value];
+		$("#city").empty();
+		if (cities) {
+			for (var key in cities) {
+				var opt = document.createElement("option");
+				opt.value = key;
+				opt.text = key;
+				opt.selected = key == city;
+				$("#city").append(opt);
+			}
+			$("#city").change();
+		}
+	});
+	$("#city").change(function() {
+		var value = this.options[this.selectedIndex].value;
+		var prov = $("#province option:selected").val();
+		var dist = $("#district option:selected").val() || "${(params.area[2])!user.district!}";
+		var dists = areas[prov][value];
+		$("#district").empty();
+		if (dists) {
+			for (var i = 0; i < dists.length; i++) {
+				var opt = document.createElement("option");
+				opt.value = dists[i];
+				opt.text = dists[i];
+				opt.selected = dists[i] == dist;
+				$("#district").append(opt);
+			}
+		}
+	});
+	
+	<#if user.role=="Student">
+	$("#birthYear,#birthMonth").change(function() {
+		var year = parseInt($("#birthYear option:selected").val()),
+			month = parseInt($("#birthMonth option:selected").val()),
+			date = parseInt($("#birthDate option:selected").val() || "${(params.birthday[2])!(user.birthday?substring(8))!}");
+		$("#birthDate").html("<option />");
+		if (year && month) {
+			var dates;
+			switch (month) {
+			case 4: case 6: case 9: case 11:
+				dates = 30;
+				break;
+			case 2:
+				dates = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 29 : 28;
+				break;
+			default:
+				dates = 31;
+				break;
+			}
+			for (var i = 1; i <= dates; i++) {
+				var opt = document.createElement("option");
+				opt.value = i;
+				opt.text = i;
+				opt.selected = i == date;
+				$("#birthDate").append(opt);
+			}
+		}
+	});
+
+	var gradeLevels = ${gradeLevelJson};
+	$("#grades input:radio").change(function() {
+		if (!this.checked) return;
+		var value = this.value;
+		var levels = gradeLevels[value];
+		$("#grades select").each(function(idx) {
+			var level = parseInt($("option:selected", this).val() || (
+					idx == 0 ? "${params.gradeLevelFrom!user.gradeLevelFrom!}" : "${params.gradeLevelTo!user.gradeLevelTo!}"));
+			$(this).empty();
+			if (levels) {
+				for (var i = 0; i < levels.length; i++) {
+					var opt = document.createElement("option");
+					opt.value = i + 1;
+					opt.text = levels[i];
+					opt.selected = i + 1 == level;
+					$(this).append(opt);
+				}
+			}
+		});
+	});
+	</#if>
+	
+	if ($("#mailAddress").val() == "") {
+		$("#email").change(function() { $("#mailAddress").val(this.value); });
+	}
+	if ($("#contactName").val() == "") {
+		$("#name").change(function() { $("#contactName").val(this.value); });
+	}
+	if ($("#address1").val() == "") {
+		$("#province,#city,#district").change(function() {
+				$("#address1").val($("#province option:selected").text() 
+						+ $("#city option:selected").text() 
+						+ $("#district option:selected").text())
+		});
+	}
+	
+	$("#email,#name,#province,#birthYear,#grades input:radio").change();
+});
+//-->
+</script>
 </head>
 <body>
 <table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
@@ -14,13 +120,9 @@
 		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
-				<div class="box-title ui-state-default ui-corner-top">
-					<div class="ui-icon ui-icon-pin-s float-left"></div>消息
-				</div>
-				<div class="box-subtitle ui-widget-content">
-					<div class="ui-icon ui-icon-person float-left"></div>基本资料
-				</div>
+				<div class="box-title ui-state-default ui-corner-top">修改资料</div>
 				<div class="box-content ui-widget-content">
+					<a href="${pathrel}/public/resetpw.html">更改密码</a>
 				</div>
 			</div>
 		</td>
@@ -31,10 +133,234 @@
 					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">用户主页</a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">修改资料</a>
 				</div>
+				<form method="post">
+				<div class="box-subtitle ui-widget-content">基本资料</div>
 				<div class="box-content ui-widget-content">
-					<h1>稍等，马上就有……</h1>
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址<span class="required">*</span></th>
+							<td width="300" align="left">
+								<input type="text" name="email" id="email" value="${params.email!user.email!}" />
+								<@errmsg name="email" />
+							</td>
+							<td align="left" class="alpha25">请输入登录邮箱地址。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
+							<td align="left">
+								<input type="text" name="name" id="name" value="${params.name!user.name!}" />
+								<@errmsg name="name" />
+							</td>
+							<td align="left" class="alpha25">请输入您的姓名。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
+							<td align="left">
+								<select name="area" id="province">
+								<#list areas?keys as province>
+									<@option value=province select=(params.area[0])!user.province>${province}</@option>
+								</#list>
+								</select>
+								<select name="area" id="city"></select>
+								<select name="area" id="district"></select>
+								<@errmsg name="area" />
+							</td>
+							<td align="left" class="alpha25">请输入所在地区。</td>
+						</tr>
+						<#if user.role=="Student">
+						<tr>
+							<th align="center" class="ui-widget-header noborder">性别</th>
+							<td align="left">
+								<@radio name="gender" value="Male" select=params.gender!"Male">男</@radio>
+								<@radio name="gender" value="Female" select=params.gender>女</@radio>
+								<@errmsg name="gender" />
+							</td>
+							<td align="left" class="alpha25">学生性别。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">生日</th>
+							<td align="left">
+								<select name="birthday" id="birthYear">
+									<option></option>
+								<#list 1980..birthYear as year>
+									<@option value="${year?c}" select=(params.birthday[0])!>${year?c}</@option>
+								</#list>
+								</select>年
+								<select name="birthday" id="birthMonth">
+									<option></option>
+								<#list 1..12 as month>
+									<@option value="${month?string('00')}" select=(params.birthday[1])!>${month?c}</@option>
+								</#list>
+								</select>月
+								<select name="birthday" id="birthDate">
+									<option></option>
+								</select>日
+								<@errmsg name="birthday" />
+							</td>
+							<td align="left" class="alpha25">学生生日。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
+							<td align="left">
+								<select name="area" id="province">
+								<#list areas?keys as province>
+									<@option value=province select=(params.area[0])!>${province}</@option>
+								</#list>
+								</select>
+								<select name="area" id="city"></select>
+								<select name="area" id="district"></select>
+								<@errmsg name="area" />
+							</td>
+							<td align="left" class="alpha25">学生所在地区。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">学校</th>
+							<td align="left">
+								<input type="text" name="school" value="${params.school!}" />
+								<@errmsg name="school" />
+							</td>
+							<td align="left" class="alpha25">学生就读学校名。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
+							<td align="left">
+								<div id="grades">
+									<#list grades?keys as grade>
+										<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
+									</#list>
+									<select name="gradeLevel"></select>
+								</div>
+								<@errmsg name="grade" />
+							</td>
+							<td align="left" class="alpha25">学生年级。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">兴趣爱好</th>
+							<td align="left">
+								<input type="text" name="hobby" value="${params.hobby!}" />
+								<@errmsg name="hobby" />
+							</td>
+							<td align="left" class="alpha25">学生兴趣爱好。</td>
+						</tr>
+						</#if>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">个人描述</th>
+							<td align="left">
+								<textarea name="description" rows="5" cols="30">${params.description!user.description!}</textarea>
+								<@errmsg name="description" />
+							</td>
+							<td align="left" class="alpha25">请输入简单描述。</td>
+						</tr>
+					</tbody>
+					</table>
 				</div>
+				<div class="box-subtitle ui-widget-content">联系资料</div>
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">姓名</th>
+							<td width="300" align="left">
+								<input type="text" name="contactName" id="contactName" value="${params.contactName!contact.name!}" />
+								<@errmsg name="contactName" />
+							</td>
+							<td align="left" class="alpha25">联系人姓名。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">地址</th>
+							<td align="left">
+								〒<input type="text" name="postcode" value="${params.postcode!contact.postcode!}" size="7" /><br />
+								<input type="text" name="address" id="address1" value="${(params.address[0])!contact.address1!}" /><br />
+								<input type="text" name="address" value="${(params.address[0])!contact.address2!}" /><br />
+								<@errmsg name="address" />
+							</td>
+							<td align="left" class="alpha25">联系人邮编和地址。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">固定电话</th>
+							<td align="left">
+								<input type="text" name="telephone" value="${params.telephone!contact.telephone!}" />
+								<@errmsg name="telephone" />
+							</td>
+							<td align="left" class="alpha25">联系人固定电话。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">移动电话</th>
+							<td align="left">
+								<input type="text" name="cellphone" value="${params.cellphone!contact.cellphone!}" />
+								<@errmsg name="cellphone" />
+							</td>
+							<td align="left" class="alpha25">联系人移动电话。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">QQ</th>
+							<td align="left">
+								<input type="text" name="qq" value="${params.qq!contact.QQ!}" />
+								<@errmsg name="qq" />
+							</td>
+							<td align="left" class="alpha25">联系人QQ号码。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">微博地址</th>
+							<td align="left">
+								<input type="text" name="weibo" value="${params.weibo!contact.weibo!}" />
+								<@errmsg name="weibo" />
+							</td>
+							<td align="left" class="alpha25">联系人微博地址。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">Email</th>
+							<td align="left">
+								<input type="text" name="mailAddress" id="mailAddress" value="${params.mailAddress!contact.mailAddress!}" />
+								<@errmsg name="mailAddress" />
+							</td>
+							<td align="left" class="alpha25">联系人Email。</td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
+				<div class="box-subtitle ui-widget-content">隐私设置</div>
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">基本资料</th>
+							<td width="300" align="left">
+								<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!user.accountPrivacy>不公开</@radio>
+								<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!user.accountPrivacy>只对联系人公开</@radio>
+								<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!user.accountPrivacy>全部公开</@radio>
+								<@errmsg name="accountPrivacy" />
+							</td>
+							<td align="left" class="alpha25">设置公开基本资料。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">联系资料</th>
+							<td align="left">
+								<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!user.contactPrivacy>不公开</@radio>
+								<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!user.contactPrivacy>只对联系人公开</@radio>
+								<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!user.contactPrivacy>全部公开</@radio>
+								<@errmsg name="contactPrivacy" />
+							</td>
+							<td align="left" class="alpha25">设置公开联系资料。</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>&nbsp;</th>
+							<td align="left">
+								<br />
+								<input type="submit" name="submit" value="修改" class="green-button small-button ui-corner-all" />
+								<input type="reset" value="重置" class="green-button small-button ui-corner-all" />
+							</td>
+						</tr>
+					</tfoot>
+					</table>
+				</div>
+				</form>
 			</div>
 		</td>
 	</tr>

@@ -83,10 +83,10 @@
 		<property name="registerValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
 				<entry key="name.required" value="请输入您的姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
 				<entry key="email.required" value="请输入登录邮箱。" />
-				<entry key="email.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="email.length" value="请不要超过{maxLength}个字。" />
 				<entry key="email.length.maxLength"><value type="int">255</value></entry>
 				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
@@ -100,23 +100,23 @@
 			</util:map>
 		</property>
 		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
-		<property name="userSuccessPage" value="/front/registerStudent.html" />
-		<property name="orgSuccessPage" value="/public/contact.html" />
+		<property name="userSuccessPage" value="/front/member.html" />
+		<property name="orgSuccessPage" value="/back/member.html" />
 	</bean>
 	
 	<bean id="front.registerStudentView" class="com.changev.tutor.web.front.RegisterStudentView">
 		<property name="registerValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
 				<entry key="name.required" value="请输入学生姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
-				<entry key="school.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="school.length" value="请不要超过{maxLength}个字。" />
 				<entry key="school.length.maxlength"><value type="int">50</value></entry>
-				<entry key="hobby.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="hobby.length" value="请不要超过{maxLength}个字。" />
 				<entry key="hobby.length.maxlength"><value type="int">50</value></entry>
-				<entry key="description.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="description.length" value="请不要超过{maxLength}个字。" />
 				<entry key="description.length.maxlength"><value type="int">500</value></entry>
-				<entry key="answerer[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="answerer[].length" value="请不要超过{maxLength}个字。" />
 				<entry key="answerer[].length.maxlength"><value type="int">255</value></entry>
 				<entry key="answerer[].user" value="输入的用户不存在。" />
 			</util:map>
@@ -128,25 +128,25 @@
 	<bean id="front.registerCompleteView" class="com.changev.tutor.web.front.RegisterCompleteView">
 		<property name="registerValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="name.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
-				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
-				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字。" />
 				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
-				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="telephone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
 				<entry key="telephone.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="cellphone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="cellphone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="cellphone.length.maxLength"><value type="int">15</value></entry>
 				<entry key="cellphone.numeric" value="电话号码只能是数字。" />
-				<entry key="qq.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="qq.length" value="请不要超过{maxLength}个字。" />
 				<entry key="qq.length.maxLength"><value type="int">255</value></entry>
-				<entry key="weibo.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="weibo.length" value="请不要超过{maxLength}个字。" />
 				<entry key="weibo.length.maxLength"><value type="int">255</value></entry>
-				<entry key="mailAddress.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="mailAddress.length" value="请不要超过{maxLength}个字。" />
 				<entry key="mailAddress.length.maxLength"><value type="int">255</value></entry>
 				<entry key="mailAddress.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="mailAddress.pattern.pattern" value="[^@\s]+@\S+" />
@@ -159,6 +159,54 @@
 	<bean id="front.memberView" class="com.changev.tutor.web.front.MemberView">
 	</bean>
 	
+	<bean id="front.modifyMemberView" class="com.changev.tutor.web.front.ModifyMemberView">
+		<property name="submitValidator">
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="email.required" value="请输入登录邮箱。" />
+				<entry key="email.length" value="请不要超过{maxLength}个字。" />
+				<entry key="email.length.maxLength"><value type="int">255</value></entry>
+				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
+				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
+				<entry key="name.required" value="请输入您的姓名。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
+				<entry key="name.length.maxLength"><value type="int">10</value></entry>
+				<entry key="school.length" value="请不要超过{maxLength}个字。" />
+				<entry key="school.length.maxLength"><value type="int">50</value></entry>
+				<entry key="hobby.length" value="请不要超过{maxLength}个字。" />
+				<entry key="hobby.length.maxLength"><value type="int">50</value></entry>
+				<entry key="description.length" value="请不要超过{maxLength}个字。" />
+				<entry key="description.length.maxLength"><value type="int">500</value></entry>
+				<entry key="contactName.length" value="请不要超过{maxLength}个字。" />
+				<entry key="contactName.length.maxLength"><value type="int">10</value></entry>
+				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
+				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
+				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字。" />
+				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
+				<entry key="telephone.length" value="请不要超过{maxLength}个字。" />
+				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
+				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
+				<entry key="telephone.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
+				<entry key="cellphone.length" value="请不要超过{maxLength}个字。" />
+				<entry key="cellphone.length.maxLength"><value type="int">15</value></entry>
+				<entry key="cellphone.numeric" value="电话号码只能是数字。" />
+				<entry key="qq.length" value="请不要超过{maxLength}个字。" />
+				<entry key="qq.length.maxLength"><value type="int">255</value></entry>
+				<entry key="weibo.length" value="请不要超过{maxLength}个字。" />
+				<entry key="weibo.length.maxLength"><value type="int">255</value></entry>
+				<entry key="mailAddress.length" value="请不要超过{maxLength}个字。" />
+				<entry key="mailAddress.length.maxLength"><value type="int">255</value></entry>
+				<entry key="mailAddress.pattern" value="请输入正确的邮箱地址。" />
+				<entry key="mailAddress.pattern.pattern" value="[^@\s]+@\S+" />
+			</util:map>
+		</property>
+		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
+		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
+		<property name="successPage" value="/front/member.html" />
+	</bean>
+	
+	<bean id="front.questionDetailView" class="com.changev.tutor.web.front.QuestionDetailView" />
+	
 	<bean id="back.memberView" class="com.changev.tutor.web.back.MemberView">
 	</bean>
 	
@@ -166,7 +214,7 @@
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
 				<entry key="email.required" value="请输入登录邮箱。" />
-				<entry key="email.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="email.length" value="请不要超过{maxLength}个字。" />
 				<entry key="email.length.maxLength"><value type="int">255</value></entry>
 				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
@@ -174,37 +222,37 @@
 				<entry key="password.length.minLength"><value type="int">6</value></entry>
 				<entry key="password.length.maxLength"><value type="int">10</value></entry>
 				<entry key="name.required" value="请输入您的姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
 				<entry key="subjects[].required" value="请选择学科。" />
 				<entry key="teachedYears.numeric" value="教龄只能是数字。" />
-				<entry key="homepage.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="homepage.length" value="请不要超过{maxLength}个字。" />
 				<entry key="homepage.length.maxLength"><value type="int">255</value></entry>
-				<entry key="description.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="description.length" value="请不要超过{maxLength}个字。" />
 				<entry key="description.length.maxLength"><value type="int">500</value></entry>
-				<entry key="contactName.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="contactName.length" value="请不要超过{maxLength}个字。" />
 				<entry key="contactName.length.maxLength"><value type="int">10</value></entry>
-				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
-				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字。" />
 				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
-				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="telephone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
 				<entry key="telephone.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="fax.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="fax.length" value="请不要超过{maxLength}个字。" />
 				<entry key="fax.length.maxLength"><value type="int">20</value></entry>
 				<entry key="fax.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
 				<entry key="fax.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="cellphone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="cellphone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="cellphone.length.maxLength"><value type="int">15</value></entry>
 				<entry key="cellphone.numeric" value="电话号码只能是数字。" />
-				<entry key="qq.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="qq.length" value="请不要超过{maxLength}个字。" />
 				<entry key="qq.length.maxLength"><value type="int">255</value></entry>
-				<entry key="weibo.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="weibo.length" value="请不要超过{maxLength}个字。" />
 				<entry key="weibo.length.maxLength"><value type="int">255</value></entry>
-				<entry key="mailAddress.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="mailAddress.length" value="请不要超过{maxLength}个字。" />
 				<entry key="mailAddress.length.maxLength"><value type="int">255</value></entry>
 				<entry key="mailAddress.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="mailAddress.pattern.pattern" value="[^@\s]+@\S+" />
@@ -226,42 +274,42 @@
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
 				<entry key="email.required" value="请输入登录邮箱。" />
-				<entry key="email.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="email.length" value="请不要超过{maxLength}个字。" />
 				<entry key="email.length.maxLength"><value type="int">255</value></entry>
 				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
 				<entry key="name.required" value="请输入您的姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
 				<entry key="subjects[].required" value="请选择学科。" />
 				<entry key="teachedYears.numeric" value="教龄只能是数字。" />
-				<entry key="homepage.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="homepage.length" value="请不要超过{maxLength}个字。" />
 				<entry key="homepage.length.maxLength"><value type="int">255</value></entry>
-				<entry key="description.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="description.length" value="请不要超过{maxLength}个字。" />
 				<entry key="description.length.maxLength"><value type="int">500</value></entry>
-				<entry key="contactName.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="contactName.length" value="请不要超过{maxLength}个字。" />
 				<entry key="contactName.length.maxLength"><value type="int">10</value></entry>
-				<entry key="postcode.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
 				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
 				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
-				<entry key="address[].length" value="请不要超过{maxLength}个字符。" />
+				<entry key="address[].length" value="请不要超过{maxLength}个字。" />
 				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
-				<entry key="telephone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="telephone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
 				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
 				<entry key="telephone.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="fax.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="fax.length" value="请不要超过{maxLength}个字。" />
 				<entry key="fax.length.maxLength"><value type="int">20</value></entry>
 				<entry key="fax.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
 				<entry key="fax.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="cellphone.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="cellphone.length" value="请不要超过{maxLength}个字。" />
 				<entry key="cellphone.length.maxLength"><value type="int">15</value></entry>
 				<entry key="cellphone.numeric" value="电话号码只能是数字。" />
-				<entry key="qq.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="qq.length" value="请不要超过{maxLength}个字。" />
 				<entry key="qq.length.maxLength"><value type="int">255</value></entry>
-				<entry key="weibo.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="weibo.length" value="请不要超过{maxLength}个字。" />
 				<entry key="weibo.length.maxLength"><value type="int">255</value></entry>
-				<entry key="mailAddress.length" value="请不要超过{maxLength}个字符。" />
+				<entry key="mailAddress.length" value="请不要超过{maxLength}个字。" />
 				<entry key="mailAddress.length.maxLength"><value type="int">255</value></entry>
 				<entry key="mailAddress.pattern" value="请输入正确的邮箱地址。" />
 				<entry key="mailAddress.pattern.pattern" value="[^@\s]+@\S+" />
@@ -276,7 +324,15 @@
 	
 	<bean id="back.questionListView" class="com.changev.tutor.web.back.QuestionListView" />
 	
-	<bean id="back.questionDetailView" class="com.changev.tutor.web.back.QuestionDetailView" />
+	<bean id="back.questionDetailView" class="com.changev.tutor.web.back.QuestionDetailView">
+		<property name="submitValidator">
+			<bean class="com.changev.tutor.web.util.ParamLengthValidator"
+				p:name="answer"
+				p:maxLength="500"
+				p:message="请不要超过{maxLength}个字。" />
+		</property>
+		<property name="defaultBackUrl" value="member.html" />
+	</bean>
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 	

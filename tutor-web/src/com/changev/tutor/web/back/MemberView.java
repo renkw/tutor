@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
+import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserModel;
@@ -30,6 +31,8 @@ import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.util.QueryBuilder.SubQuery;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.db4o.query.Candidate;
+import com.db4o.query.Evaluation;
 
 /**
  * <p>
@@ -60,6 +63,7 @@ public class MemberView implements View {
 			logger.trace("[postRender] called");
 	}
 
+	@SuppressWarnings("serial")
 	protected void setVariables(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
@@ -68,14 +72,26 @@ public class MemberView implements View {
 		UserModel loginUser = SessionContainer.getLoginUser(request);
 		if (loginUser.getRole() == UserRole.Teacher) {
 			final TeacherModel teacher = (TeacherModel) loginUser;
-			QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
+			final List<?> oldQuestionList = new QueryBuilder<AnswerModel>()
+					.isFalse(DELETED).isFalse(AnswerModel.QUESTION, CLOSED)
+					.eq(loginUser, AnswerModel.ANSWERER)
+					.execute(AnswerModel.QUESTION);
+			QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>()
+					.eval(new Evaluation() {
+						@Override
+						public void evaluate(Candidate candidate) {
+							candidate.include(!oldQuestionList
+									.contains(candidate.getObject()));
+						}
+					});
 			q.isFalse(CLOSED).isFalse(DELETED).or(new SubQuery() {
 				@Override
 				public void query(QueryBuilder<?> q) {
 					q.eq(teacher, ASSIGN_TO).and(new SubQuery() {
 						@Override
 						public void query(QueryBuilder<?> q) {
-							q.eq(teacher.getProvince(), PROVINCE)
+							q.isNull(ASSIGN_TO)
+									.eq(teacher.getProvince(), PROVINCE)
 									.eq(teacher.getCity(), CITY)
 									.eq(teacher.getGrade(), GRADE)
 									.range(teacher.getGradeLevelFrom(),
@@ -86,7 +102,7 @@ public class MemberView implements View {
 					});
 				}
 			});
-			List<QuestionModel> questionList = Tutor.listDesc(q.execute(), 20);
+			List<QuestionModel> questionList = Tutor.listDesc(q.execute(), 10);
 			request.setAttribute("questions", questionList);
 		}
 	}

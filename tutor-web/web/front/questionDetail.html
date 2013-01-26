@@ -18,7 +18,7 @@
 <script type="text/javascript">
 <!--
 function relayout(boxh) {
-	$("#answerList").css("height", boxh < 800 ? "auto" : (boxh - 600) + "px");
+	$("#answerList").css("height", boxh < 800 ? "auto" : (boxh - 400) + "px");
 }
 
 $(function() {
@@ -43,8 +43,9 @@ $(function() {
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
 					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
-					<a href="#" onclick="history.go(-1);return false;">返回列表</a><br />
+					<a href="member.html">返回</a><br />
 				</div>
+				<div class="box-content ui-widget-content"></div>
 			</div>
 		</td>
 		<td align="left" valign="top">
@@ -95,58 +96,42 @@ $(function() {
 					</#list>
 					</div>
 					<br class="clear-both" />
-					<form method="post">
-						<div>
-							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${lastAnswer.createDateTime!}</small>
-							<div class="strange sb14">${lastAnswer.question!}</div>
-						</div>
+				</div>
+				<div class="box-subtitle ui-widget-content">解答记录</div>
+				<div id="answerList" class="box-content ui-widget-content">
+				<#list answers as answer>
+					<div class="${(answer_index%2==0)?string('odd', 'even')}">
 						<div>
 							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${lastAnswer.updateDateTime!}</small>
-							<div><textarea name="answer" rows="6" cols="80">${params.answer!lastAnswer.answer!}</textarea></div>
-							<div>
-								<input type="submit" name="submit" value="提交解答" class="green-button small-button s12" />
-								<span class="sweet s12">（最多500字）</span>
+							<small>${answer.updateDateTime?datetime} ${answer.answerer.fullName!}</small>
+							<#if !question.closed>
+							<div class="float-right">
+								<a href="#" onclick="addq('final','${Tutor.id(answer)}');return false;" class="fresh">采用</a>
 							</div>
+							<div class="ui-icon ui-icon-check float-right"></div>
+							<#elseif answer.answerer.email==question.finalAnswerer.email>
+							<div class="float-right">
+								<span class="nice">已采用</span>
+							</div>
+							<div class="ui-state-active noborder nobg float-right"><div class="ui-icon ui-icon-check"></div></div>
+							</#if>
+							<div class="darker clear-both">${answer.answer!}</div>
 						</div>
-						<input type="hidden" name="id" value="${params.id!}" />
-						<input type="hidden" name="answerId" value="${answerId!}" />
-					</form>
-				</div>
-				<#--
-				<div class="box-subtitle ui-widget-content">追问记录</div>
-				<div id="answerList" class="box-content ui-widget-content">
-				<#list details as detail>
-					<div class="${(detail_index%2==0)?string('odd', 'even')}">
-						<div>
+						<#list answer.details as detail>
+						<div style="margin-left:50px">
 							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${detail.createDateTime!}</small>
+							<small>${detail.createDateTime?datetime}</small>
 							<div class="darker clear-left">${detail.question!}</div>
 						</div>
-						<div>
+						<div style="margin-left:50px">
 							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${detail.updateDateTime!}</small>
+							<small>${detail.updateDateTime?datetime}</small>
 							<div class="darker clear-left">${detail.answer!}</div>
 						</div>
+						</#list>
 					</div>
 				</#list>
-				<#if answer??>
-					<div class="${(detailCount%2==0)?string('odd', 'even')}">
-						<div>
-							<div class="ui-icon ui-icon-help float-left"></div>
-							<small>${question.createDateTime!}</small>
-							<div class="darker clear-left">${question.title!}</div>
-						</div>
-						<div>
-							<div class="ui-icon ui-icon-pencil float-left"></div>
-							<small>${answer.updateDateTime!}</small>
-							<div class="darker clear-left">${answer.answer!}</div>
-						</div>
-					</div>
-				</#if>
 				</div>
-				-->
 			</div>
 		</td>
 	</tr>

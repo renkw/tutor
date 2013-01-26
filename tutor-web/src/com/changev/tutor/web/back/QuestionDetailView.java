@@ -24,6 +24,7 @@ import com.changev.tutor.model.UserRole;
 import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 
 /**
@@ -37,7 +38,10 @@ import com.db4o.ObjectContainer;
 public class QuestionDetailView implements View {
 
 	private static final Logger logger = Logger
-			.getLogger(QuestionListView.class);
+			.getLogger(QuestionDetailView.class);
+
+	private ParamValidator submitValidator;
+	private String defaultBackUrl;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -71,37 +75,42 @@ public class QuestionDetailView implements View {
 			logger.debug("[submit] answer = " + answer);
 		}
 
-		TeacherModel loginUser = SessionContainer.getLoginUser(request).as(
-				UserRole.Teacher);
-		ObjectContainer objc = Tutor.getCurrentContainer();
-		try {
-			AbstractModel model;
-			if (StringUtils.isEmpty(answerId)) {
-				QuestionModel questionModel = Tutor.fromId(id);
-				AnswerModel answerModel = new AnswerModel();
-				answerModel.setQuestion(questionModel);
-				answerModel.setAnswerer(loginUser);
-				answerModel.setAnswer(answer);
-				model = answerModel;
-			} else {
-				model = Tutor.fromId(answerId);
-				if (model instanceof AnswerModel) {
-					AnswerModel answerModel = (AnswerModel) model;
-					answerModel.setAnswer(Tutor.emptyNull(answer));
-				} else if (model instanceof AnswerDetailModel) {
-					AnswerDetailModel detailModel = (AnswerDetailModel) model;
-					detailModel.setAnswer(Tutor.emptyNull(answer));
+		if (submitValidator == null || submitValidator.validate(request)) {
+			if (logger.isDebugEnabled())
+				logger.debug("[submit] validate passed");
+
+			TeacherModel loginUser = SessionContainer.getLoginUser(request).as(
+					UserRole.Teacher);
+			ObjectContainer objc = Tutor.getCurrentContainer();
+			try {
+				AbstractModel model;
+				if (StringUtils.isEmpty(answerId)) {
+					QuestionModel questionModel = Tutor.fromId(id);
+					AnswerModel answerModel = new AnswerModel();
+					answerModel.setQuestion(questionModel);
+					answerModel.setAnswerer(loginUser);
+					answerModel.setAnswer(answer);
+					model = answerModel;
 				} else {
-					// illegal id
-					// TODO
+					model = Tutor.fromId(answerId);
+					if (model instanceof AnswerModel) {
+						AnswerModel answerModel = (AnswerModel) model;
+						answerModel.setAnswer(Tutor.emptyNull(answer));
+					} else if (model instanceof AnswerDetailModel) {
+						AnswerDetailModel detailModel = (AnswerDetailModel) model;
+						detailModel.setAnswer(Tutor.emptyNull(answer));
+					} else {
+						// illegal id
+						// TODO
+					}
 				}
+				objc.store(model);
+				objc.commit();
+			} catch (Throwable t) {
+				logger.error("[submit] save answer error", t);
+				objc.rollback();
+				throw t;
 			}
-			objc.store(model);
-			objc.commit();
-		} catch (Throwable t) {
-			logger.error("[submit] save answer error", t);
-			objc.rollback();
-			throw t;
 		}
 
 		setVariables(request);
@@ -113,8 +122,11 @@ public class QuestionDetailView implements View {
 			logger.trace("[setVariables] called");
 
 		String id = request.getParameter("id");
-		if (logger.isDebugEnabled())
+		String backUrl = request.getParameter("backUrl");
+		if (logger.isDebugEnabled()) {
 			logger.debug("[setVariables] id = " + id);
+			logger.debug("[setVariables] backUrl = " + backUrl);
+		}
 
 		TeacherModel loginUser = SessionContainer.getLoginUser(request).as(
 				UserRole.Teacher);
@@ -141,11 +153,48 @@ public class QuestionDetailView implements View {
 				lastModel.setUpdateDateTime(Tutor.currentDateTime());
 			}
 		} else {
-			lastModel = detailList.remove(0);
+			lastModel = detailList.get(0);
 			request.setAttribute("answerId", Tutor.id(lastModel));
 		}
 		request.setAttribute("lastAnswer", lastModel);
 		request.setAttribute("details", detailList);
+
+		if (StringUtils.isEmpty(backUrl))
+			backUrl = StringUtils.replace(request.getHeader("Referer"),
+					"&search=s", "");
+		if (StringUtils.isEmpty(backUrl))
+			backUrl = defaultBackUrl;
+		request.setAttribute("backUrl", backUrl);
+	}
+
+	/**
+	 * @return the submitValidator
+	 */
+	public ParamValidator getSubmitValidator() {
+		return submitValidator;
+	}
+
+	/**
+	 * @param submitValidator
+	 *            the submitValidator to set
+	 */
+	public void setSubmitValidator(ParamValidator submitValidator) {
+		this.submitValidator = submitValidator;
+	}
+
+	/**
+	 * @return the defaultBackUrl
+	 */
+	public String getDefaultBackUrl() {
+		return defaultBackUrl;
+	}
+
+	/**
+	 * @param defaultBackUrl
+	 *            the defaultBackUrl to set
+	 */
+	public void setDefaultBackUrl(String defaultBackUrl) {
+		this.defaultBackUrl = defaultBackUrl;
 	}
 
 }

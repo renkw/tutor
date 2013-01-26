@@ -35,9 +35,37 @@
 	<tr>
 		<th align="left" valign="bottom">
 			<div class="menubar">
-				<a href="${pathrel}/back/member.html" class="ui-corner-top active">我的主页</a>
-				<a href="${pathrel}/back/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top">提问列表</a>
-				<a href="${pathrel}/back/modifyMember.html" class="ui-corner-top">修改资料</a>
+			<#if (tutor.loginUser)??>
+				<#switch tutor.loginUser.role>
+					<#case "Parent"><#case "Student">
+				<a href="${pathrel}/front/member.html" class="ui-corner-top ${request.requestURL?ends_with('/member.html')?string('active','')}">
+					我的主页
+				</a>
+				<#--
+				<a href="${pathrel}/front/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+					提问列表
+				</a>
+				-->
+				<a href="${pathrel}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+					修改资料
+				</a>
+					<#break>
+					<#case "Organization"><#case "Teacher">
+				<a href="${pathrel}/back/member.html" class="ui-corner-top ${request.requestURL?ends_with('/member.html')?string('active','')}">
+					我的主页
+				</a>
+				<a href="${pathrel}/back/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+					提问列表
+				</a>
+				<a href="${pathrel}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+					修改资料
+				</a>
+					<#break>
+				</#switch>
+			<#else>
+				<a href="${pathrel}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">登录</a>
+				<a href="${pathrel}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>
+			</#if>
 			</div>
 		</th>
 	</tr>

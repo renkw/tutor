@@ -79,6 +79,8 @@ public class QuestionModel extends AbstractModel {
 	 * 提问人的id
 	 */
 	private String user_id;
+	
+	private transient boolean newFlag;
 
 	public String getLocation() {
 		beforeGet();
@@ -372,6 +374,20 @@ public class QuestionModel extends AbstractModel {
 			uploadPictures = new ActivatableArrayList<String>();
 		}
 		return uploadPictures;
+	}
+
+	/**
+	 * @return the newFlag
+	 */
+	public boolean isNewFlag() {
+		return newFlag;
+	}
+
+	/**
+	 * @param newFlag the newFlag to set
+	 */
+	public void setNewFlag(boolean newFlag) {
+		this.newFlag = newFlag;
 	}
 
 	public int getType() {

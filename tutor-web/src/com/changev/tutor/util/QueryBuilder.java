@@ -31,14 +31,14 @@ public final class QueryBuilder<T> {
 	private Constraint c;
 	private boolean andOr;
 
-	private QueryBuilder(Query query) {
+	private QueryBuilder(Query query, boolean andOr) {
 		this.query = query;
-		this.andOr = true;
+		this.andOr = andOr;
 	}
 
 	public QueryBuilder(ObjectContainer objc, Class<T> type) {
-		this(objc.query());
-		c = query.constrain(type);
+		this(objc.query(), true);
+		query.constrain(type);
 	}
 
 	public QueryBuilder(Class<T> type) {
@@ -61,7 +61,7 @@ public final class QueryBuilder<T> {
 	}
 
 	public <TYPE> QueryBuilder<TYPE> at(String... names) {
-		return new QueryBuilder<TYPE>(descend(names));
+		return new QueryBuilder<TYPE>(descend(names), andOr);
 	}
 
 	public QueryBuilder<T> and(SubQuery sub) {
@@ -188,9 +188,9 @@ public final class QueryBuilder<T> {
 		return this;
 	}
 
+	// must called before all other conditions, reason unknown
 	public QueryBuilder<T> eval(Evaluation e, String... names) {
-		Constraint c1 = descend(names).constrain(e);
-		c = c == null ? c1 : andOr ? c.and(c1) : c.or(c1);
+		descend(names).constrain(e);
 		return this;
 	}
 
@@ -204,9 +204,9 @@ public final class QueryBuilder<T> {
 		return this;
 	}
 
-	public ObjectSet<T> execute() {
+	public ObjectSet<T> execute(String... names) {
 		long time = System.currentTimeMillis();
-		ObjectSet<T> set = query.execute();
+		ObjectSet<T> set = descend(names).execute();
 		if (performance.isDebugEnabled()) {
 			time = System.currentTimeMillis() - time;
 			StackTraceElement[] elems = Thread.currentThread().getStackTrace();

@@ -24,7 +24,7 @@ $(function() {
 	$("#pagebar a").click(function() {
 		var pn = $(this).attr("href");
 		if (pn != "#") 
-			addq("pageno", pn.slice(1), "search", "");
+			addq("pageno", pn.slice(1), "search", null);
 		return false;
 	});
 });
@@ -44,8 +44,8 @@ $(function() {
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
-					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
-					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
+					<a href="?sort=new&amp;range=${params.range!'month'}&amp;search=s">未解答提问</a><br />
+					<a href="?sort=old&amp;range=${params.range!'month'}&amp;search=s">已解答提问</a><br />
 				</div>
 			</div>
 		</td>
@@ -60,26 +60,26 @@ $(function() {
 					<a href="#" class="nav-link float-left">
 					<#switch params.range!>
 						<#case "week">最近一周<#break>
-						<#case "month">最近一个月<#break>
 						<#case "quarter">最近三个月<#break>
 						<#case "half">最近半年<#break>
 						<#case "all">全部<#break>
+						<#default>最近一个月<#break>
 					</#switch>
 						的
 					<#switch params.sort!>
-						<#case "new">未解答提问<#break>
 						<#case "old">已解答提问<#break>
+						<#default>未解答提问<#break>
 					</#switch>
 						(${total})
 					</a>
 				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="alpha50">
-						<a href="#" onclick="addq('range','week','search','s');return false;">最近一周</a> |
-						<a href="#" onclick="addq('range','month','search','s');return false;">最近一个月</a> |
-						<a href="#" onclick="addq('range','quarter','search','s');return false;">最近三个月</a> |
-						<a href="#" onclick="addq('range','half','search','s');return false;">最近半年</a> |
-						<a href="#" onclick="addq('range','all','search','s');return false;">全部</a>
+						<a href="?sort=${params.sort!'new'}&amp;range=week&amp;search=s">最近一周</a> |
+						<a href="?sort=${params.sort!'new'}&amp;range=month&amp;search=s">最近一个月</a> |
+						<a href="?sort=${params.sort!'new'}&amp;range=quarter&amp;search=s">最近三个月</a> |
+						<a href="?sort=${params.sort!'new'}&amp;range=half&amp;search=s">最近半年</a> |
+						<a href="?sort=${params.sort!'new'}&amp;range=all&amp;search=s">全部</a>
 					</div>
 				</div>
 				<div id="questionList" class="box-content ui-widget-content">
@@ -91,7 +91,7 @@ $(function() {
 							<div class="${q.subject!}">${(q.grade?substring(0, 1))!}${Tutor.numberWord(q.gradeLevel)}</div>
 						</div>
 						<div class="row-content">
-							<p class="sb14">${q.title!}</p>
+							<p class="sb14">${q.title!}<#if q.newFlag><img src="../images/new.png" align="absmiddle" /></#if></p>
 						</div>
 						<div class="row-tail">
 							<small>${q.createDateTime?datetime}</small><br />

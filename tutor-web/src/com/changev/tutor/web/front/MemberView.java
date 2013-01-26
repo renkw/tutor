@@ -130,12 +130,12 @@ public class MemberView implements View {
 		List<QuestionModel> questionList;
 		if (loginUser.getRole() == UserRole.Parent) {
 			studentList = ((ParentModel) loginUser).getChildren();
-			questionList = ((ParentModel) loginUser).getUnclosedQuestions();
+			questionList = ((ParentModel) loginUser).getQuestions();
 		} else {
 			studentList = Arrays.asList((StudentModel) loginUser);
-			questionList = ((StudentModel) loginUser).getUnclosedQuestions();
+			questionList = ((StudentModel) loginUser).getQuestions();
 		}
-		questionList = Tutor.listDesc(questionList, 20);
+		questionList = Tutor.listDesc(questionList/* , 10 */);
 		request.setAttribute("students", studentList);
 		request.setAttribute("questions", questionList);
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));

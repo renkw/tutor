@@ -71,8 +71,8 @@ $(function() {
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
-					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
-					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
+					<a href="${pathrel}/back/questionList.html?sort=new&amp;range=month&amp;search=s">未解答提问</a><br />
+					<a href="${pathrel}/back/questionList.html?sort=old&amp;range=month&amp;search=s">已解答提问</a><br />
 				</div>
 				</#if>
 				<#--
@@ -124,7 +124,7 @@ $(function() {
 				<#if tutor.loginUser.role=="Teacher">
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-help float-left"></div>最新提问
-					<a href="${pathrel}/back/questionList.html" title="查看更多" class="float-right">
+					<a href="${pathrel}/back/questionList.html?sort=new&amp;range=month&amp;search=s" title="查看更多" class="float-right">
 						<span class="ui-icon ui-icon-extlink"></span>
 					</a>
 				</div>
