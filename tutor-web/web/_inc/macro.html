@@ -1,32 +1,25 @@
-<#-- 定义模板变量 -->
-<#assign
-	pathrel = request.contextPath
-	constpath = "../../data/const.json"
->
-
-<#-- 输出一般消息 -->
-<#macro infomsg name>
-<#if messages.messages[name]??>
-<div class="ui-state-default">
-	<div class="ui-icon ui-icon-comment float-left"></div>${messages.messages[name]}
+<#-- 输出请求消息 -->
+<#macro message name>
+<#if (messages.errors[name])??>
+<div class="ui-state-error">
+	<div class="ui-icon ui-icon-close float-left"></div>${messages.errors[name]}
 </div>
-</#if>
-</#macro>
-
-<#-- 输出警告消息 -->
-<#macro warnmsg name>
-<#if messages.warnings[name]??>
+<#elseif (messages.warnings[name])??>
 <div class="ui-state-highlight">
 	<div class="ui-icon ui-icon-alert float-left"></div>${messages.warnings[name]}
 </div>
+<#elseif (messages.messages[name])??>
+<div class="ui-state-default">
+	<div class="ui-icon ui-icon-info float-left"></div>${messages.messages[name]}
+</div>
 </#if>
 </#macro>
 
-<#-- 输出错误消息 -->
-<#macro errmsg name>
-<#if messages.errors[name]??>
-<div class="ui-state-error">
-	<div class="ui-icon ui-icon-close float-left"></div>${messages.errors[name]}
+<#-- 输出处理消息 -->
+<#macro actionMessage>
+<#if (tutor.actionMessage)??>
+<div class="box-subtitle ui-state-highlight">
+	<div class="ui-icon ui-icon-comment float-left"></div>${tutor.actionMessage}
 </div>
 </#if>
 </#macro>
@@ -80,18 +73,18 @@
 	<#else>
 		<#local picture="/images/organization.png">
 	</#if>
-	<img src="${pathrel}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
 <#elseif user.role=="Student">
 	<#if user.facePicture??>
 		<#local picture="/files/${Tutor.id(user)}/${user.facePicture}">
 	<#else>
 		<#local picture="/images/student.png">
 	</#if>
-	<img src="${pathrel}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
 <#elseif user.male??&&user.male>
-	<img src="${pathrel}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
 <#else>
-	<img src="${pathrel}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
 </#if>
 </#macro>
 

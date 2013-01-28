@@ -1,15 +1,15 @@
 <thead>
 	<tr>
 		<th rowspan="2" height="80" align="left" valign="top" style="width:200px">
-			<a href="${pathrel}/home.html">
-				<img src="${pathrel}/images/wendaoo.png" border="0" width="200" height="80" alt="闻道" title="闻道" />
+			<a href="${request.contextPath}/home.html">
+				<img src="${request.contextPath}/images/wendaoo.png" border="0" width="200" height="80" alt="闻道" title="闻道" />
 			</a>
 		</th>
 		<th align="left" valign="top">
-			<#if messages.warnings.system??>
+			<#if (tutor.systemMessage)??>
 			<div class="ui-state-highlight float-left" style="padding:2px">
 				<div class="ui-icon ui-icon-alert float-left"></div>
-				${messages.warnings.system}
+				${tutor.systemMessage}
 				<br class="clear-left" />
 			</div>
 			</#if>
@@ -22,13 +22,13 @@
 			<div class="float-right" style="margin-top:2px">
 			<#if (tutor.loginUser)??>
 				${tutor.loginUser.name}
-				[<a href="${pathrel}/public/logout.html">退出</a>] |
+				[<a href="${request.contextPath}/public/logout.html">退出</a>] |
 			<#else>
-				<a href="${pathrel}/public/login.html">登录</a> |
-				<a href="${pathrel}/public/register.html">注册</a> |
+				<a href="${request.contextPath}/public/login.html">登录</a> |
+				<a href="${request.contextPath}/public/register.html">注册</a> |
 			</#if>
-				<a href="${pathrel}/mobile/home.html">手机版</a> |
-				<a href="${pathrel}/public/help.html">帮助</a>&nbsp;&nbsp;
+				<a href="${request.contextPath}/mobile/home.html">手机版</a> |
+				<a href="${request.contextPath}/public/help.html">帮助</a>&nbsp;&nbsp;
 			</div>
 		</th>
 	</tr>
@@ -38,33 +38,33 @@
 			<#if (tutor.loginUser)??>
 				<#switch tutor.loginUser.role>
 					<#case "Parent"><#case "Student">
-				<a href="${pathrel}/front/member.html" class="ui-corner-top ${request.requestURL?ends_with('/member.html')?string('active','')}">
-					我的主页
-				</a>
-				<#--
-				<a href="${pathrel}/front/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<a href="${request.contextPath}/front/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
-				-->
-				<a href="${pathrel}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+				<a href="${request.contextPath}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
 					修改资料
 				</a>
 					<#break>
-					<#case "Organization"><#case "Teacher">
-				<a href="${pathrel}/back/member.html" class="ui-corner-top ${request.requestURL?ends_with('/member.html')?string('active','')}">
-					我的主页
+					<#case "Organization">
+				<a href="${request.contextPath}/back/teacherList.html" class="ui-corner-top ${request.requestURL?ends_with('/teacherList.html')?string('active','')}">
+					教师列表
 				</a>
-				<a href="${pathrel}/back/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+					修改资料
+				</a>
+					<#break>
+					<#case "Teacher">
+				<a href="${request.contextPath}/back/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
-				<a href="${pathrel}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
 					修改资料
 				</a>
 					<#break>
 				</#switch>
 			<#else>
-				<a href="${pathrel}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">登录</a>
-				<a href="${pathrel}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>
+				<a href="${request.contextPath}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">登录</a>
+				<a href="${request.contextPath}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>
 			</#if>
 			</div>
 		</th>

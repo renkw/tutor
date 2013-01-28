@@ -24,6 +24,7 @@ import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.google.gson.Gson;
@@ -136,20 +137,15 @@ public class RegisterStudentView implements View {
 			if (objc.ext().setSemaphore(lock, 0)) {
 				try {
 					StudentModel studentModel = new StudentModel();
-					studentModel.setName(Tutor.emptyNull(name));
+					studentModel.setName(ParamUtils.emptyNull(name));
 					studentModel.setMale("Male".equals(gender));
 					studentModel.setBirthday(StringUtils.join(birthday, '-'));
-					studentModel.setProvince(area == null ? null : Tutor
-							.emptyNull(area[0]));
-					studentModel.setCity(area == null ? null : Tutor
-							.emptyNull(area[1]));
-					studentModel.setDistrict(area == null ? null : Tutor
-							.emptyNull(area[2]));
-					studentModel.setSchool(Tutor.emptyNull(school));
-					studentModel.setGrade(Tutor.emptyNull(grade));
-					studentModel.setGradeLevel(Tutor.byteNull(gradeLevel));
-					studentModel.setHobby(Tutor.emptyNull(hobby));
-					studentModel.setDescription(Tutor.emptyNull(description));
+					studentModel.setSchool(ParamUtils.emptyNull(school));
+					studentModel.setGrade(ParamUtils.emptyNull(grade));
+					studentModel.setGradeLevel(ParamUtils.byteNull(gradeLevel));
+					studentModel.setHobby(ParamUtils.emptyNull(hobby));
+					studentModel.setDescription(ParamUtils
+							.emptyNull(description));
 					studentModel.setParent(parentModel);
 					// studentModel.setState(UserState.Unavailable);
 					studentModel.setState(UserState.Incomplete);
@@ -169,12 +165,9 @@ public class RegisterStudentView implements View {
 						}
 					}
 
-					parentModel.setProvince(area == null ? null : Tutor
-							.emptyNull(area[0]));
-					parentModel.setCity(area == null ? null : Tutor
-							.emptyNull(area[1]));
-					parentModel.setDistrict(area == null ? null : Tutor
-							.emptyNull(area[2]));
+					parentModel.setProvince(ParamUtils.emptyNull(area, 0));
+					parentModel.setCity(ParamUtils.emptyNull(area, 1));
+					parentModel.setDistrict(ParamUtils.emptyNull(area, 2));
 					// parentModel.setState(UserState.NotActivated);
 					parentModel.setState(UserState.Activated);
 

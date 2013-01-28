@@ -22,6 +22,7 @@ import com.changev.tutor.model.UserPrivacy;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 
@@ -115,17 +116,16 @@ public class RegisterCompleteView implements View {
 						parentModel.setContact(contactModel);
 					}
 
-					contactModel.setName(Tutor.emptyNull(name));
-					contactModel.setPostcode(Tutor.emptyNull(postcode));
-					contactModel.setAddress1(address == null ? null : Tutor
-							.emptyNull(address[0]));
-					contactModel.setAddress2(address == null ? null : Tutor
-							.emptyNull(address[1]));
-					contactModel.setTelephone(Tutor.emptyNull(telephone));
-					contactModel.setCellphone(Tutor.emptyNull(cellphone));
-					contactModel.setQQ(Tutor.emptyNull(qq));
-					contactModel.setWeibo(Tutor.emptyNull(weibo));
-					contactModel.setMailAddress(Tutor.emptyNull(mailAddress));
+					contactModel.setName(ParamUtils.emptyNull(name));
+					contactModel.setPostcode(ParamUtils.emptyNull(postcode));
+					contactModel.setAddress1(ParamUtils.emptyNull(address, 0));
+					contactModel.setAddress2(ParamUtils.emptyNull(address, 1));
+					contactModel.setTelephone(ParamUtils.emptyNull(telephone));
+					contactModel.setCellphone(ParamUtils.emptyNull(cellphone));
+					contactModel.setQQ(ParamUtils.emptyNull(qq));
+					contactModel.setWeibo(ParamUtils.emptyNull(weibo));
+					contactModel.setMailAddress(ParamUtils
+							.emptyNull(mailAddress));
 
 					UserPrivacy acc = UserPrivacy.valueOf(accountPrivacy);
 					UserPrivacy con = UserPrivacy.valueOf(contactPrivacy);

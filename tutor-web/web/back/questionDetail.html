@@ -43,7 +43,7 @@ $(function() {
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
 					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
-					<a href="${backUrl!'member.html'}">返回</a><br />
+					<a href="questionList.html${tutor.questionListQuery!}">返回提问列表</a><br />
 				</div>
 				<div class="box-content ui-widget-content"></div>
 			</div>
@@ -52,12 +52,13 @@ $(function() {
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">提问列表</a>
+					<a href="questionList.html" class="nav-link float-left">提问列表</a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">解答</a>
 				</div>
+				<@actionMessage />
 				<div class="box-subtitle ui-widget-content">提问解答</div>
 				<div class="box-content ui-state-active">
 					<div class="row-head">
@@ -90,8 +91,8 @@ $(function() {
 					</table>
 					<div class="row-tail">
 					<#list question.uploadPictures as pic>
-						<a href="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" target="_blank">
-							<img src="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" width="112" height="112" border="0" />
+						<a href="../files/${Tutor.id(question.questioner)}/${pic}" target="_blank">
+							<img src="../files/${Tutor.id(question.questioner)}/${pic}" width="112" height="112" border="0" />
 						</a>
 					</#list>
 					</div>
@@ -107,7 +108,7 @@ $(function() {
 							<div class="ui-icon ui-icon-pencil float-left"></div>
 							<small>${lastAnswer.updateDateTime?datetime}</small>
 							<div><textarea name="answer" rows="6" cols="80">${params.answer!lastAnswer.answer!}</textarea></div>
-							<@errmsg name="answer" />
+							<@message name="answer" />
 							<div>
 								<input type="submit" name="submit" value="提交解答" class="green-button small-button s12" />
 								<span class="sweet s12">（最多500字）</span>

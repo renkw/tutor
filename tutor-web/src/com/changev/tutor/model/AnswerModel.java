@@ -5,6 +5,7 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.db4o.ObjectContainer;
@@ -51,6 +52,8 @@ public class AnswerModel extends AbstractModel {
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
 		setOrganization(answerer.getOrganization());
+		if (!question.getAnswered())
+			question.setAnswered(Boolean.TRUE);
 	}
 
 	@Override
@@ -136,6 +139,8 @@ public class AnswerModel extends AbstractModel {
 	 */
 	public List<AnswerDetailModel> getDetails() {
 		beforeGet();
+		if (details == null)
+			return Collections.emptyList();
 		return details;
 	}
 

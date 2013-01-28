@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
+import com.changev.tutor.model.ParentModel;
 import com.changev.tutor.model.StudentModel;
 import com.changev.tutor.model.UserContactModel;
 import com.changev.tutor.model.UserModel;
@@ -25,6 +26,7 @@ import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.google.gson.Gson;
@@ -63,6 +65,7 @@ public class ModifyMemberView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
+		SessionContainer.get(request).setActionMessage(null);
 	}
 
 	protected void setVariables(HttpServletRequest request) {
@@ -107,7 +110,6 @@ public class ModifyMemberView implements View {
 			logger.trace("[setVariables] called");
 
 		// basic
-		String email = request.getParameter("email");
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
@@ -131,7 +133,6 @@ public class ModifyMemberView implements View {
 		String accountPrivacy = request.getParameter("accountPrivacy");
 		String contactPrivacy = request.getParameter("contactPrivacy");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[submit] email = " + email);
 			logger.debug("[submit] name = " + name);
 			logger.debug("[submit] gender = " + gender);
 			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
@@ -162,68 +163,56 @@ public class ModifyMemberView implements View {
 			ObjectContainer objc = Tutor.getCurrentContainer();
 
 			UserModel loginUser = SessionContainer.getLoginUser(request);
-			boolean emailChanged = !StringUtils.equals(email,
-					loginUser.getEmail());
 			String lock = ModelFactory.getUserSemaphore(loginUser.getEmail());
-			String newLock = ModelFactory.getUserSemaphore(email);
 			if (objc.ext().setSemaphore(lock, 0)) {
 				try {
-					if (emailChanged
-							&& (!objc.ext().setSemaphore(newLock, 0) || objc
-									.queryByExample(
-											ModelFactory.getUserExample(email))
-									.hasNext())) {
-						Messages.addError(request, "email",
-								duplicatedEmailMessage);
-					} else {
-						loginUser.setEmail(Tutor.emptyNull(email));
-						loginUser.setName(Tutor.emptyNull(name));
-						loginUser.setProvince(area == null ? null : Tutor
-								.emptyNull(area[0]));
-						loginUser.setCity(area == null ? null : Tutor
-								.emptyNull(area[1]));
-						loginUser.setDistrict(area == null ? null : Tutor
-								.emptyNull(area[2]));
-						if (loginUser.getRole() == UserRole.Student) {
-							// teacher
-							StudentModel studentModel = loginUser
-									.as(UserRole.Student);
-							studentModel.setMale("Male".equals(gender));
-							studentModel.setBirthday(StringUtils.join(birthday,
-									'-'));
-							studentModel.setSchool(Tutor.emptyNull(school));
-							studentModel.setGrade(Tutor.emptyNull(grade));
-							studentModel.setGradeLevel(Tutor
-									.byteNull(gradeLevel));
-							studentModel.setHobby(Tutor.emptyNull(hobby));
-						}
-						loginUser.setDescription(Tutor.emptyNull(description));
-						loginUser.setAccountPrivacy(Tutor.enumNull(
-								UserPrivacy.class, accountPrivacy));
-						loginUser.setContactPrivacy(Tutor.enumNull(
-								UserPrivacy.class, contactPrivacy));
-						loginUser.setState(UserState.Activated);
-						// contact
-						UserContactModel contactModel = loginUser.getContact();
-						if (contactModel == null) {
-							contactModel = new UserContactModel();
-							loginUser.setContact(contactModel);
-						}
-						contactModel.setName(Tutor.emptyNull(contactName));
-						contactModel.setPostcode(Tutor.emptyNull(postcode));
-						contactModel.setAddress1(address == null ? null : Tutor
-								.emptyNull(address[0]));
-						contactModel.setAddress2(address == null ? null : Tutor
-								.emptyNull(address[1]));
-						contactModel.setTelephone(Tutor.emptyNull(telephone));
-						contactModel.setCellphone(Tutor.emptyNull(cellphone));
-						contactModel.setQQ(Tutor.emptyNull(qq));
-						contactModel.setWeibo(Tutor.emptyNull(weibo));
-						contactModel.setMailAddress(Tutor
-								.emptyNull(mailAddress));
-						// save
-						objc.store(loginUser);
-						objc.commit();
+					loginUser.setName(ParamUtils.emptyNull(name));
+					if (loginUser.getRole() == UserRole.Parent) {
+						// parent
+						ParentModel parentModel = loginUser.as(UserRole.Parent);
+						parentModel.setProvince(ParamUtils.emptyNull(area, 0));
+						parentModel.setCity(ParamUtils.emptyNull(area, 1));
+						parentModel.setDistrict(ParamUtils.emptyNull(area, 2));
+					} else if (loginUser.getRole() == UserRole.Student) {
+						// student
+						StudentModel studentModel = loginUser
+								.as(UserRole.Student);
+						studentModel.setMale("Male".equals(gender));
+						studentModel.setBirthday(StringUtils
+								.join(birthday, '-'));
+						studentModel.setSchool(ParamUtils.emptyNull(school));
+						studentModel.setGrade(ParamUtils.emptyNull(grade));
+						studentModel.setGradeLevel(ParamUtils
+								.byteNull(gradeLevel));
+						studentModel.setHobby(ParamUtils.emptyNull(hobby));
+					}
+					loginUser.setDescription(ParamUtils.emptyNull(description));
+					loginUser.setAccountPrivacy(ParamUtils.enumNull(
+							UserPrivacy.class, accountPrivacy));
+					loginUser.setContactPrivacy(ParamUtils.enumNull(
+							UserPrivacy.class, contactPrivacy));
+					loginUser.setState(UserState.Activated);
+					// contact
+					UserContactModel contactModel = loginUser.getContact();
+					if (contactModel == null) {
+						contactModel = new UserContactModel();
+						loginUser.setContact(contactModel);
+					}
+					contactModel.setName(ParamUtils.emptyNull(contactName));
+					contactModel.setPostcode(ParamUtils.emptyNull(postcode));
+					contactModel.setAddress1(ParamUtils.emptyNull(address, 0));
+					contactModel.setAddress2(ParamUtils.emptyNull(address, 1));
+					contactModel.setTelephone(ParamUtils.emptyNull(telephone));
+					contactModel.setCellphone(ParamUtils.emptyNull(cellphone));
+					contactModel.setQQ(ParamUtils.emptyNull(qq));
+					contactModel.setWeibo(ParamUtils.emptyNull(weibo));
+					contactModel.setMailAddress(ParamUtils
+							.emptyNull(mailAddress));
+					// save
+					objc.store(loginUser);
+					objc.commit();
+					SessionContainer.get(request).setActionMessage("修改用户资料成功。");
+					if (StringUtils.isNotEmpty(successPage)) {
 						if (logger.isDebugEnabled())
 							logger.debug("[submit] success. goto "
 									+ successPage);
@@ -236,12 +225,11 @@ public class ModifyMemberView implements View {
 					objc.rollback();
 					throw t;
 				} finally {
-					if (emailChanged)
-						objc.ext().releaseSemaphore(newLock);
 					objc.ext().releaseSemaphore(lock);
 				}
+			} else {
+				Messages.addError(request, "email", userLockedMessage);
 			}
-			Messages.addError(request, "email", userLockedMessage);
 		}
 
 		setVariables(request);

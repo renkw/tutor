@@ -37,7 +37,7 @@
 			<form method="post">
 				<div class="box-body ui-widget-content ui-corner-all">
 					<div class="box-title navbar ui-state-default ui-corner-top">
-						<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+						<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 						<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 						<a href="#" class="nav-link float-left">完成注册</a>
 					</div>
@@ -49,7 +49,7 @@
 								<th width="80" align="center" class="ui-widget-header noborder">姓名</th>
 								<td width="300" align="left">
 									<input type="text" name="name" value="${params.name!tutor.loginUser.name}" />
-									<@errmsg name="name" />
+									<@message name="name" />
 								</td>
 								<td align="left" class="alpha25">联系人姓名。</td>
 							</tr>
@@ -59,7 +59,7 @@
 									〒<input type="text" name="postcode" value="${params.postcode!}" size="7" /><br />
 									<input type="text" name="address" value="${(params.address[0])!tutor.loginUser.location}" /><br />
 									<input type="text" name="address" value="${(params.address[1])!}" /><br />
-									<@errmsg name="address" />
+									<@message name="address" />
 								</td>
 								<td align="left" class="alpha25">联系人邮编和地址。</td>
 							</tr>
@@ -67,7 +67,7 @@
 								<th align="center" class="ui-widget-header noborder">固定电话</th>
 								<td align="left">
 									<input type="text" name="telephone" value="${params.telephone!}" />
-									<@errmsg name="telephone" />
+									<@message name="telephone" />
 								</td>
 								<td align="left" class="alpha25">联系人固定电话。</td>
 							</tr>
@@ -75,7 +75,7 @@
 								<th align="center" class="ui-widget-header noborder">移动电话</th>
 								<td align="left">
 									<input type="text" name="cellphone" value="${params.cellphone!}" />
-									<@errmsg name="cellphone" />
+									<@message name="cellphone" />
 								</td>
 								<td align="left" class="alpha25">联系人移动电话。</td>
 							</tr>
@@ -83,7 +83,7 @@
 								<th align="center" class="ui-widget-header noborder">QQ</th>
 								<td align="left">
 									<input type="text" name="qq" value="${params.qq!}" />
-									<@errmsg name="qq" />
+									<@message name="qq" />
 								</td>
 								<td align="left" class="alpha25">联系人QQ号码。</td>
 							</tr>
@@ -91,7 +91,7 @@
 								<th align="center" class="ui-widget-header noborder">微博地址</th>
 								<td align="left">
 									<input type="text" name="weibo" value="${params.weibo!}" />
-									<@errmsg name="weibo" />
+									<@message name="weibo" />
 								</td>
 								<td align="left" class="alpha25">联系人微博地址。</td>
 							</tr>
@@ -99,7 +99,7 @@
 								<th align="center" class="ui-widget-header noborder">Email</th>
 								<td align="left">
 									<input type="text" name="mailAddress" value="${params.mailAddress!tutor.loginUser.email}" />
-									<@errmsg name="mailAddress" />
+									<@message name="mailAddress" />
 								</td>
 								<td align="left" class="alpha25">联系人Email。</td>
 							</tr>
@@ -116,7 +116,7 @@
 									<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!"ContacterOnly">不公开</@radio>
 									<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!"ContacterOnly">只对联系人公开</@radio>
 									<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!"ContacterOnly">全部公开</@radio>
-									<@errmsg name="accountPrivacy" />
+									<@message name="accountPrivacy" />
 								</td>
 								<td align="left" class="alpha25">设置公开学生信息。</td>
 							</tr>
@@ -126,7 +126,7 @@
 									<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!"ContacterOnly">不公开</@radio>
 									<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!"ContacterOnly">只对联系人公开</@radio>
 									<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!"ContacterOnly">全部公开</@radio>
-									<@errmsg name="contactPrivacy" />
+									<@message name="contactPrivacy" />
 								</td>
 								<td align="left" class="alpha25">设置公开联系信息。</td>
 							</tr>

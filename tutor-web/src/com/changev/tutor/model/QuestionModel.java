@@ -6,6 +6,7 @@
 package com.changev.tutor.model;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,12 +49,13 @@ public class QuestionModel extends AbstractModel {
 	public static final String ASSIGN_TO = "assignTo";
 	public static final String FINAL_ANSWERER = "finalAnswerer";
 	public static final String CLOSED = "closed";
+	public static final String ANSWERED = "answered";
 	public static final String EXPIRATION_DATE = "expirationDate";
 	public static final String CLOSED_DATE_TIME = "closedDateTime";
 	public static final String UPLOAD_PICTURES = "uploadPictures";
 
 	@Indexed
-	private UserModel questioner;
+	private ParentModel questioner;
 	private StudentModel student;
 	private String province;
 	// XXX 有user的model为什么还需要城市这些？是不是可以去掉
@@ -67,9 +69,10 @@ public class QuestionModel extends AbstractModel {
 	private TeacherModel assignTo;
 	private TeacherModel finalAnswerer;
 	private Boolean closed;
+	private Boolean answered;
+	@Indexed
 	private Date expirationDate;
 	private Date closedDateTime;
-	@Indexed
 	private List<String> uploadPictures;
 	/*
 	 * 问题类型
@@ -79,8 +82,6 @@ public class QuestionModel extends AbstractModel {
 	 * 提问人的id
 	 */
 	private String user_id;
-	
-	private transient boolean newFlag;
 
 	public String getLocation() {
 		beforeGet();
@@ -97,12 +98,13 @@ public class QuestionModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
-		setProvince(student.getProvince());
-		setCity(student.getCity());
-		setDistrict(student.getDistrict());
+		setProvince(questioner.getProvince());
+		setCity(questioner.getCity());
+		setDistrict(questioner.getDistrict());
 		setGrade(student.getGrade());
 		setGradeLevel(student.getGradeLevel());
 		setClosed(Boolean.FALSE);
+		setAnswered(Boolean.FALSE);
 		Calendar today = Tutor.currentDateCalendar();
 		today.add(Calendar.MONTH, 1);
 		setExpirationDate(today.getTime());
@@ -121,7 +123,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the questioner
 	 */
-	public UserModel getQuestioner() {
+	public ParentModel getQuestioner() {
 		beforeGet();
 		return questioner;
 	}
@@ -130,7 +132,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param questioner
 	 *            the questioner to set
 	 */
-	public void setQuestioner(UserModel questioner) {
+	public void setQuestioner(ParentModel questioner) {
 		beforeSet();
 		this.questioner = questioner;
 	}
@@ -340,6 +342,23 @@ public class QuestionModel extends AbstractModel {
 	}
 
 	/**
+	 * @return the answered
+	 */
+	public Boolean getAnswered() {
+		beforeGet();
+		return answered;
+	}
+
+	/**
+	 * @param answered
+	 *            the answered to set
+	 */
+	public void setAnswered(Boolean answered) {
+		beforeSet();
+		this.answered = answered;
+	}
+
+	/**
 	 * @return the finalAnswerer
 	 */
 	public TeacherModel getFinalAnswerer() {
@@ -361,6 +380,8 @@ public class QuestionModel extends AbstractModel {
 	 */
 	public List<String> getUploadPictures() {
 		beforeGet();
+		if (uploadPictures == null)
+			return Collections.emptyList();
 		return uploadPictures;
 	}
 
@@ -374,20 +395,6 @@ public class QuestionModel extends AbstractModel {
 			uploadPictures = new ActivatableArrayList<String>();
 		}
 		return uploadPictures;
-	}
-
-	/**
-	 * @return the newFlag
-	 */
-	public boolean isNewFlag() {
-		return newFlag;
-	}
-
-	/**
-	 * @param newFlag the newFlag to set
-	 */
-	public void setNewFlag(boolean newFlag) {
-		this.newFlag = newFlag;
 	}
 
 	public int getType() {

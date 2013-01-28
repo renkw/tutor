@@ -20,6 +20,7 @@ import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -122,8 +123,8 @@ public class RegisterView implements View {
 							.queryByExample(ModelFactory.getUserExample(email));
 					if (!userSet.hasNext()) {
 						// register
-						userModel.setName(Tutor.emptyNull(name));
-						userModel.setEmail(Tutor.emptyNull(email));
+						userModel.setName(ParamUtils.emptyNull(name));
+						userModel.setEmail(ParamUtils.emptyNull(email));
 						userModel.setPassword(ModelFactory
 								.encryptPassword(password));
 						objc.store(userModel);

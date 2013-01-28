@@ -3,10 +3,11 @@
  * Create 2013/01/24
  * Copyright (c) change-v.com 2012 
  */
-package com.changev.tutor.web.back;
+package com.changev.tutor.web.front;
 
 import static com.changev.tutor.model.AbstractModel.CREATE_DATE_TIME;
 import static com.changev.tutor.model.AbstractModel.DELETED;
+import static com.changev.tutor.model.QuestionModel.ANSWERED;
 import static com.changev.tutor.model.QuestionModel.ASSIGN_TO;
 import static com.changev.tutor.model.QuestionModel.CLOSED;
 
@@ -21,16 +22,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
-import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
-import com.changev.tutor.model.TeacherModel;
-import com.changev.tutor.model.UserRole;
+import com.changev.tutor.model.UserModel;
 import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.util.QueryBuilder.SubQuery;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
-import com.db4o.query.Candidate;
-import com.db4o.query.Evaluation;
 
 /**
  * <p>
@@ -61,7 +58,6 @@ public class QuestionListView implements View {
 			logger.trace("[postRender] called");
 	}
 
-	@SuppressWarnings({ "unchecked", "serial" })
 	protected void searchQuestions(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[searchQuestions] called");
@@ -80,8 +76,7 @@ public class QuestionListView implements View {
 		range = StringUtils.defaultIfEmpty(range, "month");
 
 		SessionContainer container = SessionContainer.get(request);
-		final TeacherModel teacher = container.getLoginUser().as(
-				UserRole.Teacher);
+		final UserModel loginUser = container.getLoginUser();
 		List<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			if (logger.isDebugEnabled())
@@ -104,25 +99,9 @@ public class QuestionListView implements View {
 			// get answered questions
 			QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
 			if ("new".equals(sort)) {
-				final List<?> oldQuestionList = new QueryBuilder<AnswerModel>()
-						.isFalse(DELETED).eq(teacher, AnswerModel.ANSWERER)
-						.isFalse(AnswerModel.QUESTION, CLOSED)
-						.select(AnswerModel.QUESTION);
-				q.eval(new Evaluation() {
-					@Override
-					public void evaluate(Candidate candidate) {
-						candidate.include(!oldQuestionList.contains(candidate
-								.getObject()));
-					}
-				});
+				q.isFalse(ANSWERED);
 			} else if ("old".equals(sort)) {
-				List<?> list = new QueryBuilder<AnswerModel>()
-						.isFalse(AnswerModel.DELETED)
-						.eq(teacher, AnswerModel.ANSWERER)
-						.isFalse(AnswerModel.QUESTION, CLOSED)
-						.ge(toDate, AnswerModel.QUESTION, CREATE_DATE_TIME)
-						.select(AnswerModel.QUESTION);
-				questionList = (List<QuestionModel>) list;
+				q.isTrue(ANSWERED);
 			} else if ("close".equals(sort)) {
 				q.isTrue(CLOSED);
 			}
@@ -132,7 +111,7 @@ public class QuestionListView implements View {
 						.or(new SubQuery() {
 							@Override
 							public void query(QueryBuilder<?> q) {
-								q.eq(teacher, ASSIGN_TO).isNull(ASSIGN_TO);
+								q.eq(loginUser, ASSIGN_TO).isNull(ASSIGN_TO);
 							}
 						}).select();
 			}

@@ -17,6 +17,7 @@ import com.changev.tutor.Tutor;
 import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
@@ -36,6 +37,7 @@ public class LoginView implements View {
 
 	private ParamValidator loginValidator;
 	private String failMessage;
+	private String incompleteMessage;
 	private Map<String, String> successPages;
 
 	@Override
@@ -90,9 +92,15 @@ public class LoginView implements View {
 			if (user != null) {
 				long userId = Tutor.getCurrentContainerExt().getID(user);
 				UserRole role = user.getRole();
+				UserState state = user.getState();
 				// reset session
 				request.getSession().invalidate();
 				SessionContainer.get(request, true).login(userId);
+				if (state == UserState.Incomplete) {
+					// warnings
+					SessionContainer.get(request).setSystemMessage(
+							incompleteMessage);
+				}
 				String url = request.getParameter("url");
 				if (StringUtils.isEmpty(url)) {
 					url = request.getContextPath()
@@ -152,6 +160,21 @@ public class LoginView implements View {
 	 */
 	public void setSuccessPages(Map<String, String> successPages) {
 		this.successPages = successPages;
+	}
+
+	/**
+	 * @return the incompleteMessage
+	 */
+	public String getIncompleteMessage() {
+		return incompleteMessage;
+	}
+
+	/**
+	 * @param incompleteMessage
+	 *            the incompleteMessage to set
+	 */
+	public void setIncompleteMessage(String incompleteMessage) {
+		this.incompleteMessage = incompleteMessage;
 	}
 
 }

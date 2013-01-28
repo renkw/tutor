@@ -94,30 +94,8 @@ public final class ModelFactory {
 		return answerExample;
 	}
 
-	public static AnswerModel getAcceptedAnswerExample(String email) {
-		TeacherModel teacherExample = new TeacherModel();
-		teacherExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setClosed(Boolean.TRUE);
-		questionExample.setFinalAnswerer(teacherExample);
-		AnswerModel answerExample = new AnswerModel();
-		answerExample.setQuestion(questionExample);
-		answerExample.setDeleted(Boolean.FALSE);
-		return answerExample;
-	}
-
-	public static QuestionModel getAssignedQuestionExample(String email) {
-		TeacherModel teacherExample = new TeacherModel();
-		teacherExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setClosed(Boolean.FALSE);
-		questionExample.setAssignTo(teacherExample);
-		questionExample.setDeleted(Boolean.FALSE);
-		return questionExample;
-	}
-
 	public static QuestionModel getUserQuestionExample(String email) {
-		UserModel userExample = new UserModel();
+		ParentModel userExample = new ParentModel();
 		userExample.setEmail(email);
 		QuestionModel questionExample = new QuestionModel();
 		questionExample.setQuestioner(userExample);

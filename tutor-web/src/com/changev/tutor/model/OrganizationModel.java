@@ -5,13 +5,17 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
 import com.db4o.collections.ActivatableHashSet;
+import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
@@ -31,8 +35,17 @@ public class OrganizationModel extends UserModel {
 	public static final String TEACHER_COUNT = "teacherCount";
 	public static final String SCORE = "score";
 	public static final String ACCOUNT_LEVEL = "accountLevel";
+	public static final String PROVINCE = "province";
+	public static final String CITY = "city";
+	public static final String DISTRICT = "district";
 
 	private String logoPicture;
+	@Indexed
+	private String province;
+	@Indexed
+	private String city;
+	@Indexed
+	private String district;
 	private Set<String> subjects;
 	private String homepage;
 	private Integer teacherCount;
@@ -41,6 +54,13 @@ public class OrganizationModel extends UserModel {
 
 	public OrganizationModel() {
 		super.setRole(UserRole.Organization);
+	}
+
+	public String getLocation() {
+		beforeGet();
+		return new StringBuilder().append(StringUtils.defaultString(province))
+				.append(StringUtils.defaultString(city))
+				.append(StringUtils.defaultString(district)).toString();
 	}
 
 	public List<TeacherModel> getTeachers() {
@@ -104,6 +124,8 @@ public class OrganizationModel extends UserModel {
 	 */
 	public Set<String> getSubjects() {
 		beforeGet();
+		if (subjects == null)
+			return Collections.emptySet();
 		return subjects;
 	}
 
@@ -185,6 +207,57 @@ public class OrganizationModel extends UserModel {
 	public void setAccountLevel(Integer accountLevel) {
 		beforeSet();
 		this.accountLevel = accountLevel;
+	}
+
+	/**
+	 * @return the province
+	 */
+	public String getProvince() {
+		beforeGet();
+		return province;
+	}
+
+	/**
+	 * @param province
+	 *            the province to set
+	 */
+	public void setProvince(String province) {
+		beforeSet();
+		this.province = province;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		beforeGet();
+		return city;
+	}
+
+	/**
+	 * @param city
+	 *            the city to set
+	 */
+	public void setCity(String city) {
+		beforeSet();
+		this.city = city;
+	}
+
+	/**
+	 * @return the district
+	 */
+	public String getDistrict() {
+		beforeGet();
+		return district;
+	}
+
+	/**
+	 * @param district
+	 *            the district to set
+	 */
+	public void setDistrict(String district) {
+		beforeSet();
+		this.district = district;
 	}
 
 }

@@ -14,7 +14,9 @@
 		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
-				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
+				<div class="box-title ui-state-default ui-corner-top">
+					<div class="ui-icon ui-icon-pin-s float-left"></div>用户登录
+				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-help float-left"></div>需要帮助
 				</div>
@@ -34,7 +36,7 @@
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">用户登录</a>
 				</div>
@@ -48,7 +50,7 @@
 								</th>
 								<td align="left">
 									<input type="text" id="email" name="email" value="${params.email!}" size="30" />
-									<@errmsg name="email" />
+									<@message name="email" />
 								</td>
 								<td align="left" class="alpha25">请输入登录邮箱地址。</td>
 							</tr>
@@ -58,7 +60,7 @@
 								</th>
 								<td align="left">
 									<input type="password" id="password" name="password" value="" size="30" maxlength="10" />
-									<@errmsg name="password" />
+									<@message name="password" />
 								</td>
 								<td align="left" class="alpha25">请输入登录密码。</td>
 							</tr>
@@ -68,10 +70,10 @@
 								</th>
 								<td align="left">
 									<input type="text" id="checkCode" name="checkCode" value="" size="10" maxlength="4" />
-									<img src="${pathrel}/random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
+									<img src="../random.gif?t=${Tutor.timestamp()?c}" alt="验证码" title="单击更换图片"
 										align="absmiddle" class="pointer"
-										onclick="this.src='${pathrel}/random.gif?t='+new Date().getTime()" />
-									<@errmsg name="checkCode" />
+										onclick="this.src='../random.gif?t='+new Date().getTime()" />
+									<@message name="checkCode" />
 								</td>
 								<td align="left" class="alpha25">请输入图片中的文字。</td>
 							</tr>
@@ -80,7 +82,6 @@
 								<td align="left">
 									<br />
 									<input type="submit" name="login" value="登录" class="green-button small-button ui-corner-all" />
-									<input type="submit" name="register" value="注册" class="green-button small-button ui-corner-all" />
 								</td>
 								<td>&nbsp;</td>
 							</tr>

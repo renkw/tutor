@@ -25,6 +25,7 @@ import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
 import com.google.gson.Gson;
@@ -67,6 +68,7 @@ public class ModifyTeacherView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
+		SessionContainer.get(request).setActionMessage(null);
 	}
 
 	protected void setVariables(HttpServletRequest request) {
@@ -93,10 +95,6 @@ public class ModifyTeacherView implements View {
 		// birthYear
 		request.setAttribute("birthYear",
 				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
-		// areas
-		request.setAttribute("areas", Tutor.getConstant("areas"));
-		request.setAttribute("areaJson",
-				gson.toJson(Tutor.getConstant("areas")));
 		// grades
 		request.setAttribute("grades", Tutor.getConstant("grades"));
 		request.setAttribute("gradeLevelJson",
@@ -119,7 +117,6 @@ public class ModifyTeacherView implements View {
 		String name = request.getParameter("name");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
-		String[] area = request.getParameterValues("area");
 		String[] subjects = request.getParameterValues("subjects");
 		String grade = request.getParameter("grade");
 		String gradeLevelFrom = request.getParameter("gradeLevelFrom");
@@ -149,7 +146,6 @@ public class ModifyTeacherView implements View {
 			logger.debug("[submit] name = " + name);
 			logger.debug("[submit] gender = " + gender);
 			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
-			logger.debug("[submit] area = " + Arrays.toString(area));
 			logger.debug("[submit] subjects = " + Arrays.toString(subjects));
 			logger.debug("[submit] grade = " + grade);
 			logger.debug("[submit] gradeLevelFrom = " + gradeLevelFrom);
@@ -214,21 +210,15 @@ public class ModifyTeacherView implements View {
 								duplicatedEmailMessage);
 					} else {
 						// teacher info
-						teacherModel.setEmail(Tutor.emptyNull(email));
+						teacherModel.setEmail(ParamUtils.emptyNull(email));
 						if (StringUtils.isNotEmpty(password)) {
 							teacherModel.setPassword(ModelFactory
 									.encryptPassword(password));
 						}
-						teacherModel.setName(Tutor.emptyNull(name));
+						teacherModel.setName(ParamUtils.emptyNull(name));
 						teacherModel.setMale("Male".equals(gender));
 						teacherModel.setBirthday(StringUtils
 								.join(birthday, '-'));
-						teacherModel.setProvince(area == null ? null : Tutor
-								.emptyNull(area[0]));
-						teacherModel.setCity(area == null ? null : Tutor
-								.emptyNull(area[1]));
-						teacherModel.setDistrict(area == null ? null : Tutor
-								.emptyNull(area[2]));
 						teacherModel.getSubjectsFor().clear();
 						if (subjects != null) {
 							for (String s : subjects) {
@@ -237,13 +227,14 @@ public class ModifyTeacherView implements View {
 								teacherModel.getSubjectsFor().add(s);
 							}
 						}
-						teacherModel.setGrade(grade);
-						teacherModel.setGradeLevelFrom(Byte
-								.valueOf(gradeLevelFrom));
-						teacherModel
-								.setGradeLevelTo(Byte.valueOf(gradeLevelTo));
-						teacherModel.setEducation(Tutor.emptyNull(education));
-						teacherModel.setTeachedYears(Tutor
+						teacherModel.setGrade(ParamUtils.emptyNull(grade));
+						teacherModel.setGradeLevelFrom(ParamUtils
+								.byteNull(gradeLevelFrom));
+						teacherModel.setGradeLevelTo(ParamUtils
+								.byteNull(gradeLevelTo));
+						teacherModel.setEducation(ParamUtils
+								.emptyNull(education));
+						teacherModel.setTeachedYears(ParamUtils
 								.byteNull(teachedYears));
 						teacherModel.getSpecialityFor().clear();
 						if (speciality != null) {
@@ -253,12 +244,13 @@ public class ModifyTeacherView implements View {
 								teacherModel.getSpecialityFor().add(s);
 							}
 						}
-						teacherModel.setHomepage(Tutor.emptyNull(homepage));
-						teacherModel.setDescription(Tutor
+						teacherModel
+								.setHomepage(ParamUtils.emptyNull(homepage));
+						teacherModel.setDescription(ParamUtils
 								.emptyNull(description));
-						teacherModel.setAccountPrivacy(Tutor.enumNull(
+						teacherModel.setAccountPrivacy(ParamUtils.enumNull(
 								UserPrivacy.class, accountPrivacy));
-						teacherModel.setContactPrivacy(Tutor.enumNull(
+						teacherModel.setContactPrivacy(ParamUtils.enumNull(
 								UserPrivacy.class, contactPrivacy));
 						teacherModel.setState(UserState.Activated);
 						// contact
@@ -268,18 +260,21 @@ public class ModifyTeacherView implements View {
 							contactModel = new UserContactModel();
 							teacherModel.setContact(contactModel);
 						}
-						contactModel.setName(Tutor.emptyNull(contactName));
-						contactModel.setPostcode(Tutor.emptyNull(postcode));
-						contactModel.setAddress1(address == null ? null : Tutor
-								.emptyNull(address[0]));
-						contactModel.setAddress2(address == null ? null : Tutor
-								.emptyNull(address[1]));
-						contactModel.setTelephone(Tutor.emptyNull(telephone));
-						contactModel.setFax(Tutor.emptyNull(fax));
-						contactModel.setCellphone(Tutor.emptyNull(cellphone));
-						contactModel.setQQ(Tutor.emptyNull(qq));
-						contactModel.setWeibo(Tutor.emptyNull(weibo));
-						contactModel.setMailAddress(Tutor
+						contactModel.setName(ParamUtils.emptyNull(contactName));
+						contactModel
+								.setPostcode(ParamUtils.emptyNull(postcode));
+						contactModel.setAddress1(ParamUtils.emptyNull(address,
+								0));
+						contactModel.setAddress2(ParamUtils.emptyNull(address,
+								1));
+						contactModel.setTelephone(ParamUtils
+								.emptyNull(telephone));
+						contactModel.setFax(ParamUtils.emptyNull(fax));
+						contactModel.setCellphone(ParamUtils
+								.emptyNull(cellphone));
+						contactModel.setQQ(ParamUtils.emptyNull(qq));
+						contactModel.setWeibo(ParamUtils.emptyNull(weibo));
+						contactModel.setMailAddress(ParamUtils
 								.emptyNull(mailAddress));
 						// organization
 						if (StringUtils.isEmpty(id))
@@ -287,11 +282,16 @@ public class ModifyTeacherView implements View {
 						// save
 						objc.store(teacherModel);
 						objc.commit();
-						if (logger.isDebugEnabled())
-							logger.debug("[submit] success. goto "
+						SessionContainer.get(request).setActionMessage(
+								StringUtils.isNotEmpty(id) ? "修改教师资料成功。"
+										: "添加教师资料成功。");
+						if (StringUtils.isNotEmpty(submitSuccessPage)) {
+							if (logger.isDebugEnabled())
+								logger.debug("[submit] success. goto "
+										+ submitSuccessPage);
+							response.sendRedirect(request.getContextPath()
 									+ submitSuccessPage);
-						response.sendRedirect(request.getContextPath()
-								+ submitSuccessPage);
+						}
 						return false;
 					}
 				} catch (Throwable t) {
@@ -305,8 +305,9 @@ public class ModifyTeacherView implements View {
 						objc.ext().releaseSemaphore(teacherLock);
 					objc.ext().releaseSemaphore(orgLock);
 				}
+			} else {
+				Messages.addError(request, "email", userLockedMessage);
 			}
-			Messages.addError(request, "email", userLockedMessage);
 		}
 
 		setVariables(request);

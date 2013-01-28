@@ -17,6 +17,7 @@ import com.changev.tutor.Tutor;
 import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.util.QueryBuilder;
+import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamValidator;
 
@@ -34,7 +35,6 @@ public class QuestionDetailView implements View {
 			.getLogger(QuestionDetailView.class);
 
 	private ParamValidator submitValidator;
-	private String defaultBackUrl;
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -52,6 +52,7 @@ public class QuestionDetailView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[postRender] called");
+		SessionContainer.get(request).setActionMessage(null);
 	}
 
 	protected boolean closeQuestion(HttpServletRequest request,
@@ -77,6 +78,7 @@ public class QuestionDetailView implements View {
 				questionModel.setClosedDateTime(Tutor.currentDateTime());
 				Tutor.getCurrentContainer().store(questionModel);
 				Tutor.commitCurrent();
+				SessionContainer.get(request).setActionMessage("采用解答成功。");
 			} catch (Throwable t) {
 				logger.error("[closeQuesiton] save error", t);
 				Tutor.rollbackCurrent();
@@ -101,7 +103,7 @@ public class QuestionDetailView implements View {
 			questionModel = Tutor.fromId(id);
 		List<AnswerModel> answerList = new QueryBuilder<AnswerModel>()
 				.eq(questionModel, AnswerModel.QUESTION)
-				.isFalse(AnswerModel.DELETED).execute();
+				.isFalse(AnswerModel.DELETED).select();
 		request.setAttribute("question", questionModel);
 		request.setAttribute("answers", answerList);
 	}
@@ -119,21 +121,6 @@ public class QuestionDetailView implements View {
 	 */
 	public void setSubmitValidator(ParamValidator submitValidator) {
 		this.submitValidator = submitValidator;
-	}
-
-	/**
-	 * @return the defaultBackUrl
-	 */
-	public String getDefaultBackUrl() {
-		return defaultBackUrl;
-	}
-
-	/**
-	 * @param defaultBackUrl
-	 *            the defaultBackUrl to set
-	 */
-	public void setDefaultBackUrl(String defaultBackUrl) {
-		this.defaultBackUrl = defaultBackUrl;
 	}
 
 }

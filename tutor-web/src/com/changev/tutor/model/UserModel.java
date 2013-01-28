@@ -5,11 +5,12 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.Date;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.Set;
 
 import com.db4o.ObjectContainer;
+import com.db4o.collections.ActivatableHashSet;
 import com.db4o.config.annotations.Indexed;
 
 /**
@@ -27,15 +28,13 @@ public class UserModel extends AbstractModel {
 	public static final String EMAIL = "email";
 	public static final String PASSWORD = "password";
 	public static final String NAME = "name";
-	public static final String PROVINCE = "province";
-	public static final String CITY = "city";
-	public static final String DISTRICT = "district";
 	public static final String DESCRIPTION = "description";
 	public static final String ROLE = "role";
 	public static final String STATE = "state";
 	public static final String LAST_LOGIN_DATE_TIME = "lastLoginDateTime";
 	public static final String SECURE_CODE = "secureCode";
 	public static final String CONTACT = "contact";
+	public static final String CONTACTERS = "contacters";
 	public static final String ACCOUNT_PRIVACY = "accountPrivacy";
 	public static final String CONTACT_PRIVACY = "contactPrivacy";
 
@@ -43,18 +42,13 @@ public class UserModel extends AbstractModel {
 	private String email;
 	private String password;
 	private String name;
-	@Indexed
-	private String province;
-	@Indexed
-	private String city;
-	@Indexed
-	private String district;
 	private String description;
 	private UserRole role;
 	private UserState state;
 	private Date lastLoginDateTime;
 	private String secureCode;
 	private UserContactModel contact;
+	private Set<UserModel> contacters;
 	private UserPrivacy accountPrivacy;
 	private UserPrivacy contactPrivacy;
 
@@ -89,13 +83,6 @@ public class UserModel extends AbstractModel {
 	@Override
 	public UserModel clone() {
 		return (UserModel) super.clone();
-	}
-
-	public String getLocation() {
-		beforeGet();
-		return new StringBuilder().append(StringUtils.defaultString(province))
-				.append(StringUtils.defaultString(city))
-				.append(StringUtils.defaultString(district)).toString();
 	}
 
 	/**
@@ -147,57 +134,6 @@ public class UserModel extends AbstractModel {
 	public void setName(String name) {
 		beforeSet();
 		this.name = name;
-	}
-
-	/**
-	 * @return the province
-	 */
-	public String getProvince() {
-		beforeGet();
-		return province;
-	}
-
-	/**
-	 * @param province
-	 *            the province to set
-	 */
-	public void setProvince(String province) {
-		beforeSet();
-		this.province = province;
-	}
-
-	/**
-	 * @return the city
-	 */
-	public String getCity() {
-		beforeGet();
-		return city;
-	}
-
-	/**
-	 * @param city
-	 *            the city to set
-	 */
-	public void setCity(String city) {
-		beforeSet();
-		this.city = city;
-	}
-
-	/**
-	 * @return the district
-	 */
-	public String getDistrict() {
-		beforeGet();
-		return district;
-	}
-
-	/**
-	 * @param district
-	 *            the district to set
-	 */
-	public void setDistrict(String district) {
-		beforeSet();
-		this.district = district;
 	}
 
 	/**
@@ -300,6 +236,28 @@ public class UserModel extends AbstractModel {
 	public void setContact(UserContactModel contact) {
 		beforeSet();
 		this.contact = contact;
+	}
+
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContacters() {
+		beforeGet();
+		if (contacters == null)
+			return Collections.emptySet();
+		return contacters;
+	}
+
+	/**
+	 * @return the contacters
+	 */
+	public Set<UserModel> getContactersFor() {
+		beforeGet();
+		if (contacters == null) {
+			beforeSet();
+			contacters = new ActivatableHashSet<UserModel>();
+		}
+		return contacters;
 	}
 
 	/**

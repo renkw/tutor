@@ -63,16 +63,17 @@
 				<entry key="checkCode.checkcode" value="验证码不正确。" />
 			</util:map>
 		</property>
-		<property name="failMessage" value="用户不存在或密码错误。" />
 		<property name="successPages">
 			<map>
-				<entry key="Parent" value="/front/member.html" />
-				<entry key="Student" value="/front/member.html" />
-				<entry key="Organization" value="/back/member.html" />
-				<entry key="Teacher" value="/back/member.html" />
+				<entry key="Parent" value="/front/questionList.html" />
+				<entry key="Student" value="/front/questionList.html" />
+				<entry key="Organization" value="/back/teacherList.html" />
+				<entry key="Teacher" value="/back/questionList.html" />
 				<entry key="Admin" value="/manage/data.html" />
 			</map>
 		</property>
+		<property name="failMessage" value="用户不存在或密码错误。" />
+		<property name="incompleteMessage" value="为了更好地服务，请完整个人资料。" />
 	</bean>
 	
 	<bean id="public.logoutView" class="com.changev.tutor.web.pub.LogoutView"
@@ -100,8 +101,8 @@
 			</util:map>
 		</property>
 		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
-		<property name="userSuccessPage" value="/front/member.html" />
-		<property name="orgSuccessPage" value="/back/member.html" />
+		<property name="userSuccessPage" value="/front/questionList.html" />
+		<property name="orgSuccessPage" value="/back/teacherList.html" />
 	</bean>
 	
 	<bean id="front.registerStudentView" class="com.changev.tutor.web.front.RegisterStudentView">
@@ -153,20 +154,12 @@
 			</util:map>
 		</property>
 		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="successPage" value="/front/member.html" />
-	</bean>
-	
-	<bean id="front.memberView" class="com.changev.tutor.web.front.MemberView">
+		<property name="successPage" value="/front/questionList.html" />
 	</bean>
 	
 	<bean id="front.modifyMemberView" class="com.changev.tutor.web.front.ModifyMemberView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="email.required" value="请输入登录邮箱。" />
-				<entry key="email.length" value="请不要超过{maxLength}个字。" />
-				<entry key="email.length.maxLength"><value type="int">255</value></entry>
-				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
-				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
 				<entry key="name.required" value="请输入您的姓名。" />
 				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
@@ -202,14 +195,13 @@
 		</property>
 		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
 		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="successPage" value="/front/member.html" />
+		<property name="successPage" value="" />
 	</bean>
+	
+	<bean id="front.questionListView" class="com.changev.tutor.web.front.QuestionListView" />
 	
 	<bean id="front.questionDetailView" class="com.changev.tutor.web.front.QuestionDetailView" />
-	
-	<bean id="back.memberView" class="com.changev.tutor.web.back.MemberView">
-	</bean>
-	
+
 	<bean id="back.modifyTeacherView" class="com.changev.tutor.web.back.ModifyTeacherView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
@@ -266,18 +258,13 @@
 		</property>
 		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
 		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="submitSuccessPage" value="/back/member.html" />
-		<property name="deleteSuccessPage" value="/back/member.html" />
+		<property name="submitSuccessPage" value="/back/teacherList.html" />
+		<property name="deleteSuccessPage" value="/back/teacherList.html" />
 	</bean>
 	
 	<bean id="back.modifyMemberView" class="com.changev.tutor.web.back.ModifyMemberView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="email.required" value="请输入登录邮箱。" />
-				<entry key="email.length" value="请不要超过{maxLength}个字。" />
-				<entry key="email.length.maxLength"><value type="int">255</value></entry>
-				<entry key="email.pattern" value="请输入正确的邮箱地址。" />
-				<entry key="email.pattern.pattern" value="[^@\s]+@\S+" />
 				<entry key="name.required" value="请输入您的姓名。" />
 				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
@@ -319,7 +306,7 @@
 		</property>
 		<property name="duplicatedEmailMessage" value="该邮箱已经注册。" />
 		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="successPage" value="/back/member.html" />
+		<property name="successPage" value="" />
 	</bean>
 	
 	<bean id="back.questionListView" class="com.changev.tutor.web.back.QuestionListView" />
@@ -331,7 +318,6 @@
 				p:maxLength="500"
 				p:message="请不要超过{maxLength}个字。" />
 		</property>
-		<property name="defaultBackUrl" value="member.html" />
 	</bean>
 	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />

@@ -17,7 +17,7 @@
 <script type="text/javascript">
 <!--
 function relayout(boxh) {
-	$("#questionList").css("height", boxh < 450 ? "auto" : (boxh - 250) + "px");
+	$("#questionList").css("height", boxh < 450 ? "auto" : (boxh - 300) + "px");
 }
 
 $(function() {
@@ -39,13 +39,42 @@ $(function() {
 		<td height="100%" align="left" valign="top">
 			<!-- REPLACE HERE　WITH　ASSISTANT -->
 			<div class="box-assist ui-widget-content ui-corner-all">
-				<div class="box-title ui-state-default ui-corner-top">&nbsp;</div>
+				<div class="box-title ui-state-default ui-corner-top">
+					<div class="ui-icon ui-icon-pin-s float-left"></div>查询提问列表
+				</div>
+				<div class="box-subtitle ui-widget-content">
+					<div class="ui-icon ui-icon-person float-left"></div>我的资料
+				</div>
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="2" cellpadding="0">
+					<tbody>
+						<tr>
+							<td rowspan="4" align="left" valign="top"><@face user=tutor.loginUser width=75 /></td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.email}</div></td>
+						</tr>
+						<tr>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.name}</div></td>
+						</tr>
+						<tr>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.location}</div></td>
+						</tr>
+						<tr>
+							<td>
+								<a href="../front/modifyMember.html" class="fresh">修改</a>
+								<a href="../public/resetpw.html" class="danger">更换密码</a>
+							</td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-bookmark float-left"></div>提问分类
 				</div>
 				<div class="box-content ui-widget-content">
-					<a href="#" onclick="addq('sort','new','search','s');return false;">未解答提问</a><br />
-					<a href="#" onclick="addq('sort','old','search','s');return false;">已解答提问</a><br />
+					<a href="?sort=new&amp;range=${range}">未解答提问</a><br />
+					<a href="?sort=old&amp;range=${range}">已解答提问</a><br />
+					<a href="?sort=close&amp;range=${range}">已关闭提问</a><br />
+					<a href="?sort=all&amp;range=${range}">全部的提问</a><br />
 				</div>
 			</div>
 		</td>
@@ -53,7 +82,7 @@ $(function() {
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">提问列表</a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
@@ -66,23 +95,35 @@ $(function() {
 						<#case "all">全部<#break>
 					</#switch>
 						的
-					<#switch params.sort!>
-						<#case "new">未解答提问<#break>
+					<#switch sort!>
 						<#case "old">已解答提问<#break>
+						<#case "close">已关闭提问<#break>
+						<#case "all">全部提问<#break>
+						<#default>未解答提问<#break>
 					</#switch>
 						(${total})
 					</a>
+					<div class="ui-icon ui-icon-plus float-right" title="新提问"></div>
 				</div>
 				<div class="box-subtitle ui-widget-content">
 					<div class="alpha50">
-						<a href="#" onclick="addq('range','week','search','s');return false;">最近一周</a> |
-						<a href="#" onclick="addq('range','month','search','s');return false;">最近一个月</a> |
-						<a href="#" onclick="addq('range','quarter','search','s');return false;">最近三个月</a> |
-						<a href="#" onclick="addq('range','half','search','s');return false;">最近半年</a> |
-						<a href="#" onclick="addq('range','all','search','s');return false;">全部</a>
+						<a href="?sort=${sort}&amp;range=week">最近一周</a> |
+						<a href="?sort=${sort}&amp;range=month">最近一个月</a> |
+						<a href="?sort=${sort}&amp;range=quarter">最近三个月</a> |
+						<a href="?sort=${sort}&amp;range=half">最近半年</a> |
+						<a href="?sort=${sort}&amp;range=all">全部</a>
 					</div>
 				</div>
 				<div id="questionList" class="box-content ui-widget-content">
+				<#if questions?size==0>
+					<center><#switch params.range!>
+						<#case "week">最近一周<#break>
+						<#case "month">最近一个月<#break>
+						<#case "quarter">最近三个月<#break>
+						<#case "half">最近半年<#break>
+					</#switch>
+					没有任何提问！<a href="newQuesiton.html">新提问</a>。</center>
+				</#if>
 				<#list questions as q>
 					<#assign style=(q_index%2==0)?string("odd", "even")>
 					<div class="${style}">

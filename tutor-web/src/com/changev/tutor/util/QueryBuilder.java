@@ -204,7 +204,7 @@ public final class QueryBuilder<T> {
 		return this;
 	}
 
-	public ObjectSet<T> execute(String... names) {
+	public ObjectSet<T> select(String... names) {
 		long time = System.currentTimeMillis();
 		ObjectSet<T> set = descend(names).execute();
 		if (performance.isDebugEnabled()) {

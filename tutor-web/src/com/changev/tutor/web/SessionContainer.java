@@ -84,11 +84,12 @@ public final class SessionContainer implements Serializable {
 
 	private Long loginUserId;
 	private Date loginDateTime;
-	private Messages sessionMessage = new Messages();
-	private String checkCode;
-
 	private transient UserModel loginUser;
+	private String checkCode;
+	private String systemMessage;
+	private String actionMessage;
 	private transient List<QuestionModel> questionList;
+	private String questionListQuery;
 
 	SessionContainer() {
 	}
@@ -164,18 +165,33 @@ public final class SessionContainer implements Serializable {
 	}
 
 	/**
-	 * @return the sessionMessage
+	 * @return the systemMessage
 	 */
-	public Messages getSessionMessage() {
-		return sessionMessage;
+	public String getSystemMessage() {
+		return systemMessage;
 	}
 
 	/**
-	 * @param sessionMessage
-	 *            the sessionMessage to set
+	 * @param systemMessage
+	 *            the systemMessage to set
 	 */
-	public void setSessionMessage(Messages sessionMessage) {
-		this.sessionMessage = sessionMessage;
+	public void setSystemMessage(String systemMessage) {
+		this.systemMessage = systemMessage;
+	}
+
+	/**
+	 * @return the actionMessage
+	 */
+	public String getActionMessage() {
+		return actionMessage;
+	}
+
+	/**
+	 * @param actionMessage
+	 *            the actionMessage to set
+	 */
+	public void setActionMessage(String actionMessage) {
+		this.actionMessage = actionMessage;
 	}
 
 	/**
@@ -208,6 +224,21 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void setQuestionList(List<QuestionModel> questionList) {
 		this.questionList = questionList;
+	}
+
+	/**
+	 * @return the questionListQuery
+	 */
+	public String getQuestionListQuery() {
+		return questionListQuery;
+	}
+
+	/**
+	 * @param questionListQuery
+	 *            the questionListQuery to set
+	 */
+	public void setQuestionListQuery(String questionListQuery) {
+		this.questionListQuery = questionListQuery;
 	}
 
 }

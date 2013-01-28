@@ -5,6 +5,7 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -53,20 +54,6 @@ public class StudentModel extends UserModel {
 	public List<QuestionModel> getQuestions() {
 		return Tutor.getCurrentContainer().queryByExample(
 				ModelFactory.getStudentQuestionExample(getEmail()));
-	}
-
-	public List<QuestionModel> getUnclosedQuestions() {
-		QuestionModel example = ModelFactory
-				.getStudentQuestionExample(getEmail());
-		example.setClosed(Boolean.FALSE);
-		return Tutor.getCurrentContainer().queryByExample(example);
-	}
-
-	public List<QuestionModel> getClosedQuestions() {
-		QuestionModel example = ModelFactory
-				.getStudentQuestionExample(getEmail());
-		example.setClosed(Boolean.TRUE);
-		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	@Override
@@ -217,6 +204,8 @@ public class StudentModel extends UserModel {
 	 */
 	public Map<String, TeacherModel> getDefaultAnswerer() {
 		beforeGet();
+		if (defaultAnswerer == null)
+			return Collections.emptyMap();
 		return defaultAnswerer;
 	}
 

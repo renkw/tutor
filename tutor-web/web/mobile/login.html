@@ -12,7 +12,7 @@
 <label for="email" class="float-left">邮件地址</label><input type="text" name="email" id="email" value="${params.email!}" /><br />
 <label for="password" class="float-left">密码</label><input type="password" name="password" id="password" /><br />
 <label for="email" class="float-left">验证码</label><input type="text" name="checkCode" id="checkCode" size="4" />
-<img src="${pathrel}/random.gif?t=${Tutor.timestamp()}" align="absmiddle" /><br />
+<img src="../random.gif?t=${Tutor.timestamp()}" align="absmiddle" /><br />
 <input type="submit" name="login" value="登录" class="clear-left" />
 <input type="submit" name="register" value="注册" />
 </form>
