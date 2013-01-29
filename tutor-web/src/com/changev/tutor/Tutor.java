@@ -962,8 +962,8 @@ public final class Tutor {
 	private static final String[] NUM_WORD = { "零", "一", "二", "三", "四", "五",
 			"六", "七", "八", "九", "十" };
 
-	public static String numberWord(int n) {
-		return NUM_WORD[n % NUM_WORD.length];
+	public static String numberWord(Number n) {
+		return n == null ? "" : NUM_WORD[n.intValue() % NUM_WORD.length];
 	}
 
 }

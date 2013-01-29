@@ -83,9 +83,6 @@
 	<bean id="public.registerView" name="public.registerorgView" class="com.changev.tutor.web.pub.RegisterView">
 		<property name="registerValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="name.required" value="请输入您的姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字。" />
-				<entry key="name.length.maxLength"><value type="int">10</value></entry>
 				<entry key="email.required" value="请输入登录邮箱。" />
 				<entry key="email.length" value="请不要超过{maxLength}个字。" />
 				<entry key="email.length.maxLength"><value type="int">255</value></entry>
@@ -104,71 +101,25 @@
 		<property name="userSuccessPage" value="/front/questionList.html" />
 		<property name="orgSuccessPage" value="/back/teacherList.html" />
 	</bean>
-	
-	<bean id="front.registerStudentView" class="com.changev.tutor.web.front.RegisterStudentView">
-		<property name="registerValidator">
-			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="name.required" value="请输入学生姓名。" />
-				<entry key="name.length" value="请不要超过{maxLength}个字。" />
-				<entry key="name.length.maxLength"><value type="int">10</value></entry>
-				<entry key="school.length" value="请不要超过{maxLength}个字。" />
-				<entry key="school.length.maxlength"><value type="int">50</value></entry>
-				<entry key="hobby.length" value="请不要超过{maxLength}个字。" />
-				<entry key="hobby.length.maxlength"><value type="int">50</value></entry>
-				<entry key="description.length" value="请不要超过{maxLength}个字。" />
-				<entry key="description.length.maxlength"><value type="int">500</value></entry>
-				<entry key="answerer[].length" value="请不要超过{maxLength}个字。" />
-				<entry key="answerer[].length.maxlength"><value type="int">255</value></entry>
-				<entry key="answerer[].user" value="输入的用户不存在。" />
-			</util:map>
-		</property>
-		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="successPage" value="/front/registerComplete.html" />
-	</bean>
-	
-	<bean id="front.registerCompleteView" class="com.changev.tutor.web.front.RegisterCompleteView">
-		<property name="registerValidator">
-			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
-				<entry key="name.length" value="请不要超过{maxLength}个字。" />
-				<entry key="name.length.maxLength"><value type="int">10</value></entry>
-				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
-				<entry key="postcode.length.maxLength"><value type="int">7</value></entry>
-				<entry key="postcode.numeric" value="邮政编码只能包含数字。" />
-				<entry key="address[].length" value="请不要超过{maxLength}个字。" />
-				<entry key="address[].length.maxLength"><value type="int">200</value></entry>
-				<entry key="telephone.length" value="请不要超过{maxLength}个字。" />
-				<entry key="telephone.length.maxLength"><value type="int">20</value></entry>
-				<entry key="telephone.pattern" value="请按照格式（区号-电话号码-分机号）输入。" />
-				<entry key="telephone.pattern.pattern" value="(?:\d+-)?\d+(?:-\d+)?" />
-				<entry key="cellphone.length" value="请不要超过{maxLength}个字。" />
-				<entry key="cellphone.length.maxLength"><value type="int">15</value></entry>
-				<entry key="cellphone.numeric" value="电话号码只能是数字。" />
-				<entry key="qq.length" value="请不要超过{maxLength}个字。" />
-				<entry key="qq.length.maxLength"><value type="int">255</value></entry>
-				<entry key="weibo.length" value="请不要超过{maxLength}个字。" />
-				<entry key="weibo.length.maxLength"><value type="int">255</value></entry>
-				<entry key="mailAddress.length" value="请不要超过{maxLength}个字。" />
-				<entry key="mailAddress.length.maxLength"><value type="int">255</value></entry>
-				<entry key="mailAddress.pattern" value="请输入正确的邮箱地址。" />
-				<entry key="mailAddress.pattern.pattern" value="[^@\s]+@\S+" />
-			</util:map>
-		</property>
-		<property name="userLockedMessage" value="其他用户正在修改，请稍候再试。" />
-		<property name="successPage" value="/front/questionList.html" />
-	</bean>
-	
+
 	<bean id="front.modifyMemberView" class="com.changev.tutor.web.front.ModifyMemberView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
 				<entry key="name.required" value="请输入您的姓名。" />
 				<entry key="name.length" value="请不要超过{maxLength}个字。" />
 				<entry key="name.length.maxLength"><value type="int">10</value></entry>
+				<entry key="studentName.required" value="请输入您的姓名。" />
+				<entry key="studentName.length" value="请不要超过{maxLength}个字。" />
+				<entry key="studentName.length.maxLength"><value type="int">10</value></entry>
 				<entry key="school.length" value="请不要超过{maxLength}个字。" />
 				<entry key="school.length.maxLength"><value type="int">50</value></entry>
 				<entry key="hobby.length" value="请不要超过{maxLength}个字。" />
 				<entry key="hobby.length.maxLength"><value type="int">50</value></entry>
 				<entry key="description.length" value="请不要超过{maxLength}个字。" />
 				<entry key="description.length.maxLength"><value type="int">500</value></entry>
+				<entry key="answerer[].length" value="请不要超过{maxLength}个字。" />
+				<entry key="answerer[].length.maxlength"><value type="int">255</value></entry>
+				<entry key="answerer[].user" value="输入的用户不存在。" />
 				<entry key="contactName.length" value="请不要超过{maxLength}个字。" />
 				<entry key="contactName.length.maxLength"><value type="int">10</value></entry>
 				<entry key="postcode.length" value="请不要超过{maxLength}个字。" />
@@ -200,8 +151,12 @@
 	
 	<bean id="front.questionListView" class="com.changev.tutor.web.front.QuestionListView" />
 	
+	<bean id="front.newQuestionView" class="com.changev.tutor.web.front.NewQuestionView" />
+	
 	<bean id="front.questionDetailView" class="com.changev.tutor.web.front.QuestionDetailView" />
 
+	<bean id="back.teacherListView" class="com.changev.tutor.web.back.TeacherListView" />
+	
 	<bean id="back.modifyTeacherView" class="com.changev.tutor.web.back.ModifyTeacherView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">

@@ -16,10 +16,10 @@ import org.apache.log4j.Logger;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
-import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamValidator;
+import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -79,6 +79,7 @@ public class QuestionDetailView implements View {
 				Tutor.getCurrentContainer().store(questionModel);
 				Tutor.commitCurrent();
 				SessionContainer.get(request).setActionMessage("采用解答成功。");
+				SessionContainer.get(request).setQuestionList(null);
 			} catch (Throwable t) {
 				logger.error("[closeQuesiton] save error", t);
 				Tutor.rollbackCurrent();
@@ -90,6 +91,7 @@ public class QuestionDetailView implements View {
 		return true;
 	}
 
+	@SuppressWarnings("serial")
 	protected void setVariables(HttpServletRequest request,
 			QuestionModel questionModel) {
 		if (logger.isTraceEnabled())
@@ -101,9 +103,15 @@ public class QuestionDetailView implements View {
 
 		if (questionModel == null)
 			questionModel = Tutor.fromId(id);
-		List<AnswerModel> answerList = new QueryBuilder<AnswerModel>()
-				.eq(questionModel, AnswerModel.QUESTION)
-				.isFalse(AnswerModel.DELETED).select();
+		final QuestionModel question = questionModel;
+		List<AnswerModel> answerList = Tutor.getCurrentContainer().query(
+				new Predicate<AnswerModel>() {
+					@Override
+					public boolean match(AnswerModel candidate) {
+						return !candidate.getDeleted()
+								&& candidate.getQuestion() == question;
+					}
+				});
 		request.setAttribute("question", questionModel);
 		request.setAttribute("answers", answerList);
 	}

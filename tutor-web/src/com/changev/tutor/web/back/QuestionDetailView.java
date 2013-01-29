@@ -21,12 +21,12 @@ import com.changev.tutor.model.AnswerModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
-import com.changev.tutor.util.QueryBuilder;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
+import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -108,6 +108,7 @@ public class QuestionDetailView implements View {
 				objc.store(model);
 				objc.commit();
 				SessionContainer.get(request).setActionMessage("发布解答成功。");
+				SessionContainer.get(request).setQuestionList(null);
 			} catch (Throwable t) {
 				logger.error("[submit] save answer error", t);
 				objc.rollback();
@@ -119,6 +120,7 @@ public class QuestionDetailView implements View {
 		return true;
 	}
 
+	@SuppressWarnings("serial")
 	protected void setVariables(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
@@ -130,13 +132,18 @@ public class QuestionDetailView implements View {
 			logger.debug("[setVariables] backUrl = " + backUrl);
 		}
 
-		TeacherModel loginUser = SessionContainer.getLoginUser(request).as(
-				UserRole.Teacher);
-		QuestionModel questionModel = Tutor.fromId(id);
-		AnswerModel answerModel = Tutor.one(new QueryBuilder<AnswerModel>()
-				.eq(loginUser, AnswerModel.ANSWERER)
-				.eq(questionModel, AnswerModel.QUESTION)
-				.isFalse(AnswerModel.DELETED).select());
+		final TeacherModel loginUser = SessionContainer.getLoginUser(request)
+				.as(UserRole.Teacher);
+		final QuestionModel questionModel = Tutor.fromId(id);
+		AnswerModel answerModel = Tutor.one(Tutor.getCurrentContainer().query(
+				new Predicate<AnswerModel>() {
+					@Override
+					public boolean match(AnswerModel candidate) {
+						return !candidate.getDeleted()
+								&& candidate.getAnswerer() == loginUser
+								&& candidate.getQuestion() == questionModel;
+					}
+				}));
 		request.setAttribute("question", questionModel);
 		request.setAttribute("answer", answerModel);
 		List<AnswerDetailModel> detailList = Collections.emptyList();

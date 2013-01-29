@@ -8,6 +8,9 @@ package com.changev.tutor.model;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.crypto.Cipher;
 
@@ -111,7 +114,7 @@ public final class ModelFactory {
 		questionExample.setDeleted(Boolean.FALSE);
 		return questionExample;
 	}
-
+	
 	public static String encryptPassword(String password) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -148,6 +151,17 @@ public final class ModelFactory {
 		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static List<QuestionModel> getAnswerQuestionList(
+			List<AnswerModel> answerList) {
+		if (answerList == null || answerList.isEmpty())
+			return Collections.emptyList();
+		List<QuestionModel> list = new ArrayList<QuestionModel>(
+				answerList.size());
+		for (AnswerModel answer : answerList)
+			list.add(answer.getQuestion());
+		return list;
 	}
 
 }

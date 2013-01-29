@@ -43,7 +43,7 @@ public class StudentModel extends UserModel {
 	private String grade;
 	private Byte gradeLevel;
 	private String hobby;
-	private Map<String, TeacherModel> defaultAnswerer;
+	private Map<String, UserModel> defaultAnswerer;
 	@Indexed
 	private ParentModel parent;
 
@@ -202,7 +202,7 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, TeacherModel> getDefaultAnswerer() {
+	public Map<String, UserModel> getDefaultAnswerer() {
 		beforeGet();
 		if (defaultAnswerer == null)
 			return Collections.emptyMap();
@@ -212,11 +212,11 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, TeacherModel> getDefaultAnswererFor() {
+	public Map<String, UserModel> getDefaultAnswererFor() {
 		beforeGet();
 		if (defaultAnswerer == null) {
 			beforeSet();
-			defaultAnswerer = new ActivatableHashMap<String, TeacherModel>();
+			defaultAnswerer = new ActivatableHashMap<String, UserModel>();
 		}
 		return defaultAnswerer;
 	}

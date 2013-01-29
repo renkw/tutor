@@ -170,10 +170,10 @@ public class ContextListener implements ServletContextListener,
 		}
 		// set current object container
 		ObjectContainer objc = null;
-		if (session != null) {
-			objc = (ObjectContainer) session
-					.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
-		}
+//		if (session != null) {
+//			objc = (ObjectContainer) session
+//					.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
+//		}
 		if (objc == null) {
 			objc = new ObjectContainerWrapper();
 			request.setAttribute(Tutor.KEY_OBJECT_CONTAINER, objc);

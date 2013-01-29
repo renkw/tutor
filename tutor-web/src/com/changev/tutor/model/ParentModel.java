@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
-import com.db4o.config.annotations.Indexed;
 
 /**
  * <p>
@@ -29,11 +28,8 @@ public class ParentModel extends UserModel {
 	public static final String CITY = "city";
 	public static final String DISTRICT = "district";
 
-	@Indexed
 	private String province;
-	@Indexed
 	private String city;
-	@Indexed
 	private String district;
 
 	public ParentModel() {

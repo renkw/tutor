@@ -28,7 +28,7 @@ $(function() {
 			}
 			for (var i = 1; i <= dates; i++) {
 				var opt = document.createElement("option");
-				opt.value = i;
+				opt.value = i < 10 ? "0" + i : i;
 				opt.text = i;
 				opt.selected = i == date;
 				$("#birthDate").append(opt);

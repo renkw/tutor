@@ -46,8 +46,8 @@ $(function() {
 	$("#birthYear,#birthMonth").change(function() {
 		var year = parseInt($("#birthYear option:selected").val()),
 			month = parseInt($("#birthMonth option:selected").val()),
-			date = parseInt($("#birthDate option:selected").val() || "${(params.birthday[2])!(user.birthday?substring(8))!}");
-		$("#birthDate").html("<option />");
+			date = parseInt($("#birthDate option:selected").val()) || parseInt("${(params.birthday[2])!(user.birthday?substring(8))!}");
+		$("#birthDate").html("<option value='00' />");
 		if (year && month) {
 			var dates;
 			switch (month) {
@@ -63,7 +63,7 @@ $(function() {
 			}
 			for (var i = 1; i <= dates; i++) {
 				var opt = document.createElement("option");
-				opt.value = i;
+				opt.value = i < 10 ? "0" + i : i;
 				opt.text = i;
 				opt.selected = i == date;
 				$("#birthDate").append(opt);
@@ -107,7 +107,7 @@ $(function() {
 		});
 	}
 	
-	$("#email,#name,#province,#birthYear,#grades input:radio").change();
+	$("#name,#province,#birthYear,#grades input:radio").change();
 });
 //-->
 </script>
@@ -144,8 +144,13 @@ $(function() {
 					<tbody>
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址</th>
-							<td width="300" align="left">${user.email!}</td>
+							<td width="300" align="left">${Tutor.maskEmail(user.email)}</td>
 							<td align="left" class="alpha25">您的登录邮箱地址。</td>
+						</tr>
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">密码</th>
+							<td width="300" align="left">********</td>
+							<td align="left" class="alpha25">您的登录密码。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
@@ -169,19 +174,19 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">生日</th>
 							<td align="left">
 								<select name="birthday" id="birthYear">
-									<option></option>
+									<option value="00"></option>
 								<#list 1960..birthYear as year>
 									<@option value="${year?c}" select=(params.birthday[0])!(user.birthday?substring(0,4))!>${year?c}</@option>
 								</#list>
 								</select>年
 								<select name="birthday" id="birthMonth">
-									<option></option>
+									<option value="00"></option>
 								<#list 1..12 as month>
 									<@option value="${month?string('00')}" select=(params.birthday[1])!(user.birthday?substring(5,7))!>${month?c}</@option>
 								</#list>
 								</select>月
 								<select name="birthday" id="birthDate">
-									<option></option>
+									<option value="00"></option>
 								</select>日
 								<@message name="birthday" />
 							</td>

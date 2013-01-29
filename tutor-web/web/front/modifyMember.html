@@ -11,7 +11,7 @@ $(function() {
 	var areas = ${areaJson};
 	$("#province").change(function() {
 		var value = this.options[this.selectedIndex].value;
-		var city = $("#city option:selected").val() || "${(params.area[1])!user.city!}";
+		var city = $("#city option:selected").val() || "${(params.area[1])!parent.city!}";
 		var cities = areas[value];
 		$("#city").empty();
 		if (cities) {
@@ -28,7 +28,7 @@ $(function() {
 	$("#city").change(function() {
 		var value = this.options[this.selectedIndex].value;
 		var prov = $("#province option:selected").val();
-		var dist = $("#district option:selected").val() || "${(params.area[2])!user.district!}";
+		var dist = $("#district option:selected").val() || "${(params.area[2])!parent.district!}";
 		var dists = areas[prov][value];
 		$("#district").empty();
 		if (dists) {
@@ -42,12 +42,11 @@ $(function() {
 		}
 	});
 	
-	<#if user.role=="Student">
 	$("#birthYear,#birthMonth").change(function() {
 		var year = parseInt($("#birthYear option:selected").val()),
 			month = parseInt($("#birthMonth option:selected").val()),
-			date = parseInt($("#birthDate option:selected").val() || "${(params.birthday[2])!(user.birthday?substring(8))!}");
-		$("#birthDate").html("<option />");
+			date = parseInt($("#birthDate option:selected").val()) || parseInt("${(params.birthday[2])!(student.birthday?substring(8))!}");
+		$("#birthDate").html("<option value='00' />");
 		if (year && month) {
 			var dates;
 			switch (month) {
@@ -63,7 +62,7 @@ $(function() {
 			}
 			for (var i = 1; i <= dates; i++) {
 				var opt = document.createElement("option");
-				opt.value = i;
+				opt.value = i < 10 ? "0" + i : i;
 				opt.text = i;
 				opt.selected = i == date;
 				$("#birthDate").append(opt);
@@ -76,9 +75,8 @@ $(function() {
 		if (!this.checked) return;
 		var value = this.value;
 		var levels = gradeLevels[value];
-		$("#grades select").each(function(idx) {
-			var level = parseInt($("option:selected", this).val() || (
-					idx == 0 ? "${params.gradeLevelFrom!user.gradeLevelFrom!}" : "${params.gradeLevelTo!user.gradeLevelTo!}"));
+		$("#grades select").each(function() {
+			var level = parseInt($("option:selected", this).val() || "${params.gradeLevel!student.gradeLevel!}");
 			$(this).empty();
 			if (levels) {
 				for (var i = 0; i < levels.length; i++) {
@@ -91,7 +89,6 @@ $(function() {
 			}
 		});
 	});
-	</#if>
 	
 	if ($("#mailAddress").val() == "") {
 		$("#email").change(function() { $("#mailAddress").val(this.value); });
@@ -107,7 +104,16 @@ $(function() {
 		});
 	}
 	
-	$("#email,#name,#province,#birthYear,#grades input:radio").change();
+	$("#name,#province,#birthYear,#grades input:radio").change();
+	
+	$("#defaultAnswerer input:text").change(function() {
+		var val = this.value;
+		if ($("#defaultAnswerer input:checkbox")[0].checked)
+			$("#defaultAnswerer input:text").val(val);
+	});
+	$("#name").change(function() {
+		$("#studentName").val(this.value);
+	});
 });
 //-->
 </script>
@@ -144,13 +150,19 @@ $(function() {
 					<tbody>
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址</th>
-							<td width="300" align="left">${user.email!}</td>
+							<td width="300" align="left">${Tutor.maskEmail(user.email)}</td>
 							<td align="left" class="alpha25">您的登录邮箱地址。</td>
+						</tr>
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">密码</th>
+							<td width="300" align="left">********</td>
+							<td align="left" class="alpha25">您的登录密码。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
 							<td align="left">
 								<input type="text" name="name" id="name" value="${params.name!user.name!}" />
+								<#if user.role=="Student"><input type="hidden" name="studentName" id="studentName" /></#if>
 								<@message name="name" />
 							</td>
 							<td align="left" class="alpha25">请输入您的姓名。</td>
@@ -161,7 +173,7 @@ $(function() {
 							<td align="left">
 								<select name="area" id="province">
 								<#list areas?keys as province>
-									<@option value=province select=(params.area[0])!user.province>${province}</@option>
+									<@option value=province select=(params.area[0])!parent.province>${province}</@option>
 								</#list>
 								</select>
 								<select name="area" id="city"></select>
@@ -171,66 +183,29 @@ $(function() {
 							<td align="left" class="alpha25">请输入所在地区。</td>
 						</tr>
 						</#if>
-						<#if user.role=="Student">
+					</tbody>
+					</table>
+				</div>
+				<div class="box-subtitle ui-widget-content">学生资料</div>
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<#if user.role=="Parent">
 						<tr>
-							<th align="center" class="ui-widget-header noborder">性别</th>
+							<th align="center" class="ui-widget-header noborder">学生姓名<span class="required">*</span></th>
 							<td align="left">
-								<@radio name="gender" value="Male" select=params.gender!"Male">男</@radio>
-								<@radio name="gender" value="Female" select=params.gender>女</@radio>
-								<@message name="gender" />
+								<input type="text" name="studentName" value="${params.name!student.name!}" />
+								<@message name="studentName" />
 							</td>
-							<td align="left" class="alpha25">学生性别。</td>
+							<td align="left" class="alpha25">学生姓名。</td>
 						</tr>
-						<tr>
-							<th align="center" class="ui-widget-header noborder">生日</th>
-							<td align="left">
-								<select name="birthday" id="birthYear">
-									<option></option>
-								<#list 1980..birthYear as year>
-									<@option value="${year?c}" select=(params.birthday[0])!>${year?c}</@option>
-								</#list>
-								</select>年
-								<select name="birthday" id="birthMonth">
-									<option></option>
-								<#list 1..12 as month>
-									<@option value="${month?string('00')}" select=(params.birthday[1])!>${month?c}</@option>
-								</#list>
-								</select>月
-								<select name="birthday" id="birthDate">
-									<option></option>
-								</select>日
-								<@message name="birthday" />
-							</td>
-							<td align="left" class="alpha25">学生生日。</td>
-						</tr>
-						<tr>
-							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
-							<td align="left">
-								<select name="area" id="province">
-								<#list areas?keys as province>
-									<@option value=province select=(params.area[0])!>${province}</@option>
-								</#list>
-								</select>
-								<select name="area" id="city"></select>
-								<select name="area" id="district"></select>
-								<@message name="area" />
-							</td>
-							<td align="left" class="alpha25">学生所在地区。</td>
-						</tr>
-						<tr>
-							<th align="center" class="ui-widget-header noborder">学校</th>
-							<td align="left">
-								<input type="text" name="school" value="${params.school!}" />
-								<@message name="school" />
-							</td>
-							<td align="left" class="alpha25">学生就读学校名。</td>
-						</tr>
+						</#if>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 							<td align="left">
 								<div id="grades">
 									<#list grades?keys as grade>
-										<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
+										<@radio name="grade" value=grade select=params.grade!student.grade!"小学">${grades[grade]}</@radio>
 									</#list>
 									<select name="gradeLevel"></select>
 								</div>
@@ -239,14 +214,52 @@ $(function() {
 							<td align="left" class="alpha25">学生年级。</td>
 						</tr>
 						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">性别</th>
+							<td width="300" align="left">
+								<@radio name="gender" value="Male" select=params.gender!(student.male?string("Male", "Female"))!"Male">男</@radio>
+								<@radio name="gender" value="Female" select=params.gender!(student.male?string("Male", "Female"))!>女</@radio>
+								<@message name="gender" />
+							</td>
+							<td align="left" class="alpha25">学生性别。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">生日</th>
+							<td align="left">
+								<select name="birthday" id="birthYear">
+									<option value="0000"></option>
+								<#list 1980..birthYear as year>
+									<@option value="${year?c}" select=(params.birthday[0])!(student.birthday.substring(0,4))!>${year?c}</@option>
+								</#list>
+								</select>年
+								<select name="birthday" id="birthMonth">
+									<option value="00"></option>
+								<#list 1..12 as month>
+									<@option value="${month?string('00')}" select=(params.birthday[1])!(student.birthday.substring(5,7))!>${month?c}</@option>
+								</#list>
+								</select>月
+								<select name="birthday" id="birthDate">
+									<option value="00"></option>
+								</select>日
+								<@message name="birthday" />
+							</td>
+							<td align="left" class="alpha25">学生生日。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">学校</th>
+							<td align="left">
+								<input type="text" name="school" value="${params.school!student.school!}" />
+								<@message name="school" />
+							</td>
+							<td align="left" class="alpha25">学生就读学校名。</td>
+						</tr>
+						<tr>
 							<th align="center" class="ui-widget-header noborder">兴趣爱好</th>
 							<td align="left">
-								<input type="text" name="hobby" value="${params.hobby!}" />
+								<input type="text" name="hobby" value="${params.hobby!student.hobby!}" />
 								<@message name="hobby" />
 							</td>
 							<td align="left" class="alpha25">学生兴趣爱好。</td>
 						</tr>
-						</#if>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">个人描述</th>
 							<td align="left">
@@ -254,6 +267,20 @@ $(function() {
 								<@message name="description" />
 							</td>
 							<td align="left" class="alpha25">请输入简单描述。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">指定解答</th>
+							<td align="left">
+								<div id="defaultAnswerer">
+									<label><input type="checkbox" />全部一致</label><br />
+									<#list subjects?keys as subject>
+										<input type="hidden" name="subject" value="${subject}" />
+										<label>${subjects[subject]}&nbsp;&nbsp;<input type="text" name="answerer" value="${(params.answerer[subject_index])!(student.defaultAnswerer[subject].email)!}" /></label><br />
+									</#list>
+								</div>
+								<@message name="answerer" />
+							</td>
+							<td align="left" class="alpha25">指定各学科默认的解答者。</td>
 						</tr>
 					</tbody>
 					</table>
@@ -337,6 +364,18 @@ $(function() {
 							</td>
 							<td align="left" class="alpha25">设置公开基本资料。</td>
 						</tr>
+						<#if user.role=="Parent">
+						<tr>
+							<th width="80" align="center" class="ui-widget-header noborder">学生资料</th>
+							<td width="300" align="left">
+								<@radio name="studentPrivacy" value="Private" select=params.studentPrivacy!student.accountPrivacy>不公开</@radio>
+								<@radio name="studentPrivacy" value="ContacterOnly" select=params.studentPrivacy!student.accountPrivacy>只对联系人公开</@radio>
+								<@radio name="studentPrivacy" value="Public" select=params.studentPrivacy!student.accountPrivacy>全部公开</@radio>
+								<@message name="studentPrivacy" />
+							</td>
+							<td align="left" class="alpha25">设置公开学生资料。</td>
+						</tr>
+						</#if>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">联系资料</th>
 							<td align="left">

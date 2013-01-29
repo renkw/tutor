@@ -21,7 +21,7 @@
 			-->
 			<div class="float-right" style="margin-top:2px">
 			<#if (tutor.loginUser)??>
-				${tutor.loginUser.name}
+				${tutor.loginUser.name!Tutor.maskEmail(tutor.loginUser.email)}
 				[<a href="${request.contextPath}/public/logout.html">退出</a>] |
 			<#else>
 				<a href="${request.contextPath}/public/login.html">登录</a> |
@@ -38,7 +38,7 @@
 			<#if (tutor.loginUser)??>
 				<#switch tutor.loginUser.role>
 					<#case "Parent"><#case "Student">
-				<a href="${request.contextPath}/front/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<a href="${request.contextPath}/front/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
 				<a href="${request.contextPath}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
@@ -54,7 +54,7 @@
 				</a>
 					<#break>
 					<#case "Teacher">
-				<a href="${request.contextPath}/back/questionList.html?sort=new&amp;range=month&amp;search=s" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<a href="${request.contextPath}/back/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
 				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">

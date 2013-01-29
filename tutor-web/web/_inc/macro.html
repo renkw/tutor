@@ -67,24 +67,26 @@
 
 <#-- 头像 -->
 <#macro face user width=0 height=0>
-<#if user.role=="Organization">
+<#if !user.role??>
+	<img src="${request.contextPath}/images/noname.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} />
+<#elseif user.role=="Organization">
 	<#if user.logoPicture??>
 		<#local picture="/files/${Tutor.id(user)}/${user.logoPicture}">
 	<#else>
 		<#local picture="/images/organization.png">
 	</#if>
-	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name!}" />
 <#elseif user.role=="Student">
 	<#if user.facePicture??>
 		<#local picture="/files/${Tutor.id(user)}/${user.facePicture}">
 	<#else>
 		<#local picture="/images/student.png">
 	</#if>
-	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}${picture}" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name!}" />
 <#elseif user.male??&&user.male>
-	<img src="${request.contextPath}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}/images/male.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name!}" />
 <#else>
-	<img src="${request.contextPath}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name}" />
+	<img src="${request.contextPath}/images/female.png" ${(width gt 0)?string('width="${width}"', '')} ${(height gt 0)?string('height="${height}"', '')} alt="${user.name!}" />
 </#if>
 </#macro>
 

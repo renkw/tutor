@@ -55,7 +55,7 @@ public class QuestionModel extends AbstractModel {
 	public static final String UPLOAD_PICTURES = "uploadPictures";
 
 	@Indexed
-	private ParentModel questioner;
+	private UserModel questioner;
 	private StudentModel student;
 	private String province;
 	// XXX 有user的model为什么还需要城市这些？是不是可以去掉
@@ -66,7 +66,7 @@ public class QuestionModel extends AbstractModel {
 	private Byte gradeLevel;
 	private String title;
 	@Indexed
-	private TeacherModel assignTo;
+	private UserModel assignTo;
 	private TeacherModel finalAnswerer;
 	private Boolean closed;
 	private Boolean answered;
@@ -98,11 +98,29 @@ public class QuestionModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
-		setProvince(questioner.getProvince());
-		setCity(questioner.getCity());
-		setDistrict(questioner.getDistrict());
-		setGrade(student.getGrade());
-		setGradeLevel(student.getGradeLevel());
+		if (student == null) {
+			if (questioner instanceof StudentModel)
+				setStudent((StudentModel) questioner);
+			else if (questioner instanceof ParentModel)
+				setStudent((StudentModel) Tutor.one(((ParentModel) questioner)
+						.getChildren()));
+		}
+		if (province == null && city == null && district == null) {
+			ParentModel parent = null;
+			if (questioner instanceof ParentModel)
+				parent = (ParentModel) questioner;
+			if (questioner instanceof StudentModel)
+				parent = ((StudentModel) questioner).getParent();
+			if (parent != null) {
+				setProvince(parent.getProvince());
+				setCity(parent.getCity());
+				setDistrict(parent.getDistrict());
+			}
+		}
+		if (grade == null && gradeLevel == null && student != null) {
+			setGrade(student.getGrade());
+			setGradeLevel(student.getGradeLevel());
+		}
 		setClosed(Boolean.FALSE);
 		setAnswered(Boolean.FALSE);
 		Calendar today = Tutor.currentDateCalendar();
@@ -123,7 +141,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the questioner
 	 */
-	public ParentModel getQuestioner() {
+	public UserModel getQuestioner() {
 		beforeGet();
 		return questioner;
 	}
@@ -132,7 +150,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param questioner
 	 *            the questioner to set
 	 */
-	public void setQuestioner(ParentModel questioner) {
+	public void setQuestioner(UserModel questioner) {
 		beforeSet();
 		this.questioner = questioner;
 	}
@@ -276,7 +294,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the assignTo
 	 */
-	public TeacherModel getAssignTo() {
+	public UserModel getAssignTo() {
 		beforeGet();
 		return assignTo;
 	}
@@ -285,7 +303,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param assignTo
 	 *            the assignTo to set
 	 */
-	public void setAssignTo(TeacherModel assignTo) {
+	public void setAssignTo(UserModel assignTo) {
 		beforeSet();
 		this.assignTo = assignTo;
 	}

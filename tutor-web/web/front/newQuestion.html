@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>新提问</title>
+<#include "/_inc/head.html">
+<script type="text/javascript">
+<!--
+$(function() {
+	var defaultAnswerer = ${defaultAnswererJson};
+	$("#subject").change(function() {
+		var a = defaultAnswerer[$("#subject option:selected").val()];
+		var apply = $("#apply");
+		if (a) {
+			apply[0].disabled = false;
+			if (apply[0].checked) {
+				apply.next().text(a);
+			} else {
+				apply.next().text("无指定");
+			}
+		} else {
+			apply[0].disabled = true;
+			apply.next().text("无指定");
+		}
+	});
+	
+	$("#subject").change();
+});
+//-->
+</script>
+</head>
+<body>
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
+<#include "/_inc/bar.html">
+<tbody>
+	<tr>
+		<td height="100%" align="left" valign="top">
+			<!-- REPLACE HERE　WITH　ASSISTANT -->
+			<div class="box-assist ui-widget-content ui-corner-all">
+				<div class="box-title ui-state-default ui-corner-top">
+					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
+					<a href="questionList.html${tutor.questionListQuery}">返回提问列表</a>
+				</div>
+				<div class="box-content ui-widget-content">
+				<#if tutor.loginUser.state=="Incomplete">
+					<a href="modifyMember.html">完整个人资料</a>
+				</#if>
+				</div>
+			</div>
+		</td>
+		<td align="left" valign="top">
+			<!-- REPLACE HERE WITH CONTENT -->
+			<div class="box-body ui-widget-content ui-corner-all">
+				<div class="box-title navbar ui-state-default ui-corner-top">
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="questionList.html" class="nav-link float-left">提问列表</a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">新提问</a>
+				</div>
+				<@actionMessage />
+				<form method="post" enctype="multipart/form-data">
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
+							<td align="left">
+								<select name="subject" id="subject">
+							<#list subjects?keys as subject>
+									<@option value=subject select=params.subject>${subjects[subject]}</@option>
+							</#list>
+								</select>
+								<@message name="subject" />
+							</td>
+							<td align="left" class="alpha25">请输入学科。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">问题描述<span class="required">*</span></th>
+							<td align="left">
+								<textarea name="title" rows="5" cols="30">${params.title!}</textarea>
+								<@message name="subjects" />
+							</td>
+							<td align="left" class="alpha25">请输入问题的详细描述，字数在500字以内。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">上传图片</th>
+							<td align="left">
+								<input type="file" name="file" multiple="multiple" />
+								<@message name="file" />
+							</td>
+							<td align="left" class="alpha25">如果单个图片大于500KB可能会导致发布提问失败。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">指定学校或教师</th>
+							<td align="left">
+								<@checkbox id="apply" name="apply" value="true" select=params.apply!"true"><span></span></@checkbox>
+							</td>
+							<td align="left" class="alpha25">可以指定机构或教师为您解答，不选择则所有机构都可以为您解答。</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>&nbsp;</th>
+							<td align="left">
+								<br />
+								<input type="submit" name="submit" value="发布提问" class="green-button small-button ui-corner-all" />
+							</td>
+						</tr>
+					</tfoot>
+					</table>
+				</div>
+				</form>
+			</div>
+		</td>
+	</tr>
+</tbody>
+<#include "/_inc/foot.html">
+</table>
+</body>
+</html>

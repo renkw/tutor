@@ -5,12 +5,6 @@
  */
 package com.changev.tutor.web.front;
 
-import static com.changev.tutor.model.AbstractModel.CREATE_DATE_TIME;
-import static com.changev.tutor.model.AbstractModel.DELETED;
-import static com.changev.tutor.model.QuestionModel.ANSWERED;
-import static com.changev.tutor.model.QuestionModel.ASSIGN_TO;
-import static com.changev.tutor.model.QuestionModel.CLOSED;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,10 +18,9 @@ import org.apache.log4j.Logger;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.UserModel;
-import com.changev.tutor.util.QueryBuilder;
-import com.changev.tutor.util.QueryBuilder.SubQuery;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -58,6 +51,7 @@ public class QuestionListView implements View {
 			logger.trace("[postRender] called");
 	}
 
+	@SuppressWarnings("serial")
 	protected void searchQuestions(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[searchQuestions] called");
@@ -76,7 +70,6 @@ public class QuestionListView implements View {
 		range = StringUtils.defaultIfEmpty(range, "month");
 
 		SessionContainer container = SessionContainer.get(request);
-		final UserModel loginUser = container.getLoginUser();
 		List<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			if (logger.isDebugEnabled())
@@ -95,25 +88,58 @@ public class QuestionListView implements View {
 			else if ("all".equals(range))
 				calendar.clear();
 
-			Date toDate = calendar.getTime();
+			final UserModel loginUser = container.getLoginUser();
+			final Date toDate = calendar.getTime();
 			// get answered questions
-			QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
 			if ("new".equals(sort)) {
-				q.isFalse(ANSWERED);
-			} else if ("old".equals(sort)) {
-				q.isTrue(ANSWERED);
-			} else if ("close".equals(sort)) {
-				q.isTrue(CLOSED);
-			}
-
-			if (questionList == null) {
-				questionList = q.isFalse(DELETED).ge(toDate, CREATE_DATE_TIME)
-						.or(new SubQuery() {
+				questionList = Tutor.getCurrentContainer().query(
+						new Predicate<QuestionModel>() {
 							@Override
-							public void query(QueryBuilder<?> q) {
-								q.eq(loginUser, ASSIGN_TO).isNull(ASSIGN_TO);
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& !candidate.getClosed()
+										&& !candidate.getAnswered()
+										&& candidate.getQuestioner() == loginUser
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0;
 							}
-						}).select();
+						});
+			} else if ("old".equals(sort)) {
+				questionList = Tutor.getCurrentContainer().query(
+						new Predicate<QuestionModel>() {
+							@Override
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& !candidate.getClosed()
+										&& candidate.getAnswered()
+										&& candidate.getQuestioner() == loginUser
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0;
+							}
+						});
+			} else if ("close".equals(sort)) {
+				questionList = Tutor.getCurrentContainer().query(
+						new Predicate<QuestionModel>() {
+							@Override
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& candidate.getClosed()
+										&& candidate.getQuestioner() == loginUser
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0;
+							}
+						});
+			} else if ("all".equals(sort)) {
+				questionList = Tutor.getCurrentContainer().query(
+						new Predicate<QuestionModel>() {
+							@Override
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& candidate.getQuestioner() == loginUser
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0;
+							}
+						});
 			}
 			container.setQuestionList(questionList);
 		}
@@ -135,7 +161,7 @@ public class QuestionListView implements View {
 
 		container.setQuestionListQuery(new StringBuilder("?sort=").append(sort)
 				.append("&amp;range=").append(range).append("&amp;pageno=")
-				.append(pageno).toString());
+				.append(pn).toString());
 	}
 
 }

@@ -21,7 +21,6 @@ import com.changev.tutor.model.StudentModel;
 import com.changev.tutor.model.UserContactModel;
 import com.changev.tutor.model.UserModel;
 import com.changev.tutor.model.UserPrivacy;
-import com.changev.tutor.model.UserRole;
 import com.changev.tutor.model.UserState;
 import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
@@ -56,7 +55,7 @@ public class ModifyMemberView implements View {
 			logger.trace("[preRender] called");
 		if (StringUtils.isNotEmpty(request.getParameter("submit")))
 			return submit(request, response);
-		setVariables(request);
+		setVariables(request, null, null);
 		return true;
 	}
 
@@ -68,7 +67,8 @@ public class ModifyMemberView implements View {
 		SessionContainer.get(request).setActionMessage(null);
 	}
 
-	protected void setVariables(HttpServletRequest request) {
+	protected void setVariables(HttpServletRequest request, ParentModel parent,
+			StudentModel student) {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
 
@@ -79,9 +79,25 @@ public class ModifyMemberView implements View {
 		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
 		// the user
 		UserModel userModel = SessionContainer.getLoginUser(request);
+		if (student == null) {
+			if (userModel instanceof StudentModel) {
+				student = (StudentModel) userModel;
+			} else if (userModel instanceof ParentModel) {
+				student = Tutor.one(((ParentModel) userModel).getChildren());
+				if (student == null) {
+					student = new StudentModel();
+					student.setAccountPrivacy(UserPrivacy.ContacterOnly);
+					student.setParent((ParentModel) userModel);
+				}
+			}
+		}
+		if (parent == null)
+			parent = student.getParent();
 		request.setAttribute("user", userModel);
+		request.setAttribute("parent", parent);
+		request.setAttribute("student", student);
 		// contact
-		UserContactModel contactModel = userModel.getContact();
+		UserContactModel contactModel = parent.getContact();
 		if (contactModel == null)
 			contactModel = new UserContactModel();
 		request.setAttribute("contact", contactModel);
@@ -91,17 +107,13 @@ public class ModifyMemberView implements View {
 				gson.toJson(Tutor.getConstant("areas")));
 		// subjects
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
-		if (userModel.getRole() == UserRole.Student) {
-			// birthYear
-			request.setAttribute("birthYear",
-					Tutor.currentCalendar().get(Calendar.YEAR) - 1);
-			// grades
-			request.setAttribute("grades", Tutor.getConstant("grades"));
-			request.setAttribute("gradeLevelJson",
-					gson.toJson(Tutor.getConstant("gradeLevels")));
-			// specility
-			request.setAttribute("speciality", Tutor.getConstant("speciality"));
-		}
+		// birthYear
+		request.setAttribute("birthYear",
+				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
+		// grades
+		request.setAttribute("grades", Tutor.getConstant("grades"));
+		request.setAttribute("gradeLevelJson",
+				gson.toJson(Tutor.getConstant("gradeLevels")));
 	}
 
 	protected boolean submit(HttpServletRequest request,
@@ -111,15 +123,17 @@ public class ModifyMemberView implements View {
 
 		// basic
 		String name = request.getParameter("name");
+		String studentName = request.getParameter("studentName");
 		String gender = request.getParameter("gender");
 		String[] birthday = request.getParameterValues("birthday");
 		String[] area = request.getParameterValues("area");
 		String school = request.getParameter("school");
-		String subject = request.getParameter("subject");
 		String grade = request.getParameter("grade");
 		String gradeLevel = request.getParameter("gradeLevel");
 		String hobby = request.getParameter("hobby");
 		String description = request.getParameter("description");
+		String[] subject = request.getParameterValues("subject");
+		String[] answerer = request.getParameterValues("answerer");
 		// contact
 		String contactName = request.getParameter("name");
 		String postcode = request.getParameter("postcode");
@@ -131,18 +145,21 @@ public class ModifyMemberView implements View {
 		String mailAddress = request.getParameter("mailAddress");
 		// privacy
 		String accountPrivacy = request.getParameter("accountPrivacy");
+		String studentPrivacy = request.getParameter("studentPrivacy");
 		String contactPrivacy = request.getParameter("contactPrivacy");
 		if (logger.isDebugEnabled()) {
 			logger.debug("[submit] name = " + name);
-			logger.debug("[submit] gender = " + gender);
-			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
 			logger.debug("[submit] area = " + Arrays.toString(area));
-			logger.debug("[submit] school = " + school);
-			logger.debug("[submit] subject = " + subject);
+			logger.debug("[submit] studentName = " + studentName);
 			logger.debug("[submit] grade = " + grade);
 			logger.debug("[submit] gradeLevel = " + gradeLevel);
+			logger.debug("[submit] gender = " + gender);
+			logger.debug("[submit] birthday = " + Arrays.toString(birthday));
+			logger.debug("[submit] school = " + school);
 			logger.debug("[submit] hobby = " + hobby);
 			logger.debug("[submit] description = " + description);
+			logger.debug("[submit] subject = " + Arrays.toString(subject));
+			logger.debug("[submit] answerer = " + Arrays.toString(answerer));
 			logger.debug("[submit] contactName = " + contactName);
 			logger.debug("[submit] postcode = " + postcode);
 			logger.debug("[submit] address = " + Arrays.toString(address));
@@ -152,10 +169,13 @@ public class ModifyMemberView implements View {
 			logger.debug("[submit] weibo = " + weibo);
 			logger.debug("[submit] mailAddress = " + mailAddress);
 			logger.debug("[submit] accountPrivacy = " + accountPrivacy);
+			logger.debug("[submit] studentPrivacy = " + studentPrivacy);
 			logger.debug("[submit] contactPrivacy = " + contactPrivacy);
 		}
 
 		// validation
+		ParentModel parentModel = null;
+		StudentModel studentModel = null;
 		if (submitValidator == null || submitValidator.validate(request)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[submit] validation passed");
@@ -166,32 +186,63 @@ public class ModifyMemberView implements View {
 			String lock = ModelFactory.getUserSemaphore(loginUser.getEmail());
 			if (objc.ext().setSemaphore(lock, 0)) {
 				try {
-					loginUser.setName(ParamUtils.emptyNull(name));
-					if (loginUser.getRole() == UserRole.Parent) {
-						// parent
-						ParentModel parentModel = loginUser.as(UserRole.Parent);
+					if (loginUser instanceof StudentModel) {
+						studentModel = (StudentModel) loginUser;
+					} else if (loginUser instanceof ParentModel) {
+						studentModel = Tutor.one(((ParentModel) loginUser)
+								.getChildren());
+						if (studentModel == null) {
+							studentModel = new StudentModel();
+							studentModel.setParent((ParentModel) loginUser);
+							studentModel.setState(UserState.Incomplete);
+						}
+					}
+					parentModel = studentModel.getParent();
+
+					// parent
+					if (loginUser instanceof ParentModel) {
 						parentModel.setProvince(ParamUtils.emptyNull(area, 0));
 						parentModel.setCity(ParamUtils.emptyNull(area, 1));
 						parentModel.setDistrict(ParamUtils.emptyNull(area, 2));
-					} else if (loginUser.getRole() == UserRole.Student) {
-						// student
-						StudentModel studentModel = loginUser
-								.as(UserRole.Student);
-						studentModel.setMale("Male".equals(gender));
-						studentModel.setBirthday(StringUtils
-								.join(birthday, '-'));
-						studentModel.setSchool(ParamUtils.emptyNull(school));
-						studentModel.setGrade(ParamUtils.emptyNull(grade));
-						studentModel.setGradeLevel(ParamUtils
-								.byteNull(gradeLevel));
-						studentModel.setHobby(ParamUtils.emptyNull(hobby));
 					}
-					loginUser.setDescription(ParamUtils.emptyNull(description));
+					// student
+					studentModel.setName(ParamUtils.emptyNull(studentName));
+					studentModel.setMale("Male".equals(gender));
+					studentModel.setBirthday(StringUtils.join(birthday, '-'));
+					studentModel.setSchool(ParamUtils.emptyNull(school));
+					studentModel.setGrade(ParamUtils.emptyNull(grade));
+					studentModel.setGradeLevel(ParamUtils.byteNull(gradeLevel));
+					studentModel.setHobby(ParamUtils.emptyNull(hobby));
+					studentModel.getDefaultAnswererFor().clear();
+					if (subject != null && answerer != null) {
+						for (int i = 0; i < subject.length
+								&& i < answerer.length; i++) {
+							if (StringUtils.isEmpty(subject[i])
+									|| StringUtils.isEmpty(answerer[i]))
+								continue;
+							UserModel answerUser = Tutor.one(objc
+									.queryByExample(ModelFactory
+											.getUserExample(answerer[i])));
+							if (answerUser == null)
+								continue;
+							studentModel.getDefaultAnswererFor().put(
+									subject[i], answerUser);
+							// studentModel.getContactersFor().add(teacher);
+							// parentModel.getContactersFor().add(teacher);
+						}
+					}
+					studentModel.setDescription(ParamUtils
+							.emptyNull(description));
+					studentModel.setAccountPrivacy(ParamUtils.enumNull(
+							UserPrivacy.class, studentPrivacy));
+					// user
+					loginUser.setName(ParamUtils.emptyNull(name));
 					loginUser.setAccountPrivacy(ParamUtils.enumNull(
 							UserPrivacy.class, accountPrivacy));
 					loginUser.setContactPrivacy(ParamUtils.enumNull(
 							UserPrivacy.class, contactPrivacy));
-					loginUser.setState(UserState.Activated);
+					if (loginUser.getState() == UserState.Incomplete)
+						loginUser.setState(UserState.Activated);
 					// contact
 					UserContactModel contactModel = loginUser.getContact();
 					if (contactModel == null) {
@@ -209,7 +260,7 @@ public class ModifyMemberView implements View {
 					contactModel.setMailAddress(ParamUtils
 							.emptyNull(mailAddress));
 					// save
-					objc.store(loginUser);
+					objc.store(studentModel);
 					objc.commit();
 					SessionContainer.get(request).setActionMessage("修改用户资料成功。");
 					if (StringUtils.isNotEmpty(successPage)) {
@@ -232,7 +283,7 @@ public class ModifyMemberView implements View {
 			}
 		}
 
-		setVariables(request);
+		setVariables(request, parentModel, studentModel);
 		return true;
 	}
 

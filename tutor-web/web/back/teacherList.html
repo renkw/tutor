@@ -43,13 +43,13 @@ $(function() {
 					<tbody>
 						<tr>
 							<td rowspan="4" align="left" valign="top"><@face user=tutor.loginUser width=75 /></td>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.email}</div></td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.email!}</div></td>
 						</tr>
 						<tr>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.name}</div></td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.name!}</div></td>
 						</tr>
 						<tr>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.location}</div></td>
+							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.location!}</div></td>
 						</tr>
 						<tr>
 							<td>
@@ -67,13 +67,13 @@ $(function() {
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
 					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
-					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<div class="ui-icon ui-icon-person float-left"></div>
 					<a href="#" class="nav-link float-left">教师列表</a>
 				</div>
 				<@actionMessage />
 				<div class="box-subtitle ui-widget-content">
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>教师列表
-					<div class="ui-icon ui-icon-plus float-right" title="添加教师"></div>
+					<div class="ui-icon ui-icon-plus float-right pointer" title="添加教师" onclick="go2('modifyTeacher.html')"></div>
 				</div>
 				<div class="box-content ui-widget-content">
 					<table id="teacherList" width="100%" border="0" cellspacing="0" cellpadding="3">
