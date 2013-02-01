@@ -62,6 +62,7 @@ public class ContextListener implements ServletContextListener,
 		ServletContext context = event.getServletContext();
 
 		// set context root path
+		Tutor.setContextPath(context.getContextPath());
 		Tutor.setContextRootPath(context.getRealPath("/"));
 
 		// init log4j
@@ -131,8 +132,8 @@ public class ContextListener implements ServletContextListener,
 	public void sessionCreated(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
 		// set current object container
-		session.setAttribute(Tutor.KEY_OBJECT_CONTAINER,
-				new ObjectContainerWrapper());
+		// session.setAttribute(Tutor.KEY_OBJECT_CONTAINER,
+		// new ObjectContainerWrapper());
 		// set session container
 		session.setAttribute(Tutor.KEY_SESSION_CONTAINER,
 				new SessionContainer());
@@ -157,6 +158,7 @@ public class ContextListener implements ServletContextListener,
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void requestInitialized(ServletRequestEvent event) {
 		HttpServletRequest request = (HttpServletRequest) event
@@ -170,12 +172,12 @@ public class ContextListener implements ServletContextListener,
 		}
 		// set current object container
 		ObjectContainer objc = null;
-//		if (session != null) {
-//			objc = (ObjectContainer) session
-//					.getAttribute(Tutor.KEY_OBJECT_CONTAINER);
-//		}
+		// if (session != null) {
+		// objc = (ObjectContainer) session
+		// .getAttribute(Tutor.KEY_OBJECT_CONTAINER);
+		// }
 		if (objc == null) {
-			objc = new ObjectContainerWrapper();
+			objc = new ObjectContainerWrapper(true);
 			request.setAttribute(Tutor.KEY_OBJECT_CONTAINER, objc);
 		}
 		Tutor.setCurrentContainer(objc);

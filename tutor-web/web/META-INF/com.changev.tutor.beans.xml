@@ -37,9 +37,7 @@
 		p:tagSyntax="0"
 	>
 		<property name="objectWrapper">
-			<bean class="freemarker.ext.beans.BeansWrapper" 
-				p:simpleMapWrapper="true"
-			/>
+			<bean class="com.changev.tutor.web.template.AdapterObjectWrapper" />
 		</property>
 		<property name="templateExceptionHandler" value="#{T(freemarker.template.TemplateExceptionHandler).IGNORE_HANDLER}" />
 	</bean>
@@ -101,7 +99,7 @@
 		<property name="userSuccessPage" value="/front/questionList.html" />
 		<property name="orgSuccessPage" value="/back/teacherList.html" />
 	</bean>
-
+	
 	<bean id="front.modifyMemberView" class="com.changev.tutor.web.front.ModifyMemberView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">

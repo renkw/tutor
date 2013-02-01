@@ -53,7 +53,7 @@ public class StudentModel extends UserModel {
 
 	public List<QuestionModel> getQuestions() {
 		return Tutor.getCurrentContainer().queryByExample(
-				ModelFactory.getStudentQuestionExample(getEmail()));
+				ModelFactory.getUserQuestionExample(getEmail()));
 	}
 
 	@Override

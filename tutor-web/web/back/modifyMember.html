@@ -8,7 +8,7 @@
 <script type="text/javascript">
 <!--
 $(function() {
-	var areas = ${areaJson};
+	var areas = ${json(areas)};
 	$("#province").change(function() {
 		var value = this.options[this.selectedIndex].value;
 		var city = $("#city option:selected").val() || "${(params.area[1])!user.city!}";
@@ -42,7 +42,7 @@ $(function() {
 		}
 	});
 	
-	<#if user.role=="Teacher">
+	<#if userRole=="Teacher">
 	$("#birthYear,#birthMonth").change(function() {
 		var year = parseInt($("#birthYear option:selected").val()),
 			month = parseInt($("#birthMonth option:selected").val()),
@@ -71,7 +71,7 @@ $(function() {
 		}
 	});
 
-	var gradeLevels = ${gradeLevelJson};
+	var gradeLevels = ${json(gradeLevels)};
 	$("#grades input:radio").change(function() {
 		if (!this.checked) return;
 		var value = this.value;
@@ -144,7 +144,7 @@ $(function() {
 					<tbody>
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址</th>
-							<td width="300" align="left">${Tutor.maskEmail(user.email)}</td>
+							<td width="300" align="left">${maskEmail(user.email)}</td>
 							<td align="left" class="alpha25">您的登录邮箱地址。</td>
 						</tr>
 						<tr>
@@ -160,12 +160,11 @@ $(function() {
 							</td>
 							<td align="left" class="alpha25">请输入您的姓名。</td>
 						</tr>
-						<#if user.role=="Teacher">
+						<#if userRole=="Teacher">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">性别</th>
 							<td align="left">
-								<@radio name="gender" value="Male" select=params.gender!(user.male?string("Male", "Female"))!"Male">男</@radio>
-								<@radio name="gender" value="Female" select=params.gender!(user.male?string("Male", "Female"))!>女</@radio>
+								<@input type="radio" name="gender" options={"Male":"男","Female":"女"} value=params.gender!(user.male?string("Male", "Female"))!"Male" />
 								<@message name="gender" />
 							</td>
 							<td align="left" class="alpha25">请输入您的性别。</td>
@@ -173,18 +172,12 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">生日</th>
 							<td align="left">
-								<select name="birthday" id="birthYear">
-									<option value="00"></option>
-								<#list 1960..birthYear as year>
-									<@option value="${year?c}" select=(params.birthday[0])!(user.birthday?substring(0,4))!>${year?c}</@option>
-								</#list>
-								</select>年
-								<select name="birthday" id="birthMonth">
-									<option value="00"></option>
-								<#list 1..12 as month>
-									<@option value="${month?string('00')}" select=(params.birthday[1])!(user.birthday?substring(5,7))!>${month?c}</@option>
-								</#list>
-								</select>月
+								<@input type="select" name="birthday" id="birthYear" options=1960..birthYear value=parseNumber((params.birthday[0])!(user.birthday?substring(0,4))!)>
+									<option value=""></option>
+								</@input>年
+								<@input type="select" name="birthday" id="birthMonth" options=1..12 value=parseNumber((params.birthday[1])!(user.birthday?substring(5,7))!)>
+									<option value=""></option>
+								</@input>月
 								<select name="birthday" id="birthDate">
 									<option value="00"></option>
 								</select>日
@@ -193,15 +186,11 @@ $(function() {
 							<td align="left" class="alpha25">请输入您的生日。</td>
 						</tr>
 						</#if>
-						<#if user.role=="Organization">
+						<#if userRole=="Organization">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
 							<td align="left">
-								<select name="area" id="province">
-								<#list areas?keys as province>
-									<@option value=province select=(params.area[0])!user.province>${province}</@option>
-								</#list>
-								</select>
+								<@input type="select" name="area" id="province" options=areas?keys value=(params.area[0])!user.province />
 								<select name="area" id="city"></select>
 								<select name="area" id="district"></select>
 								<@message name="area" />
@@ -212,21 +201,18 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
 							<td align="left">
-							<#list subjects?keys as subject>
-								<@checkbox name="subjects" value=subject select=params.subjects!user.subjects>${subjects[subject]}</@checkbox>
-							</#list>
+								<@input type="checkbox" name="subjects" options=subjects value=params.subjects!user.subjects />
 								<@message name="subjects" />
 							</td>
 							<td align="left" class="alpha25">请输入学科。</td>
 						</tr>
-						<#if user.role=="Teacher">
+						<#if userRole=="Teacher">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 							<td align="left">
 								<div id="grades">
-									<#list grades?keys as grade>
-										<@radio name="grade" value=grade select=params.grade!user.grade!"小学">${grades[grade]}</@radio>
-									</#list><br />
+									<@input type="radio" name="grade" options=grades value=params.grade!user.grade!"小学" />
+									<br />
 									<select name="gradeLevelFrom">
 									</select>
 									～
@@ -256,9 +242,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">特长</th>
 							<td align="left">
-							<#list speciality?keys as spec>
-								<@checkbox name="speciality" value=spec select=params.speciality!user.speciality>${speciality[spec]}</@checkbox>
-							</#list>
+								<@input type="checkbox" name="speciality" options=speciality value=params.speciality!user.speciality />
 								<@message name="speciality" />
 							</td>
 							<td align="left" class="alpha25">请输入特长。</td>
@@ -300,7 +284,7 @@ $(function() {
 							<td align="left">
 								〒<input type="text" name="postcode" value="${params.postcode!contact.postcode!}" size="7" /><br />
 								<input type="text" name="address" id="address1" value="${(params.address[0])!contact.address1!}" /><br />
-								<input type="text" name="address" value="${(params.address[0])!contact.address2!}" /><br />
+								<input type="text" name="address" value="${(params.address[1])!contact.address2!}" /><br />
 								<@message name="address" />
 							</td>
 							<td align="left" class="alpha25">联系人邮编和地址。</td>
@@ -353,7 +337,7 @@ $(function() {
 							</td>
 							<td align="left" class="alpha25">联系人Email。</td>
 						</tr>
-						<#if user.role=="Organization">
+						<#if userRole=="Organization">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">所在位置</th>
 							<td align="left">
@@ -374,9 +358,7 @@ $(function() {
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">基本资料</th>
 							<td width="300" align="left">
-								<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!user.accountPrivacy>不公开</@radio>
-								<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!user.accountPrivacy>只对联系人公开</@radio>
-								<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!user.accountPrivacy>全部公开</@radio>
+								<@input type="radio" name="accountPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.accountPrivacy!user.accountPrivacy />
 								<@message name="accountPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开基本资料。</td>
@@ -384,9 +366,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">联系资料</th>
 							<td align="left">
-								<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!user.contactPrivacy>不公开</@radio>
-								<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!user.contactPrivacy>只对联系人公开</@radio>
-								<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!user.contactPrivacy>全部公开</@radio>
+								<@input type="radio" name="contactPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.contactPrivacy!user.contactPrivacy />
 								<@message name="contactPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开联系资料。</td>

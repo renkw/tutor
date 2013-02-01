@@ -29,7 +29,6 @@ import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
-import com.google.gson.Gson;
 
 /**
  * <p>
@@ -76,10 +75,7 @@ public class ModifyMemberView implements View {
 		if (logger.isDebugEnabled())
 			logger.debug("[setVariables] id = " + sId);
 
-		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
-		// the user
 		UserModel userModel = SessionContainer.getLoginUser(request);
-		request.setAttribute("user", userModel);
 		// contact
 		UserContactModel contactModel = userModel.getContact();
 		if (contactModel == null)
@@ -87,8 +83,6 @@ public class ModifyMemberView implements View {
 		request.setAttribute("contact", contactModel);
 		// areas
 		request.setAttribute("areas", Tutor.getConstant("areas"));
-		request.setAttribute("areaJson",
-				gson.toJson(Tutor.getConstant("areas")));
 		// subjects
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
 		if (userModel.getRole() == UserRole.Teacher) {
@@ -97,8 +91,8 @@ public class ModifyMemberView implements View {
 					Tutor.currentCalendar().get(Calendar.YEAR) - 1);
 			// grades
 			request.setAttribute("grades", Tutor.getConstant("grades"));
-			request.setAttribute("gradeLevelJson",
-					gson.toJson(Tutor.getConstant("gradeLevels")));
+			request.setAttribute("gradeLevels",
+					Tutor.getConstant("gradeLevels"));
 			// specility
 			request.setAttribute("speciality", Tutor.getConstant("speciality"));
 		}
@@ -196,8 +190,12 @@ public class ModifyMemberView implements View {
 						// teacher
 						TeacherModel teacherModel = (TeacherModel) loginUser;
 						teacherModel.setMale("Male".equals(gender));
-						teacherModel.setBirthday(StringUtils
-								.join(birthday, '-'));
+						teacherModel.setBirthday(StringUtils.leftPad(
+								birthday[0], 4, '0')
+								+ '-'
+								+ StringUtils.leftPad(birthday[1], 2, '0')
+								+ '-'
+								+ StringUtils.leftPad(birthday[2], 2, '0'));
 						teacherModel.setGrade(ParamUtils.emptyNull(grade));
 						teacherModel.setGradeLevelFrom(ParamUtils
 								.byteNull(gradeLevelFrom));

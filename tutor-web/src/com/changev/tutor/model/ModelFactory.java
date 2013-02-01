@@ -106,15 +106,6 @@ public final class ModelFactory {
 		return questionExample;
 	}
 
-	public static QuestionModel getStudentQuestionExample(String email) {
-		StudentModel studentExample = new StudentModel();
-		studentExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setStudent(studentExample);
-		questionExample.setDeleted(Boolean.FALSE);
-		return questionExample;
-	}
-	
 	public static String encryptPassword(String password) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");

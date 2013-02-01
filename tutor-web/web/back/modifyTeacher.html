@@ -36,7 +36,7 @@ $(function() {
 		}
 	});
 
-	var gradeLevels = ${gradeLevelJson};
+	var gradeLevels = ${json(gradeLevels)};
 	$("#grades input:radio").change(function() {
 		if (!this.checked) return;
 		var value = this.value;
@@ -136,8 +136,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">性别</th>
 							<td align="left">
-								<@radio name="gender" value="Male" select=params.gender!(teacher.male?string("Male", "Female"))!"Male">男</@radio>
-								<@radio name="gender" value="Female" select=params.gender!(teacher.male?string("Male", "Female"))!>女</@radio>
+								<@input type="radio" name="gender" options={"Male":"男","Female":"女"} value=params.gender!(teacher.male?string("Male", "Female"))!"Male" />
 								<@message name="gender" />
 							</td>
 							<td align="left" class="alpha25">请输入该教师性别。</td>
@@ -145,18 +144,12 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">生日</th>
 							<td align="left">
-								<select name="birthday" id="birthYear">
-									<option></option>
-								<#list 1960..birthYear as year>
-									<@option value="${year?c}" select=(params.birthday[0])!(teacher.birthday?substring(0,4))!>${year?c}</@option>
-								</#list>
-								</select>年
-								<select name="birthday" id="birthMonth">
-									<option></option>
-								<#list 1..12 as month>
-									<@option value="${month?string('00')}" select=(params.birthday[1])!(teacher.birthday?substring(5,7))!>${month?c}</@option>
-								</#list>
-								</select>月
+								<@input type="select" name="birthday" id="birthYear" options=1960..birthYear value=parseNumber((params.birthday[0])!(teacher.birthday?substring(0,4))!)>
+									<option value=""></option>
+								</@input>年
+								<@input type="select" name="birthday" id="birthMonth" options=1..12 value=parseNumber((params.birthday[1])!(teacher.birthday?substring(5,7))!)>
+									<option value=""></option>
+								</@input>月
 								<select name="birthday" id="birthDate">
 									<option></option>
 								</select>日
@@ -167,9 +160,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
 							<td align="left">
-							<#list subjects?keys as subject>
-								<@checkbox name="subjects" value=subject select=params.subjects!teacher.subjects>${subjects[subject]}</@checkbox>
-							</#list>
+								<@input type="checkbox" name="subjects" options=subjects value=params.subjects!teacher.subjects />
 								<@message name="subjects" />
 							</td>
 							<td align="left" class="alpha25">请输入该教师担任学科。</td>
@@ -178,9 +169,8 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 							<td align="left">
 								<div id="grades">
-									<#list grades?keys as grade>
-										<@radio name="grade" value=grade select=params.grade!"小学">${grades[grade]}</@radio>
-									</#list><br />
+									<@input type="radio" name="grade" options=grades value=params.grade!teacher.grade!"小学" />
+									<br />
 									<select name="gradeLevelFrom">
 									</select>
 									～
@@ -210,9 +200,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">特长</th>
 							<td align="left">
-							<#list speciality?keys as spec>
-								<@checkbox name="speciality" value=spec select=params.speciality!teacher.speciality>${speciality[spec]}</@checkbox>
-							</#list>
+								<@input type="checkbox" name="speciality" options=speciality value=params.speciality!teacher.speciality />
 								<@message name="speciality" />
 							</td>
 							<td align="left" class="alpha25">请输入该教师的特长。</td>
@@ -316,9 +304,7 @@ $(function() {
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">教师资料</th>
 							<td width="300" align="left">
-								<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!teacher.accountPrivacy!"Public">不公开</@radio>
-								<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!teacher.accountPrivacy!"Public">只对联系人公开</@radio>
-								<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!teacher.accountPrivacy!"Public">全部公开</@radio>
+								<@input type="radio" name="accountPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.accountPrivacy!teacher.accountPrivacy />
 								<@message name="accountPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开教师资料。</td>
@@ -326,9 +312,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">联系资料</th>
 							<td align="left">
-								<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!teacher.contactPrivacy!"Public">不公开</@radio>
-								<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!teacher.contactPrivacy!"Public">只对联系人公开</@radio>
-								<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!teacher.contactPrivacy!"Public">全部公开</@radio>
+								<@input type="radio" name="contactPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.contactPrivacy!teacher.contactPrivacy />
 								<@message name="contactPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开联系资料。</td>

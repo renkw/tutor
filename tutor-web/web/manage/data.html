@@ -88,12 +88,12 @@ function add() {
 	<tbody>
 		<#list result.rows as row>
 		<tr>
-			<td nowrap="nowrap"><a href="javascript:edit(${Tutor.id(row)})">EDIT</a> <a href="javascript:del(${Tutor.id(row)})">DEL</a></td>
+			<td nowrap="nowrap"><a href="javascript:edit(${id(row)})">EDIT</a> <a href="javascript:del(${id(row)})">DEL</a></td>
 			<#list result.names as name>
-			<#if Tutor.is(row[name], "com.changev.tutor.model.AbstractModel")>
-			<td nowrap="nowrap"><a href="javascript:search(${Tutor.id(row[name])})">${row[name].class.simpleName}(${Tutor.id(row[name])})</a></td>
+			<#if instanceof(row[name], "com.changev.tutor.model.AbstractModel")>
+			<td nowrap="nowrap"><a href="javascript:search(${id(row[name])})">${row[name].class.simpleName}(${id(row[name])})</a></td>
 			<#else>
-			<td>${Tutor.toString(row[name])}</td>
+			<td>${toString(row[name])}</td>
 			</#if>
 			</#list>
 		</tr>

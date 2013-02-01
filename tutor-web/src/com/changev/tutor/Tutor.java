@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.db4o.ObjectContainer;
@@ -67,6 +68,9 @@ public final class Tutor {
 	/** 默认的日期格式 */
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
+	/** 默认的时间格式 */
+	public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+
 	/** 默认的日期时间格式 */
 	public static final String DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -98,7 +102,23 @@ public final class Tutor {
 		AES_KEY = new SecretKeySpec(key, "AES");
 	}
 
+	private static String contextPath = "";
 	private static String contextRootPath = "";
+
+	/**
+	 * @return the contextPath
+	 */
+	public static String getContextPath() {
+		return contextPath;
+	}
+
+	/**
+	 * @param contextPath
+	 *            the contextPath to set
+	 */
+	public static void setContextPath(String contextPath) {
+		Tutor.contextPath = contextPath;
+	}
 
 	/**
 	 * @param path
@@ -964,6 +984,42 @@ public final class Tutor {
 
 	public static String numberWord(Number n) {
 		return n == null ? "" : NUM_WORD[n.intValue() % NUM_WORD.length];
+	}
+
+	public static boolean isPerformanceEnabled() {
+		return Logger.getLogger(PERFORMANCE_LOGGER_NAME).isDebugEnabled();
+	}
+
+	/**
+	 * <p>
+	 * 性能日志输出
+	 * </p>
+	 * 
+	 * @param time
+	 */
+	public static void performance(String name, long time, Object result) {
+		Logger perf = Logger.getLogger(PERFORMANCE_LOGGER_NAME);
+		StackTraceElement[] elems = Thread.currentThread().getStackTrace();
+		StackTraceElement frame = null;
+		for (int i = 2; i < elems.length; i++) {
+			try {
+				if (!PerformanceIgnore.class.isAssignableFrom(Class
+						.forName(elems[i].getClassName()))) {
+					frame = elems[i];
+					break;
+				}
+			} catch (ClassNotFoundException e) {
+			}
+		}
+		StringBuilder sb = new StringBuilder().append('[').append(name)
+				.append(']');
+		if (frame != null) {
+			sb.append(' ').append(frame.getClassName()).append('#')
+					.append(frame.getMethodName()).append('@')
+					.append(frame.getLineNumber());
+		}
+		sb.append("=").append(result).append(" : ").append(time).append("ms");
+		perf.debug(sb);
 	}
 
 }

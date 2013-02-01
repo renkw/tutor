@@ -165,6 +165,8 @@ public class QuestionDetailView implements View {
 			lastModel = detailList.get(0);
 			request.setAttribute("answerId", Tutor.id(lastModel));
 		}
+		request.setAttribute("questionListQuery", SessionContainer.get(request)
+				.getQuestionListQuery());
 		request.setAttribute("lastAnswer", lastModel);
 		request.setAttribute("details", detailList);
 	}

@@ -90,7 +90,6 @@ public class NewQuestionView implements View {
 			try {
 				QuestionModel questionModel = new QuestionModel();
 				questionModel.setQuestioner(loginUser);
-				questionModel.setStudent(student);
 				questionModel.setSubject(ParamUtils.emptyNull(subject));
 				questionModel.setTitle(ParamUtils.emptyNull(title));
 				if (StringUtils.isNotEmpty(apply) && student != null) {

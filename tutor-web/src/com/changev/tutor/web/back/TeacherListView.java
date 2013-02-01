@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 
@@ -27,6 +28,8 @@ public class TeacherListView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
+		request.setAttribute("teachers", ((OrganizationModel) SessionContainer
+				.getLoginUser(request)).getTeachers());
 		return true;
 	}
 

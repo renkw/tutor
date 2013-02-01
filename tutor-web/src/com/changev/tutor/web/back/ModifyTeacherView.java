@@ -28,7 +28,6 @@ import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
-import com.google.gson.Gson;
 
 /**
  * <p>
@@ -79,7 +78,6 @@ public class ModifyTeacherView implements View {
 		if (logger.isDebugEnabled())
 			logger.debug("[setVariables] id = " + sId);
 
-		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
 		// the teacher
 		TeacherModel teacherModel = StringUtils.isNotEmpty(sId) ? (TeacherModel) Tutor
 				.getCurrentContainerExt().getByID(Long.parseLong(sId))
@@ -97,8 +95,7 @@ public class ModifyTeacherView implements View {
 				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
 		// grades
 		request.setAttribute("grades", Tutor.getConstant("grades"));
-		request.setAttribute("gradeLevelJson",
-				gson.toJson(Tutor.getConstant("gradeLevels")));
+		request.setAttribute("gradeLevels", Tutor.getConstant("gradeLevels"));
 		// subjects
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
 		// specility
@@ -217,8 +214,12 @@ public class ModifyTeacherView implements View {
 						}
 						teacherModel.setName(ParamUtils.emptyNull(name));
 						teacherModel.setMale("Male".equals(gender));
-						teacherModel.setBirthday(StringUtils
-								.join(birthday, '-'));
+						teacherModel.setBirthday(StringUtils.leftPad(
+								birthday[0], 4, '0')
+								+ '-'
+								+ StringUtils.leftPad(birthday[1], 2, '0')
+								+ '-'
+								+ StringUtils.leftPad(birthday[2], 2, '0'));
 						teacherModel.getSubjectsFor().clear();
 						if (subjects != null) {
 							for (String s : subjects) {

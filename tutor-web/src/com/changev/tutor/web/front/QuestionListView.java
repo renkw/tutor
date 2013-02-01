@@ -7,7 +7,6 @@ package com.changev.tutor.web.front;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.UserModel;
+import com.changev.tutor.util.PageList;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.db4o.query.Predicate;
@@ -70,7 +70,7 @@ public class QuestionListView implements View {
 		range = StringUtils.defaultIfEmpty(range, "month");
 
 		SessionContainer container = SessionContainer.get(request);
-		List<QuestionModel> questionList = container.getQuestionList();
+		PageList<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[search] do search");
@@ -92,7 +92,7 @@ public class QuestionListView implements View {
 			final Date toDate = calendar.getTime();
 			// get answered questions
 			if ("new".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -105,7 +105,7 @@ public class QuestionListView implements View {
 							}
 						});
 			} else if ("old".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -118,7 +118,7 @@ public class QuestionListView implements View {
 							}
 						});
 			} else if ("close".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -130,7 +130,7 @@ public class QuestionListView implements View {
 							}
 						});
 			} else if ("all".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -141,23 +141,22 @@ public class QuestionListView implements View {
 							}
 						});
 			}
+
+			questionList.setPageItems(10);
 			container.setQuestionList(questionList);
 		}
 
 		// set variables
-		final int items = 10;
-		int size = questionList.size();
+		int pages = questionList.getTotalPages();
 		int pn = StringUtils.isEmpty(pageno) ? 1 : Math.max(1,
-				Math.min(Integer.parseInt(pageno), (size + items - 1) / items));
-		int start = items * (pn - 1);
-		questionList = Tutor.listDesc(questionList, size - start - 1, items);
+				Math.min(Integer.parseInt(pageno), pages));
 
 		request.setAttribute("sort", sort);
 		request.setAttribute("range", range);
 		request.setAttribute("pageno", pn);
-		request.setAttribute("total", size);
-		request.setAttribute("totalPages", (size + items - 1) / items);
-		request.setAttribute("questions", questionList);
+		request.setAttribute("total", questionList.getTotalItems());
+		request.setAttribute("totalPages", pages);
+		request.setAttribute("questions", questionList.getPage(pn, false));
 
 		container.setQuestionListQuery(new StringBuilder("?sort=").append(sort)
 				.append("&amp;range=").append(range).append("&amp;pageno=")

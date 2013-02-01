@@ -21,6 +21,7 @@ import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
+import com.changev.tutor.util.PageList;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.db4o.query.Predicate;
@@ -75,7 +76,7 @@ public class QuestionListView implements View {
 		SessionContainer container = SessionContainer.get(request);
 		final TeacherModel teacher = container.getLoginUser().as(
 				UserRole.Teacher);
-		List<QuestionModel> questionList = container.getQuestionList();
+		PageList<QuestionModel> questionList = container.getQuestionList();
 		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[search] do search");
@@ -98,7 +99,7 @@ public class QuestionListView implements View {
 			if ("new".equals(sort)) {
 				final List<QuestionModel> oldQuestionList = ModelFactory
 						.getAnswerQuestionList(teacher.getAnswers());
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -120,15 +121,16 @@ public class QuestionListView implements View {
 							public boolean match(AnswerModel candidate) {
 								return !candidate.getDeleted()
 										&& candidate.getAnswerer() == teacher
-										&&!candidate.getQuestion().getClosed()
+										&& !candidate.getQuestion().getClosed()
 										&& candidate.getQuestion()
 												.getCreateDateTime()
 												.compareTo(toDate) >= 0;
 							}
 						});
-				questionList = ModelFactory.getAnswerQuestionList(list);
+				questionList = new PageList<QuestionModel>(
+						ModelFactory.getAnswerQuestionList(list));
 			} else if ("close".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -143,7 +145,7 @@ public class QuestionListView implements View {
 							}
 						});
 			} else if ("all".equals(sort)) {
-				questionList = Tutor.getCurrentContainer().query(
+				questionList = new PageList<QuestionModel>(
 						new Predicate<QuestionModel>() {
 							@Override
 							public boolean match(QuestionModel candidate) {
@@ -158,27 +160,25 @@ public class QuestionListView implements View {
 						});
 			}
 
+			questionList.setPageItems(10); // default 10 items per page
 			container.setQuestionList(questionList);
 		}
 
 		// set variables
-		final int items = 10;
-		int size = questionList.size();
+		int pages = questionList.getTotalPages();
 		int pn = StringUtils.isEmpty(pageno) ? 1 : Math.max(1,
-				Math.min(Integer.parseInt(pageno), (size + items - 1) / items));
-		int start = items * (pn - 1);
-		questionList = Tutor.listDesc(questionList, size - start - 1, items);
+				Math.min(Integer.parseInt(pageno), pages));
 
 		request.setAttribute("sort", sort);
 		request.setAttribute("range", range);
 		request.setAttribute("pageno", pn);
-		request.setAttribute("total", size);
-		request.setAttribute("totalPages", (size + items - 1) / items);
-		request.setAttribute("questions", questionList);
+		request.setAttribute("total", questionList.getTotalItems());
+		request.setAttribute("totalPages", pages);
+		request.setAttribute("questions", questionList.getPage(pn, false));
 
 		container.setQuestionListQuery(new StringBuilder("?sort=").append(sort)
 				.append("&amp;range=").append(range).append("&amp;pageno=")
-				.append(pn).append("&amp;search=s").toString());
+				.append(pn).toString());
 	}
 
 }

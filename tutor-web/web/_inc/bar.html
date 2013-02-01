@@ -6,10 +6,10 @@
 			</a>
 		</th>
 		<th align="left" valign="top">
-			<#if (tutor.systemMessage)??>
+			<#if systemMessage??>
 			<div class="ui-state-highlight float-left" style="padding:2px">
 				<div class="ui-icon ui-icon-alert float-left"></div>
-				${tutor.systemMessage}
+				systemMessage
 				<br class="clear-left" />
 			</div>
 			</#if>
@@ -20,8 +20,8 @@
 			</form>
 			-->
 			<div class="float-right" style="margin-top:2px">
-			<#if (tutor.loginUser)??>
-				${tutor.loginUser.name!Tutor.maskEmail(tutor.loginUser.email)}
+			<#if user??>
+				${user.name!maskEmail(user.email)}
 				[<a href="${request.contextPath}/public/logout.html">退出</a>] |
 			<#else>
 				<a href="${request.contextPath}/public/login.html">登录</a> |
@@ -35,37 +35,36 @@
 	<tr>
 		<th align="left" valign="bottom">
 			<div class="menubar">
-			<#if (tutor.loginUser)??>
-				<#switch tutor.loginUser.role>
-					<#case "Parent"><#case "Student">
+			<#switch userRole!>
+				<#case "Parent"><#case "Student">
 				<a href="${request.contextPath}/front/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
 				<a href="${request.contextPath}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
 					修改资料
 				</a>
-					<#break>
-					<#case "Organization">
+				<#break>
+				<#case "Organization">
 				<a href="${request.contextPath}/back/teacherList.html" class="ui-corner-top ${request.requestURL?ends_with('/teacherList.html')?string('active','')}">
 					教师列表
 				</a>
 				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
 					修改资料
 				</a>
-					<#break>
-					<#case "Teacher">
+				<#break>
+				<#case "Teacher">
 				<a href="${request.contextPath}/back/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
 				</a>
 				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
 					修改资料
 				</a>
-					<#break>
-				</#switch>
-			<#else>
+				<#break>
+				<#default>
 				<a href="${request.contextPath}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">登录</a>
 				<a href="${request.contextPath}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>
-			</#if>
+				<#break>
+			</#switch>
 			</div>
 		</th>
 	</tr>

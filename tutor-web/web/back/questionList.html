@@ -103,27 +103,26 @@ $(function() {
 					</#switch>！</center>
 				</#if>
 				<#list questions as q>
-					<#assign style=(q_index%2==0)?string("odd", "even")>
-					<div class="${style}">
+					<div class="${(q_index%2==0)?string('odd','even')}">
 						<div class="row-head">
 							<@face user=q.student! width=90 />
-							<div class="${q.subject!}">${(q.grade?substring(0, 1))!}${Tutor.numberWord(q.gradeLevel)}</div>
+							<div class="${q.subject!}">${(q.grade?substring(0, 1))!}${numberWord(q.gradeLevel)}</div>
 						</div>
 						<div class="row-content">
 							<p class="sb14">${q.title!}</p>
 						</div>
 						<div class="row-tail">
 							<small>${q.createDateTime?datetime}</small><br />
-							<div><a href="#" class="float-right">${(q.questioner.name)!Tutor.maskEmail(q.questioner.email)}</a><div class="ui-icon ui-icon-person float-right"></div></div>
+							<div><a href="#" class="float-right">${(q.questioner.name)!maskEmail(q.questioner.email)}</a><div class="ui-icon ui-icon-person float-right"></div></div>
 							<br /><br />
-							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?id=${Tutor.id(q)}')" />
+							<input type="button" value="详细" class="green-button small-button s12" onclick="go2('questionDetail.html?id=${id(q)}')" />
 						</div>
 						<br class="clear-both" />
 					</div>
 				</#list>
 				</div>
 				<div id="pagebar" class="pagebar ui-state-default ui-corner-bottom float-right" style="margin-right:2px">
-					<@pager total=totalPages pageno=pageno />
+					<@pager total=totalPages page=pageno />
 				</div>
 			</div>
 		</td>

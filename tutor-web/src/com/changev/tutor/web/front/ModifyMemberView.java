@@ -28,7 +28,6 @@ import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
 import com.db4o.ObjectContainer;
-import com.google.gson.Gson;
 
 /**
  * <p>
@@ -72,11 +71,6 @@ public class ModifyMemberView implements View {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
 
-		String sId = request.getParameter("id");
-		if (logger.isDebugEnabled())
-			logger.debug("[setVariables] id = " + sId);
-
-		Gson gson = Tutor.getBeanFactory().getBean(Gson.class);
 		// the user
 		UserModel userModel = SessionContainer.getLoginUser(request);
 		if (student == null) {
@@ -93,7 +87,6 @@ public class ModifyMemberView implements View {
 		}
 		if (parent == null)
 			parent = student.getParent();
-		request.setAttribute("user", userModel);
 		request.setAttribute("parent", parent);
 		request.setAttribute("student", student);
 		// contact
@@ -103,8 +96,6 @@ public class ModifyMemberView implements View {
 		request.setAttribute("contact", contactModel);
 		// areas
 		request.setAttribute("areas", Tutor.getConstant("areas"));
-		request.setAttribute("areaJson",
-				gson.toJson(Tutor.getConstant("areas")));
 		// subjects
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
 		// birthYear
@@ -112,8 +103,7 @@ public class ModifyMemberView implements View {
 				Tutor.currentCalendar().get(Calendar.YEAR) - 1);
 		// grades
 		request.setAttribute("grades", Tutor.getConstant("grades"));
-		request.setAttribute("gradeLevelJson",
-				gson.toJson(Tutor.getConstant("gradeLevels")));
+		request.setAttribute("gradeLevels", Tutor.getConstant("gradeLevels"));
 	}
 
 	protected boolean submit(HttpServletRequest request,
@@ -208,7 +198,12 @@ public class ModifyMemberView implements View {
 					// student
 					studentModel.setName(ParamUtils.emptyNull(studentName));
 					studentModel.setMale("Male".equals(gender));
-					studentModel.setBirthday(StringUtils.join(birthday, '-'));
+					studentModel.setBirthday(StringUtils.leftPad(birthday[0],
+							4, '0')
+							+ '-'
+							+ StringUtils.leftPad(birthday[1], 2, '0')
+							+ '-'
+							+ StringUtils.leftPad(birthday[2], 2, '0'));
 					studentModel.setSchool(ParamUtils.emptyNull(school));
 					studentModel.setGrade(ParamUtils.emptyNull(grade));
 					studentModel.setGradeLevel(ParamUtils.byteNull(gradeLevel));

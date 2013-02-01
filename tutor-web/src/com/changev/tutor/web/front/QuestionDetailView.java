@@ -112,6 +112,8 @@ public class QuestionDetailView implements View {
 								&& candidate.getQuestion() == question;
 					}
 				});
+		request.setAttribute("questionListQuery", SessionContainer.get(request)
+				.getQuestionListQuery());
 		request.setAttribute("question", questionModel);
 		request.setAttribute("answers", answerList);
 	}

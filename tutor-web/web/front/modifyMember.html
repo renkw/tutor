@@ -8,7 +8,7 @@
 <script type="text/javascript">
 <!--
 $(function() {
-	var areas = ${areaJson};
+	var areas = ${json(areas)};
 	$("#province").change(function() {
 		var value = this.options[this.selectedIndex].value;
 		var city = $("#city option:selected").val() || "${(params.area[1])!parent.city!}";
@@ -62,7 +62,7 @@ $(function() {
 			}
 			for (var i = 1; i <= dates; i++) {
 				var opt = document.createElement("option");
-				opt.value = i < 10 ? "0" + i : i;
+				opt.value = i;
 				opt.text = i;
 				opt.selected = i == date;
 				$("#birthDate").append(opt);
@@ -70,7 +70,7 @@ $(function() {
 		}
 	});
 
-	var gradeLevels = ${gradeLevelJson};
+	var gradeLevels = ${json(gradeLevels)};
 	$("#grades input:radio").change(function() {
 		if (!this.checked) return;
 		var value = this.value;
@@ -150,7 +150,7 @@ $(function() {
 					<tbody>
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">邮箱地址</th>
-							<td width="300" align="left">${Tutor.maskEmail(user.email)}</td>
+							<td width="300" align="left">${maskEmail(user.email)}</td>
 							<td align="left" class="alpha25">您的登录邮箱地址。</td>
 						</tr>
 						<tr>
@@ -162,20 +162,16 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">姓名<span class="required">*</span></th>
 							<td align="left">
 								<input type="text" name="name" id="name" value="${params.name!user.name!}" />
-								<#if user.role=="Student"><input type="hidden" name="studentName" id="studentName" /></#if>
+								<#if userRole=="Student"><input type="hidden" name="studentName" id="studentName" /></#if>
 								<@message name="name" />
 							</td>
 							<td align="left" class="alpha25">请输入您的姓名。</td>
 						</tr>
-						<#if user.role=="Parent">
+						<#if userRole=="Parent">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">地区<span class="required">*</span></th>
 							<td align="left">
-								<select name="area" id="province">
-								<#list areas?keys as province>
-									<@option value=province select=(params.area[0])!parent.province>${province}</@option>
-								</#list>
-								</select>
+								<@input type="select" name="area" id="province" options=areas?keys value=(params.area[0])!parent.province />
 								<select name="area" id="city"></select>
 								<select name="area" id="district"></select>
 								<@message name="area" />
@@ -190,7 +186,7 @@ $(function() {
 				<div class="box-content ui-widget-content">
 					<table border="0" cellspacing="1" cellpadding="5">
 					<tbody>
-						<#if user.role=="Parent">
+						<#if userRole=="Parent">
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学生姓名<span class="required">*</span></th>
 							<td align="left">
@@ -204,9 +200,7 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">年级<span class="required">*</span></th>
 							<td align="left">
 								<div id="grades">
-									<#list grades?keys as grade>
-										<@radio name="grade" value=grade select=params.grade!student.grade!"小学">${grades[grade]}</@radio>
-									</#list>
+									<@input type="radio" name="grade" options=grades value=params.grade!student.grade!"小学" />
 									<select name="gradeLevel"></select>
 								</div>
 								<@message name="grade" />
@@ -216,8 +210,7 @@ $(function() {
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">性别</th>
 							<td width="300" align="left">
-								<@radio name="gender" value="Male" select=params.gender!(student.male?string("Male", "Female"))!"Male">男</@radio>
-								<@radio name="gender" value="Female" select=params.gender!(student.male?string("Male", "Female"))!>女</@radio>
+								<@input type="radio" name="gender" options={"Male":"男","Female":"女"} value=params.gender!(student.male?string("Male", "Female"))!"Male" />
 								<@message name="gender" />
 							</td>
 							<td align="left" class="alpha25">学生性别。</td>
@@ -225,20 +218,14 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">生日</th>
 							<td align="left">
-								<select name="birthday" id="birthYear">
-									<option value="0000"></option>
-								<#list 1980..birthYear as year>
-									<@option value="${year?c}" select=(params.birthday[0])!(student.birthday.substring(0,4))!>${year?c}</@option>
-								</#list>
-								</select>年
-								<select name="birthday" id="birthMonth">
-									<option value="00"></option>
-								<#list 1..12 as month>
-									<@option value="${month?string('00')}" select=(params.birthday[1])!(student.birthday.substring(5,7))!>${month?c}</@option>
-								</#list>
-								</select>月
+								<@input type="select" name="birthday" id="birthYear" options=1980..birthYear value=parseNumber((params.birthday[0])!(student.birthday?substring(0,4))!)>
+									<option value=""></option>
+								</@input>年
+								<@input type="select" name="birthday" id="birthMonth" options=1..12 value=(params.birthday[1])!(student.birthday?substring(5,7))!>
+									<option value=""></option>
+								</@input>月
 								<select name="birthday" id="birthDate">
-									<option value="00"></option>
+									<option value=""></option>
 								</select>日
 								<@message name="birthday" />
 							</td>
@@ -263,7 +250,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">个人描述</th>
 							<td align="left">
-								<textarea name="description" rows="5" cols="30">${params.description!user.description!}</textarea>
+								<textarea name="description" rows="5" cols="30">${params.description!student.description!}</textarea>
 								<@message name="description" />
 							</td>
 							<td align="left" class="alpha25">请输入简单描述。</td>
@@ -357,20 +344,16 @@ $(function() {
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">基本资料</th>
 							<td width="300" align="left">
-								<@radio name="accountPrivacy" value="Private" select=params.accountPrivacy!user.accountPrivacy>不公开</@radio>
-								<@radio name="accountPrivacy" value="ContacterOnly" select=params.accountPrivacy!user.accountPrivacy>只对联系人公开</@radio>
-								<@radio name="accountPrivacy" value="Public" select=params.accountPrivacy!user.accountPrivacy>全部公开</@radio>
+								<@input type="radio" name="accountPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.accountPrivacy!user.accountPrivacy />
 								<@message name="accountPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开基本资料。</td>
 						</tr>
-						<#if user.role=="Parent">
+						<#if userRole=="Parent">
 						<tr>
 							<th width="80" align="center" class="ui-widget-header noborder">学生资料</th>
 							<td width="300" align="left">
-								<@radio name="studentPrivacy" value="Private" select=params.studentPrivacy!student.accountPrivacy>不公开</@radio>
-								<@radio name="studentPrivacy" value="ContacterOnly" select=params.studentPrivacy!student.accountPrivacy>只对联系人公开</@radio>
-								<@radio name="studentPrivacy" value="Public" select=params.studentPrivacy!student.accountPrivacy>全部公开</@radio>
+								<@input type="radio" name="studentPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.studentPrivacy!student.accountPrivacy />
 								<@message name="studentPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开学生资料。</td>
@@ -379,9 +362,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">联系资料</th>
 							<td align="left">
-								<@radio name="contactPrivacy" value="Private" select=params.contactPrivacy!user.contactPrivacy>不公开</@radio>
-								<@radio name="contactPrivacy" value="ContacterOnly" select=params.contactPrivacy!user.contactPrivacy>只对联系人公开</@radio>
-								<@radio name="contactPrivacy" value="Public" select=params.contactPrivacy!user.contactPrivacy>全部公开</@radio>
+								<@input type="radio" name="contactPrivacy" options={"Private":"不公开","ContacterOnly":"只对联系人公开","Public":"全部公开"} value=params.contactPrivacy!user.contactPrivacy />
 								<@message name="contactPrivacy" />
 							</td>
 							<td align="left" class="alpha25">设置公开联系资料。</td>

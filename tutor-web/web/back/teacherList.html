@@ -42,14 +42,14 @@ $(function() {
 					<table border="0" cellspacing="2" cellpadding="0">
 					<tbody>
 						<tr>
-							<td rowspan="4" align="left" valign="top"><@face user=tutor.loginUser width=75 /></td>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.email!}</div></td>
+							<td rowspan="4" align="left" valign="top"><@face width=75 /></td>
+							<td><div class="ellipsis" style="width:80px">${user.email!}</div></td>
 						</tr>
 						<tr>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.name!}</div></td>
+							<td><div class="ellipsis" style="width:80px">${user.name!}</div></td>
 						</tr>
 						<tr>
-							<td><div class="ellipsis" style="width:80px">${tutor.loginUser.location!}</div></td>
+							<td><div class="ellipsis" style="width:80px">${user.location!}</div></td>
 						</tr>
 						<tr>
 							<td>
@@ -67,12 +67,12 @@ $(function() {
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
 					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
-					<div class="ui-icon ui-icon-person float-left"></div>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">教师列表</a>
 				</div>
 				<@actionMessage />
 				<div class="box-subtitle ui-widget-content">
-					<div class="ui-icon ui-icon-carat-1-e float-left"></div>教师列表
+					<div class="ui-icon ui-icon-person float-left"></div>教师列表
 					<div class="ui-icon ui-icon-plus float-right pointer" title="添加教师" onclick="go2('modifyTeacher.html')"></div>
 				</div>
 				<div class="box-content ui-widget-content">
@@ -89,19 +89,19 @@ $(function() {
 						</tr>
 					</thead>
 					<tbody>
-					<#if tutor.loginUser.teachers?size==0>
+					<#if teachers?size==0>
 						<tr>
 							<td colspan="7" align="center">
 								还没有教师，<a href="modifyTeacher.html">添加一个</a>。
 							</td>
 						</tr>
 					</#if>
-					<#list tutor.loginUser.teachers as teacher>
+					<#list teachers as teacher>
 						<#assign style=(teacher_index%2==0)?string('odd', 'even')>
-						<tr id="${Tutor.id(teacher)}">
+						<tr id="${id(teacher)}">
 							<td class="datarow ${style}">${teacher.name!}</td>
 							<td class="datarow ${style}">${(teacher.male?string('男', '女'))!}</td>
-							<td class="datarow ${style}">${(teacher.subjects?string)!}</td>
+							<td class="datarow ${style}">${join(teacher.subjects)}</td>
 							<td class="datarow ${style}">${teacher.grade!} ${teacher.gradeLevelFrom!}～${teacher.gradeLevelTo!}年级</td>
 							<td class="datarow ${style}">${(teacher.contact.telephone)!}</td>
 							<td class="datarow ${style}">${(teacher.contact.cellphone)!}</td>

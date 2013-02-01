@@ -26,6 +26,17 @@ $(function() {
 	});
 	
 	$("#subject").change();
+	
+	var fileChanged = function() {
+		var div = document.createElement("div");
+		var input = document.createElement("input");
+		input.setAttribute("type", "file");
+		input.setAttribute("name", "file");
+		$(input).change(fileChanged);
+		$(this).unbind("change", fileChanged);
+		$(div).append(input).insertAfter(this);
+	};
+	$("#upfile").change(fileChanged);
 });
 //-->
 </script>
@@ -40,10 +51,10 @@ $(function() {
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
 					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
-					<a href="questionList.html${tutor.questionListQuery}">返回提问列表</a>
+					<a href="questionList.html${questionListQuery}">返回提问列表</a>
 				</div>
 				<div class="box-content ui-widget-content">
-				<#if tutor.loginUser.state=="Incomplete">
+				<#if user.state=="Incomplete">
 					<a href="modifyMember.html">完整个人资料</a>
 				</#if>
 				</div>
@@ -87,7 +98,7 @@ $(function() {
 						<tr>
 							<th align="center" class="ui-widget-header noborder">上传图片</th>
 							<td align="left">
-								<input type="file" name="file" multiple="multiple" />
+								<div><input type="file" name="file" id="upfile" /></div>
 								<@message name="file" />
 							</td>
 							<td align="left" class="alpha25">如果单个图片大于500KB可能会导致发布提问失败。</td>
