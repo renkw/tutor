@@ -149,7 +149,15 @@
 	
 	<bean id="front.questionListView" class="com.changev.tutor.web.front.QuestionListView" />
 	
-	<bean id="front.newQuestionView" class="com.changev.tutor.web.front.NewQuestionView" />
+	<bean id="front.newQuestionView" class="com.changev.tutor.web.front.NewQuestionView">
+		<property name="submitValidator">
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="title.required" value="请输入问题描述。" />
+				<entry key="title.length" value="请不要超过{maxLength}个字。" />
+				<entry key="title.length.maxLength"><value type="int">500</value></entry>
+			</util:map>
+		</property>
+	</bean>
 	
 	<bean id="front.questionDetailView" class="com.changev.tutor.web.front.QuestionDetailView" />
 

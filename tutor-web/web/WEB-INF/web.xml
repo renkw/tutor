@@ -48,11 +48,6 @@
     	</description>
 		<servlet-name>ViewServlet</servlet-name>
 		<servlet-class>com.changev.tutor.web.ViewServlet</servlet-class>
-		<multipart-config>
-			<max-file-size>512000</max-file-size>
-			<max-request-size>2048000</max-request-size>
-			<file-size-threshold>10240</file-size-threshold>
-		</multipart-config>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ViewServlet</servlet-name>
@@ -99,6 +94,20 @@
 	<servlet-mapping>
 		<servlet-name>FileDownloadServlet</servlet-name>
 		<url-pattern>/files/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>FileUploadServlet</servlet-name>
+		<servlet-class>com.changev.tutor.web.FileUploadServlet</servlet-class>
+		<multipart-config>
+			<max-file-size>512000</max-file-size>
+			<max-request-size>2048000</max-request-size>
+			<file-size-threshold>10240</file-size-threshold>
+		</multipart-config>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FileUploadServlet</servlet-name>
+		<url-pattern>/upload</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Authentication -->

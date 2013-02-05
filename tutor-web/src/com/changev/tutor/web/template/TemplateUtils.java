@@ -15,8 +15,11 @@ import org.apache.commons.lang.math.NumberUtils;
 import com.changev.tutor.Tutor;
 
 import freemarker.core.Environment;
+import freemarker.template.TemplateDateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateNumberModel;
+import freemarker.template.TemplateScalarModel;
 import freemarker.template.utility.DeepUnwrap;
 
 /**
@@ -47,7 +50,10 @@ public final class TemplateUtils {
 
 	public static String getAsString(Object value, String defaultValue)
 			throws TemplateModelException {
-		value = getAsObject(value, null);
+		if (value instanceof TemplateScalarModel)
+			value = ((TemplateScalarModel) value).getAsString();
+		else
+			value = getAsObject(value, null);
 		return value == null ? defaultValue : value.toString();
 	}
 
@@ -58,7 +64,10 @@ public final class TemplateUtils {
 
 	public static Number getAsNumber(Object value, Number defaultValue)
 			throws TemplateModelException {
-		value = getAsObject(value, null);
+		if (value instanceof TemplateNumberModel)
+			value = ((TemplateNumberModel) value).getAsNumber();
+		else
+			value = getAsObject(value, null);
 		if (value != null && !(value instanceof Number)) {
 			try {
 				value = NumberUtils.createNumber(value.toString());
@@ -75,7 +84,10 @@ public final class TemplateUtils {
 
 	public static Date getAsDate(Object value, Date defaultValue)
 			throws TemplateModelException {
-		value = getAsObject(value, defaultValue);
+		if (value instanceof TemplateDateModel)
+			value = ((TemplateDateModel) value).getAsDate();
+		else
+			value = getAsObject(value, defaultValue);
 		if (value != null && !(value instanceof Date)) {
 			String s = value.toString();
 			try {

@@ -62,18 +62,18 @@ $(function() {
 				<div class="box-subtitle ui-widget-content">提问解答</div>
 				<div class="box-content ui-state-active">
 					<div class="row-head">
-						<@face user=question.student width=90 />
+						<@face user=question.questioner width=90 />
 						<div class="${question.subject!}">${(question.grade?substring(0, 1))!}${numberWord(question.gradeLevel)}</div>
 					</div>
 					<table border="0" cellspacing="0" cellpadding="5" class="row-content">
 					<tbody>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header ui-corner-tl">姓名</th>
-							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content ui-corner-tr">${(question.student.name)!} (<a href="#">${maskEmail(question.questioner.email)}</a>)</td>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content ui-corner-tr">${(question.questioner.name)!} (<a href="#">${maskEmail(question.questioner.email)}</a>)</td>
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">地区</th>
-							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${(question.student.location)!}</td>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${(question.questioner.location)!}</td>
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">学科</th>

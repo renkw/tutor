@@ -5,15 +5,13 @@
  */
 package com.changev.tutor.web.front;
 
-import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -26,7 +24,6 @@ import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
 import com.changev.tutor.web.util.ParamValidator;
-import com.changev.tutor.web.util.UserFileManager;
 import com.google.gson.Gson;
 
 /**
@@ -46,7 +43,7 @@ public class NewQuestionView implements View {
 			HttpServletResponse response) throws Throwable {
 		if (logger.isTraceEnabled())
 			logger.trace("[preRender] called");
-		if (StringUtils.isNotEmpty(request.getParameter("submit")))
+		if (StringUtils.isNotEmpty(request.getParameter("new")))
 			return submit(request, response);
 		setVariables(request, null);
 		return true;
@@ -67,10 +64,12 @@ public class NewQuestionView implements View {
 
 		String subject = request.getParameter("subject");
 		String title = request.getParameter("title");
+		String file = request.getParameter("file");
 		String apply = request.getParameter("apply");
 		if (logger.isDebugEnabled()) {
 			logger.debug("[submit] subject = " + subject);
 			logger.debug("[submit] title = " + title);
+			logger.debug("[submit] file = " + file);
 			logger.debug("[submit] apply = " + apply);
 		}
 
@@ -80,8 +79,6 @@ public class NewQuestionView implements View {
 			student = (StudentModel) loginUser;
 		else if (loginUser instanceof ParentModel)
 			student = Tutor.one(((ParentModel) loginUser).getChildren());
-		UserFileManager fm = Tutor.getBeanFactory().getBean(
-				UserFileManager.class);
 		// validation
 		if (submitValidator == null || submitValidator.validate(request)) {
 			if (logger.isDebugEnabled())
@@ -96,27 +93,9 @@ public class NewQuestionView implements View {
 					questionModel.setAssignTo(student.getDefaultAnswerer().get(
 							subject));
 				}
-				for (Part part : request.getParts()) {
-					if (part.getSize() == 0 || !"file".equals(part.getName()))
-						continue;
-					String header = part.getHeader("content-disposition");
-					if (logger.isDebugEnabled())
-						logger.debug("[submit] " + header);
-					int i1 = header.indexOf("filename=\"") + 10;
-					int i2 = header.indexOf('"', i1);
-					String filename = header.substring(i1, i2);
-					i1 = filename.lastIndexOf('.');
-					String name = fm.create(loginUser.getEmail(), i1 == -1 ? ""
-							: filename.substring(i1));
-					OutputStream stream = fm.write(loginUser.getEmail(), name);
-					try {
-						IOUtils.copy(part.getInputStream(), stream);
-						questionModel.getUploadPicturesFor().add(name);
-					} finally {
-						stream.close();
-						part.delete();
-					}
-				}
+				if (StringUtils.isNotEmpty(file))
+					Collections.addAll(questionModel.getUploadPicturesFor(),
+							StringUtils.split(file, ','));
 				Tutor.getCurrentContainer().store(questionModel);
 				Tutor.commitCurrent();
 				SessionContainer.get(request).setActionMessage("发布提问成功。");
@@ -142,6 +121,8 @@ public class NewQuestionView implements View {
 		if (logger.isTraceEnabled())
 			logger.trace("[setVariables] called");
 		// subjects
+		request.setAttribute("questionListQuery", SessionContainer.get(request)
+				.getQuestionListQuery());
 		request.setAttribute("subjects", Tutor.getConstant("subjects"));
 		// default answerer
 		Map<String, String> defaultAnswerer = new HashMap<String, String>();

@@ -5,6 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>新提问</title>
 <#include "/_inc/head.html">
+<script type="text/javascript" src="../plupload/plupload.full.js"></script>
 <script type="text/javascript">
 <!--
 $(function() {
@@ -27,16 +28,78 @@ $(function() {
 	
 	$("#subject").change();
 	
-	var fileChanged = function() {
-		var div = document.createElement("div");
-		var input = document.createElement("input");
-		input.setAttribute("type", "file");
-		input.setAttribute("name", "file");
-		$(input).change(fileChanged);
-		$(this).unbind("change", fileChanged);
-		$(div).append(input).insertAfter(this);
+	
+	var uploader = new plupload.Uploader({
+		"runtimes" : "flash,silverlight",
+		"url" : "../upload",
+		"multipart" : true,
+		"browse_button" : "selectFile",
+		"resize" : {"quality" : 60},
+		"flash_swf_url" : "../plupload/plupload.flash.swf",
+		"silverlight_xap_url" : "../plupload/plupload.silverlight.xap",
+		"filters" : [{"title" : "图片文件(jpg,jpe,jpeg,png,gif)", "extensions" : "jpg,jpe,jpeg,png,gif"}]
+	}),
+	removeFile = function() {
+		var id = $(this).parent().attr("id");
+		for (var i = 0; i < uploader.files.length; i++) {
+			if (id == uploader.files[i].id) {
+				uploader.removeFile(uploader.files[i]);
+				$(this).parent().remove();
+				break;
+			}
+		}
 	};
-	$("#upfile").change(fileChanged);
+	uploader.bind("FilesAdded", function(up, files) {
+		for (var i = 0; i < files.length; i++) {
+			var div = $(document.createElement("div"));
+			div.attr("id", files[i].id)
+			   .attr("class", "ui-state-default noborder nobg");
+			var icon = $(document.createElement("div"));
+			icon.attr("class", "ui-icon ui-icon-circle-minus float-left pointer")
+			    .attr("title", "取消此文件上传");
+			var label = $(document.createElement("span"));
+			label.text(files[i].name);
+			var br = $(document.createElement("br"));
+			br.attr("class", "clear-left");
+			div.append(icon).append(label).append(br).appendTo("#filePane");
+			icon.click(removeFile);
+		}
+	});
+	uploader.bind("FileUploaded", function(up, file, resp) {
+		if (resp.response.slice(0, 5) == "Error") {
+			$("#" + file.id).attr("class", "ui-state-error noborder nobg")
+				.children(".ui-icon").attr("class", "ui-icon ui-icon-circle-close float-left pointer");
+			$("#uploadMessage").text(resp.response.slice(6));
+		} else {
+			$("#" + file.id).attr("class", "ui-state-active noborder nobg")
+				.children(".ui-icon").unbind("click", removeFile).attr("class", "ui-icon ui-icon-circle-check float-left pointer");
+		}
+		var s = $("#upfiles").val();
+		if (s.length != 0)
+			s += ",";
+		s += resp.response;
+		$("#upfiles").val(s);
+	});
+	uploader.bind("UploadComplete", function(up, files) {
+		var done = true;
+		for (var i = 0; i < files.length; i++) {
+			if (files[i].status == plupload.FAILED) {
+				if (done) $("#submitButton")[0].disabled = false;
+				files[i].status = plupload.QUEUED;
+				done = false;
+			}
+		}
+		if (done) document.getElementById("postForm").submit();
+	});
+	uploader.bind("Error", function(up, err) {
+		$("#uploadMessage").text("上传文件失败");
+	});
+	uploader.init();
+	
+	$("#submitButton").click(function() {
+		this.disabled = true;
+		uploader.start();
+	});
 });
 //-->
 </script>
@@ -71,18 +134,14 @@ $(function() {
 					<a href="#" class="nav-link float-left">新提问</a>
 				</div>
 				<@actionMessage />
-				<form method="post" enctype="multipart/form-data">
+				<form id="postForm" method="post">
 				<div class="box-content ui-widget-content">
 					<table border="0" cellspacing="1" cellpadding="5">
 					<tbody>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
 							<td align="left">
-								<select name="subject" id="subject">
-							<#list subjects?keys as subject>
-									<@option value=subject select=params.subject>${subjects[subject]}</@option>
-							</#list>
-								</select>
+								<@input type="select" name="subject" id="subject" options=subjects value=params.subject />
 								<@message name="subject" />
 							</td>
 							<td align="left" class="alpha25">请输入学科。</td>
@@ -91,22 +150,24 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">问题描述<span class="required">*</span></th>
 							<td align="left">
 								<textarea name="title" rows="5" cols="30">${params.title!}</textarea>
-								<@message name="subjects" />
+								<@message name="title" />
 							</td>
 							<td align="left" class="alpha25">请输入问题的详细描述，字数在500字以内。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">上传图片</th>
 							<td align="left">
-								<div><input type="file" name="file" id="upfile" /></div>
-								<@message name="file" />
+								<input type="button" id="selectFile" value="选择上传文件" />
+								<input type="hidden" name="file" id="upfiles" />
+								<div id="filePane"></div>
+								<div id="uploadMessage"></div>
 							</td>
 							<td align="left" class="alpha25">如果单个图片大于500KB可能会导致发布提问失败。</td>
 						</tr>
 						<tr>
 							<th align="center" class="ui-widget-header noborder">指定学校或教师</th>
 							<td align="left">
-								<@checkbox id="apply" name="apply" value="true" select=params.apply!"true"><span></span></@checkbox>
+								<@input type="checkbox" id="apply" name="apply" value="true" checked=params.apply!"true"><span></span></@input>
 							</td>
 							<td align="left" class="alpha25">可以指定机构或教师为您解答，不选择则所有机构都可以为您解答。</td>
 						</tr>
@@ -116,7 +177,8 @@ $(function() {
 							<th>&nbsp;</th>
 							<td align="left">
 								<br />
-								<input type="submit" name="submit" value="发布提问" class="green-button small-button ui-corner-all" />
+								<input type="button" id="submitButton" value="发布提问" class="green-button small-button ui-corner-all" />
+								<input type="hidden" name="new" value="new" />
 							</td>
 						</tr>
 					</tfoot>

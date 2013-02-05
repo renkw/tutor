@@ -7,12 +7,14 @@ package com.changev.tutor.web.template;
 
 import java.util.List;
 
-import com.changev.tutor.Tutor;
-
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModelException;
 
 /**
+ * <p>
+ * 把字符串的指定位置后面部分替换为*。
+ * </p>
+ * 
  * @author ren
  * 
  */
@@ -27,7 +29,14 @@ public class MaskMethodModel implements TemplateMethodModel {
 		String value = (String) arguments.get(0);
 		int offset = arguments.size() == 2 ? Integer
 				.parseInt((String) arguments.get(1)) : 2;
-		return Tutor.mask(value, offset);
+		return mask(value, offset);
+	}
+
+	private static String mask(String s, int off) {
+		char[] ca = s.toCharArray();
+		while (off < ca.length)
+			ca[off++] = '*';
+		return new String(ca);
 	}
 
 }

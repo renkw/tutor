@@ -34,6 +34,10 @@
 		<redirect	role="None"
 					path="/public/login.html?url={url}" />
 	</rule>
+	<rule pattern="/upload">
+		<redirect	role="None"
+					path="/public/login.html?url={url}" />
+	</rule>
 	<rule pattern="/_inc/*">
 		<error		code="404" />
 	</rule>

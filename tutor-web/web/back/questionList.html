@@ -105,7 +105,7 @@ $(function() {
 				<#list questions as q>
 					<div class="${(q_index%2==0)?string('odd','even')}">
 						<div class="row-head">
-							<@face user=q.student! width=90 />
+							<@face user=q.questioner width=90 />
 							<div class="${q.subject!}">${(q.grade?substring(0, 1))!}${numberWord(q.gradeLevel)}</div>
 						</div>
 						<div class="row-content">

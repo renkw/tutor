@@ -19,7 +19,6 @@ import java.util.Random;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -690,102 +689,6 @@ public final class Tutor {
 
 	/**
 	 * <p>
-	 * 取得对象的字符串表达形式。
-	 * </p>
-	 * 
-	 * <p>
-	 * 日期对象用{@link #DEFAULT_DATETIME_FORMAT}格式化。
-	 * </p>
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static String toString(Object obj) {
-		if (obj == null)
-			return "null";
-		if (obj.getClass() == Date.class)
-			return formatDateTime((Date) obj);
-		return obj.toString();
-	}
-
-	/**
-	 * <p>
-	 * 测试对象是否指定类型。
-	 * </p>
-	 * 
-	 * @param obj
-	 * @param clsname
-	 * @return 当指定类型为原始类型而且对象为null，返回false。<br>
-	 *         当指定类型非原始类型而且对象为null，返回true。
-	 * @throws ClassNotFoundException
-	 */
-	public static boolean is(Object obj, String clsname)
-			throws ClassNotFoundException {
-		Class<?> cls = ClassUtils.getClass(clsname);
-		if (cls.isPrimitive()) {
-			if (obj == null)
-				return false;
-			cls = ClassUtils.primitiveToWrapper(cls);
-		}
-		return cls.isInstance(obj);
-	}
-
-	/**
-	 * <p>
-	 * 转换为整数。
-	 * </p>
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static int parseInt(Object obj) {
-		if (obj == null)
-			return 0;
-		if (obj instanceof Number)
-			return ((Number) obj).intValue();
-		if (obj instanceof Date)
-			return (int) ((Date) obj).getTime();
-		return Integer.parseInt(obj.toString());
-	}
-
-	/**
-	 * <p>
-	 * 转换为长整数。
-	 * </p>
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static long parseLong(Object obj) {
-		if (obj == null)
-			return 0;
-		if (obj instanceof Number)
-			return ((Number) obj).longValue();
-		if (obj instanceof Date)
-			return ((Date) obj).getTime();
-		return Long.parseLong(obj.toString());
-	}
-
-	/**
-	 * <p>
-	 * 转换为浮点数。
-	 * </p>
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static double parseDouble(Object obj) {
-		if (obj == null)
-			return 0;
-		if (obj instanceof Number)
-			return ((Number) obj).doubleValue();
-		if (obj instanceof Date)
-			return ((Date) obj).getTime();
-		return Double.parseDouble(obj.toString());
-	}
-
-	/**
-	 * <p>
 	 * 用数组元素填充List。
 	 * </p>
 	 * 
@@ -914,78 +817,14 @@ public final class Tutor {
 		}
 		return values;
 	}
-
+	
 	/**
 	 * <p>
-	 * 把字符串的指定位置后面部分替换为*。
+	 * 是否启用性能日志输出
 	 * </p>
 	 * 
-	 * @param s
-	 * @param off
-	 * @return
+	 * @param time
 	 */
-	public static String mask(String s, int off) {
-		char[] ca = s.toCharArray();
-		while (off < ca.length)
-			ca[off++] = '*';
-		return new String(ca);
-	}
-
-	/**
-	 * <p>
-	 * 把字符串的后半部分替换为*。
-	 * </p>
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static String mask(String s) {
-		return mask(s, s.length() / 2);
-	}
-
-	/**
-	 * <p>
-	 * 把邮件地址的指定位置后面部分替换为*。 保留@后一个字符和域名后缀。
-	 * </p>
-	 * 
-	 * @param s
-	 * @param off
-	 * @return
-	 */
-	public static String maskEmail(String s, int off) {
-		char[] ca = s.toCharArray();
-		int i1 = s.indexOf('@'), i2 = s.lastIndexOf('.');
-		if (i2 == -1)
-			i2 = s.length();
-		if (i1 == -1)
-			i1 = i2;
-		while (off < i1)
-			ca[off++] = '*';
-		off += 2;
-		while (off < i2)
-			ca[off++] = '*';
-		return new String(ca);
-	}
-
-	/**
-	 * <p>
-	 * 把邮件地址的开始2个字符后面部分替换为*。 保留@后一个字符和域名后缀。
-	 * </p>
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static String maskEmail(String s) {
-		return maskEmail(s, 2);
-	}
-
-	private static final String[] NUM_WORD = { "零", "一", "二", "三", "四", "五",
-			"六", "七", "八", "九", "十" };
-
-	public static String numberWord(Number n) {
-		return n == null ? "" : NUM_WORD[n.intValue() % NUM_WORD.length];
-	}
-
 	public static boolean isPerformanceEnabled() {
 		return Logger.getLogger(PERFORMANCE_LOGGER_NAME).isDebugEnabled();
 	}
