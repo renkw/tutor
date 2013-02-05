@@ -8,6 +8,9 @@ package com.changev.tutor.model;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.crypto.Cipher;
 
@@ -94,42 +97,11 @@ public final class ModelFactory {
 		return answerExample;
 	}
 
-	public static AnswerModel getAcceptedAnswerExample(String email) {
-		TeacherModel teacherExample = new TeacherModel();
-		teacherExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setClosed(Boolean.TRUE);
-		questionExample.setFinalAnswerer(teacherExample);
-		AnswerModel answerExample = new AnswerModel();
-		answerExample.setQuestion(questionExample);
-		answerExample.setDeleted(Boolean.FALSE);
-		return answerExample;
-	}
-
-	public static QuestionModel getAssignedQuestionExample(String email) {
-		TeacherModel teacherExample = new TeacherModel();
-		teacherExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setClosed(Boolean.FALSE);
-		questionExample.setAssignTo(teacherExample);
-		questionExample.setDeleted(Boolean.FALSE);
-		return questionExample;
-	}
-
 	public static QuestionModel getUserQuestionExample(String email) {
-		UserModel userExample = new UserModel();
+		ParentModel userExample = new ParentModel();
 		userExample.setEmail(email);
 		QuestionModel questionExample = new QuestionModel();
 		questionExample.setQuestioner(userExample);
-		questionExample.setDeleted(Boolean.FALSE);
-		return questionExample;
-	}
-
-	public static QuestionModel getStudentQuestionExample(String email) {
-		StudentModel studentExample = new StudentModel();
-		studentExample.setEmail(email);
-		QuestionModel questionExample = new QuestionModel();
-		questionExample.setStudent(studentExample);
 		questionExample.setDeleted(Boolean.FALSE);
 		return questionExample;
 	}
@@ -170,6 +142,17 @@ public final class ModelFactory {
 		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static List<QuestionModel> getAnswerQuestionList(
+			List<AnswerModel> answerList) {
+		if (answerList == null || answerList.isEmpty())
+			return Collections.emptyList();
+		List<QuestionModel> list = new ArrayList<QuestionModel>(
+				answerList.size());
+		for (AnswerModel answer : answerList)
+			list.add(answer.getQuestion());
+		return list;
 	}
 
 }

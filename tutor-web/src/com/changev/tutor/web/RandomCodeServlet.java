@@ -65,11 +65,10 @@ public class RandomCodeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		if (logger.isTraceEnabled())
 			logger.trace("[doGet] called");
-		SessionContainer sess = SessionContainer.get(req);
 		String code = RandomStringUtils.random(length, chars);
 		if (logger.isDebugEnabled())
 			logger.debug("[doGet] code = " + code);
-		sess.setCheckCode(code);
+		SessionContainer.get(req).setCheckCode(code);
 		BufferedImage img = createImage(code);
 		resp.setHeader("Pragma", "no-cache");
 		resp.setHeader("Cache-Control", "no-cache");

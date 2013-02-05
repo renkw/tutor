@@ -8,7 +8,7 @@
 <style type="text/css">
 <!--
 .row-head { float: left; width: 100px; }
-.row-tail { float: right; width: 320px; }
+.row-tail { float: right; width: 320px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; }
 .row-content { float: left; width: 300px; }
 .row-content .ui-widget-content { border-left-width: 0; }
 .table-row { border-top-width: 0; }
@@ -29,6 +29,11 @@ $(function() {
 		}
 		return false;
 	});
+	
+	$("#finalAnswerer").click(function(evt) {
+		$("#contactDialog").dialog({"modal":true});
+		return false;
+	});
 });
 //-->
 </script>
@@ -43,7 +48,7 @@ $(function() {
 			<div class="box-assist ui-widget-content ui-corner-all">
 				<div class="box-title ui-state-default ui-corner-top">
 					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
-					<a href="member.html">返回</a><br />
+					<a href="questionList.html${questionListQuery!}">返回提问列表</a><br />
 				</div>
 				<div class="box-content ui-widget-content"></div>
 			</div>
@@ -52,27 +57,28 @@ $(function() {
 			<!-- REPLACE HERE WITH CONTENT -->
 			<div class="box-body ui-widget-content ui-corner-all">
 				<div class="box-title navbar ui-state-default ui-corner-top">
-					<a href="${pathrel}/home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
-					<a href="#" class="nav-link float-left">提问列表</a>
+					<a href="questionList.html" class="nav-link float-left">提问列表</a>
 					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
 					<a href="#" class="nav-link float-left">解答</a>
 				</div>
+				<@actionMessage />
 				<div class="box-subtitle ui-widget-content">提问解答</div>
 				<div class="box-content ui-state-active">
 					<div class="row-head">
-						<@face user=question.student width=90 />
-						<div class="${question.subject!}">${(question.grade?substring(0, 1))!}${Tutor.numberWord(question.gradeLevel)}</div>
+						<@face user=question.questioner width=90 />
+						<div class="${question.subject!}">${(question.grade?substring(0, 1))!}${numberWord(question.gradeLevel)}</div>
 					</div>
 					<table border="0" cellspacing="0" cellpadding="5" class="row-content">
 					<tbody>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header ui-corner-tl">姓名</th>
-							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content ui-corner-tr">${(question.student.name)!} (<a href="#">${Tutor.maskEmail(question.questioner.email)}</a>)</td>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content ui-corner-tr">${(question.questioner.name)!} (<a href="#">${maskEmail(question.questioner.email)}</a>)</td>
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">地区</th>
-							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${(question.student.location)!}</td>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${(question.questioner.location)!}</td>
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">学科</th>
@@ -80,7 +86,7 @@ $(function() {
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header table-row">年级</th>
-							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${question.grade} ${question.gradeLevel}年级</td>
+							<td align="left" valign="top" nowrap="nowrap" class="ui-widget-content table-row">${question.grade!} ${question.gradeLevel!}年级</td>
 						</tr>
 						<tr>
 							<th align="left" valign="top" nowrap="nowrap" class="ui-widget-header ui-corner-bl table-row">提问</th>
@@ -90,8 +96,8 @@ $(function() {
 					</table>
 					<div class="row-tail">
 					<#list question.uploadPictures as pic>
-						<a href="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" target="_blank">
-							<img src="${pathrel}/files/${Tutor.id(question.questioner)}/${pic}" width="112" height="112" border="0" />
+						<a href="../files/${id(question.questioner)}/${pic}" target="_blank">
+							<img src="../files/${id(question.questioner)}/${pic}" width="112" height="112" border="0" />
 						</a>
 					</#list>
 					</div>
@@ -106,12 +112,12 @@ $(function() {
 							<small>${answer.updateDateTime?datetime} ${answer.answerer.fullName!}</small>
 							<#if !question.closed>
 							<div class="float-right">
-								<a href="#" onclick="addq('final','${Tutor.id(answer)}');return false;" class="fresh">采用</a>
+								<a href="#" onclick="addq('final','${id(answer)}');return false;" class="fresh">采用</a>
 							</div>
 							<div class="ui-icon ui-icon-check float-right"></div>
 							<#elseif answer.answerer.email==question.finalAnswerer.email>
 							<div class="float-right">
-								<span class="nice">已采用</span>
+								<a href="#" id="finalAnswerer" class="nice" title="查看资料">已采用</a>
 							</div>
 							<div class="ui-state-active noborder nobg float-right"><div class="ui-icon ui-icon-check"></div></div>
 							</#if>
@@ -138,5 +144,55 @@ $(function() {
 </tbody>
 <#include "/_inc/foot.html">
 </table>
+<#if question.finalAnswerer??>
+<div id="contactDialog" title="${question.finalAnswerer.name!}的联系资料">
+	<table border="0" cellpadding="5" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<th align="left" width="50"><strong>教师姓名</strong></th><td align="left">
+				<#if question.finalAnswerer.accountPrivacy=="Public">${question.finalAnswerer.name!}
+				<#else>${mask(question.finalAnswerer.name!)}
+				</#if>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><strong>所属机构</strong></th><td align="left">
+				<#if question.finalAnswerer.accountPrivacy=="Public">${question.finalAnswerer.organization.name!}
+				<#else>${mask(question.finalAnswerer.organization.name!)}
+				</#if>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><strong>所在地区</strong></th><td align="left">
+				<#if question.finalAnswerer.accountPrivacy=="Public">${question.finalAnswerer.organization.location!}
+				<#else>${mask(question.finalAnswerer.organization.location!)}
+				</#if>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><strong>邮件地址</strong></th><td align="left">
+				<#if question.finalAnswerer.contactPrivacy=="Public">${question.finalAnswerer.contact.mailAddress!}
+				<#else>${maskEmail(question.finalAnswerer.contact.mailAddress!)}
+				</#if>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><strong>固定电话</strong></th><td align="left">
+				<#if question.finalAnswerer.contactPrivacy=="Public">${question.finalAnswerer.contact.telephone!}
+				<#else>${maskEmail(question.finalAnswerer.contact.telephone!)}
+				</#if>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><strong>移动电话</strong></th><td align="left">
+				<#if question.finalAnswerer.contactPrivacy=="Public">${question.finalAnswerer.contact.cellphone!}
+				<#else>${maskEmail(question.finalAnswerer.contact.cellphone!)}
+				</#if>
+			</td>
+		</tr>
+	</tbody>
+	</table>
+</div>
+</#if>
 </body>
 </html>

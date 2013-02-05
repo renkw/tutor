@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>新提问</title>
+<#include "/_inc/head.html">
+<script type="text/javascript" src="../plupload/plupload.full.js"></script>
+<script type="text/javascript">
+<!--
+$(function() {
+	var defaultAnswerer = ${defaultAnswererJson};
+	$("#subject").change(function() {
+		var a = defaultAnswerer[$("#subject option:selected").val()];
+		var apply = $("#apply");
+		if (a) {
+			apply[0].disabled = false;
+			if (apply[0].checked) {
+				apply.next().text(a);
+			} else {
+				apply.next().text("无指定");
+			}
+		} else {
+			apply[0].disabled = true;
+			apply.next().text("无指定");
+		}
+	});
+	
+	$("#subject").change();
+	
+	
+	var uploader = new plupload.Uploader({
+		"runtimes" : "flash,silverlight",
+		"url" : "../upload",
+		"multipart" : true,
+		"browse_button" : "selectFile",
+		"resize" : {"quality" : 60},
+		"flash_swf_url" : "../plupload/plupload.flash.swf",
+		"silverlight_xap_url" : "../plupload/plupload.silverlight.xap",
+		"filters" : [{"title" : "图片文件(jpg,jpe,jpeg,png,gif)", "extensions" : "jpg,jpe,jpeg,png,gif"}]
+	}),
+	removeFile = function() {
+		var id = $(this).parent().attr("id");
+		for (var i = 0; i < uploader.files.length; i++) {
+			if (id == uploader.files[i].id) {
+				uploader.removeFile(uploader.files[i]);
+				$(this).parent().remove();
+				break;
+			}
+		}
+	};
+	uploader.bind("FilesAdded", function(up, files) {
+		for (var i = 0; i < files.length; i++) {
+			var div = $(document.createElement("div"));
+			div.attr("id", files[i].id)
+			   .attr("class", "ui-state-default noborder nobg");
+			var icon = $(document.createElement("div"));
+			icon.attr("class", "ui-icon ui-icon-circle-minus float-left pointer")
+			    .attr("title", "取消此文件上传");
+			var label = $(document.createElement("span"));
+			label.text(files[i].name);
+			var br = $(document.createElement("br"));
+			br.attr("class", "clear-left");
+			div.append(icon).append(label).append(br).appendTo("#filePane");
+			icon.click(removeFile);
+		}
+	});
+	uploader.bind("FileUploaded", function(up, file, resp) {
+		if (resp.response.slice(0, 5) == "Error") {
+			$("#" + file.id).attr("class", "ui-state-error noborder nobg")
+				.children(".ui-icon").attr("class", "ui-icon ui-icon-circle-close float-left pointer");
+			$("#uploadMessage").text(resp.response.slice(6));
+		} else {
+			$("#" + file.id).attr("class", "ui-state-active noborder nobg")
+				.children(".ui-icon").unbind("click", removeFile).attr("class", "ui-icon ui-icon-circle-check float-left pointer");
+		}
+		var s = $("#upfiles").val();
+		if (s.length != 0)
+			s += ",";
+		s += resp.response;
+		$("#upfiles").val(s);
+	});
+	uploader.bind("UploadComplete", function(up, files) {
+		var done = true;
+		for (var i = 0; i < files.length; i++) {
+			if (files[i].status == plupload.FAILED) {
+				if (done) $("#submitButton")[0].disabled = false;
+				files[i].status = plupload.QUEUED;
+				done = false;
+			}
+		}
+		if (done) document.getElementById("postForm").submit();
+	});
+	uploader.bind("Error", function(up, err) {
+		$("#uploadMessage").text("上传文件失败");
+	});
+	uploader.init();
+	
+	$("#submitButton").click(function() {
+		this.disabled = true;
+		uploader.start();
+	});
+});
+//-->
+</script>
+</head>
+<body>
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
+<#include "/_inc/bar.html">
+<tbody>
+	<tr>
+		<td height="100%" align="left" valign="top">
+			<!-- REPLACE HERE　WITH　ASSISTANT -->
+			<div class="box-assist ui-widget-content ui-corner-all">
+				<div class="box-title ui-state-default ui-corner-top">
+					<div class="ui-icon ui-icon-triangle-1-w float-left"></div>
+					<a href="questionList.html${questionListQuery}">返回提问列表</a>
+				</div>
+				<div class="box-content ui-widget-content">
+				<#if user.state=="Incomplete">
+					<a href="modifyMember.html">完整个人资料</a>
+				</#if>
+				</div>
+			</div>
+		</td>
+		<td align="left" valign="top">
+			<!-- REPLACE HERE WITH CONTENT -->
+			<div class="box-body ui-widget-content ui-corner-all">
+				<div class="box-title navbar ui-state-default ui-corner-top">
+					<a href="../home.html" class="float-left"><span class="ui-icon ui-icon-home"></span></a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="questionList.html" class="nav-link float-left">提问列表</a>
+					<div class="ui-icon ui-icon-carat-1-e float-left"></div>
+					<a href="#" class="nav-link float-left">新提问</a>
+				</div>
+				<@actionMessage />
+				<form id="postForm" method="post">
+				<div class="box-content ui-widget-content">
+					<table border="0" cellspacing="1" cellpadding="5">
+					<tbody>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">学科<span class="required">*</span></th>
+							<td align="left">
+								<@input type="select" name="subject" id="subject" options=subjects value=params.subject />
+								<@message name="subject" />
+							</td>
+							<td align="left" class="alpha25">请输入学科。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">问题描述<span class="required">*</span></th>
+							<td align="left">
+								<textarea name="title" rows="5" cols="30">${params.title!}</textarea>
+								<@message name="title" />
+							</td>
+							<td align="left" class="alpha25">请输入问题的详细描述，字数在500字以内。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">上传图片</th>
+							<td align="left">
+								<input type="button" id="selectFile" value="选择上传文件" />
+								<input type="hidden" name="file" id="upfiles" />
+								<div id="filePane"></div>
+								<div id="uploadMessage"></div>
+							</td>
+							<td align="left" class="alpha25">如果单个图片大于500KB可能会导致发布提问失败。</td>
+						</tr>
+						<tr>
+							<th align="center" class="ui-widget-header noborder">指定学校或教师</th>
+							<td align="left">
+								<@input type="checkbox" id="apply" name="apply" value="true" checked=params.apply!"true"><span></span></@input>
+							</td>
+							<td align="left" class="alpha25">可以指定机构或教师为您解答，不选择则所有机构都可以为您解答。</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th>&nbsp;</th>
+							<td align="left">
+								<br />
+								<input type="button" id="submitButton" value="发布提问" class="green-button small-button ui-corner-all" />
+								<input type="hidden" name="new" value="new" />
+							</td>
+						</tr>
+					</tfoot>
+					</table>
+				</div>
+				</form>
+			</div>
+		</td>
+	</tr>
+</tbody>
+<#include "/_inc/foot.html">
+</table>
+</body>
+</html>

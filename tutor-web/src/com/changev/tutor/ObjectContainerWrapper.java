@@ -8,8 +8,6 @@ package com.changev.tutor;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.log4j.Logger;
-
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.ext.DatabaseClosedException;
@@ -34,14 +32,20 @@ import com.db4o.query.QueryComparator;
  * @author ren
  * @see ObjectContainer
  */
-public class ObjectContainerWrapper implements ObjectContainer, Serializable {
+public class ObjectContainerWrapper implements ObjectContainer, Serializable,
+		PerformanceIgnore {
 
 	private static final long serialVersionUID = -6221167529547830146L;
 
-	private static final Logger performance = Logger
-			.getLogger(Tutor.PERFORMANCE_LOGGER_NAME);
-
+	private boolean closeImmediately;
 	protected transient ObjectContainer original;
+
+	public ObjectContainerWrapper() {
+	}
+
+	public ObjectContainerWrapper(boolean closeImmediately) {
+		this.closeImmediately = closeImmediately;
+	}
 
 	protected ObjectContainer original() {
 		if (original == null || original.ext().isClosed())
@@ -64,8 +68,10 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 
 	@Override
 	public boolean close() throws Db4oIOException {
-		if (original != null && !original.ext().isClosed())
-			original().ext().purge();
+		if (original != null && closeImmediately) {
+			original.close();
+			original = null;
+		}
 		// always return true
 		return true;
 	}
@@ -99,18 +105,9 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			throws Db4oIOException, DatabaseClosedException {
 		long time = System.currentTimeMillis();
 		ObjectSet<T> set = original().queryByExample(template);
-		if (performance.isDebugEnabled()) {
-			time = System.currentTimeMillis() - time;
-			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
-			if (elems.length > 2) {
-				performance.debug(new StringBuilder("[Example] ")
-						.append(elems[2].getClassName()).append('#')
-						.append(elems[2].getMethodName()).append('@')
-						.append(elems[2].getLineNumber()).append("=")
-						.append(set.size()).append(" : ").append(time)
-						.append("ms").toString());
-			}
-		}
+		if (Tutor.isPerformanceEnabled())
+			Tutor.performance("Example", System.currentTimeMillis() - time,
+					set.size());
 		return set;
 	}
 
@@ -124,18 +121,9 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			throws Db4oIOException, DatabaseClosedException {
 		long time = System.currentTimeMillis();
 		ObjectSet<TargetType> set = original().query(clazz);
-		if (performance.isDebugEnabled()) {
-			time = System.currentTimeMillis() - time;
-			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
-			if (elems.length > 2) {
-				performance.debug(new StringBuilder("[Class] ")
-						.append(elems[2].getClassName()).append('#')
-						.append(elems[2].getMethodName()).append('@')
-						.append(elems[2].getLineNumber()).append("=")
-						.append(set.size()).append(" : ").append(time)
-						.append("ms").toString());
-			}
-		}
+		if (Tutor.isPerformanceEnabled())
+			Tutor.performance("Class", System.currentTimeMillis() - time,
+					set.size());
 		return set;
 	}
 
@@ -145,18 +133,9 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			DatabaseClosedException {
 		long time = System.currentTimeMillis();
 		ObjectSet<TargetType> set = original().query(predicate);
-		if (performance.isDebugEnabled()) {
-			time = System.currentTimeMillis() - time;
-			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
-			if (elems.length > 2) {
-				performance.debug(new StringBuilder("[NativeQuery] ")
-						.append(elems[2].getClassName()).append('#')
-						.append(elems[2].getMethodName()).append('@')
-						.append(elems[2].getLineNumber()).append("=")
-						.append(set.size()).append(" : ").append(time)
-						.append("ms").toString());
-			}
-		}
+		if (Tutor.isPerformanceEnabled())
+			Tutor.performance("NativeQuery", System.currentTimeMillis() - time,
+					set.size());
 		return set;
 	}
 
@@ -167,18 +146,9 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			DatabaseClosedException {
 		long time = System.currentTimeMillis();
 		ObjectSet<TargetType> set = original().query(predicate, comparator);
-		if (performance.isDebugEnabled()) {
-			time = System.currentTimeMillis() - time;
-			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
-			if (elems.length > 2) {
-				performance.debug(new StringBuilder("[NativeQuerySort] ")
-						.append(elems[2].getClassName()).append('#')
-						.append(elems[2].getMethodName()).append('@')
-						.append(elems[2].getLineNumber()).append("=")
-						.append(set.size()).append(" : ").append(time)
-						.append("ms").toString());
-			}
-		}
+		if (Tutor.isPerformanceEnabled())
+			Tutor.performance("NativeQuerySort", System.currentTimeMillis()
+					- time, set.size());
 		return set;
 	}
 
@@ -188,18 +158,9 @@ public class ObjectContainerWrapper implements ObjectContainer, Serializable {
 			throws Db4oIOException, DatabaseClosedException {
 		long time = System.currentTimeMillis();
 		ObjectSet<TargetType> set = original().query(predicate, comparator);
-		if (performance.isDebugEnabled()) {
-			time = System.currentTimeMillis() - time;
-			StackTraceElement[] elems = Thread.currentThread().getStackTrace();
-			if (elems.length > 2) {
-				performance.debug(new StringBuilder("[NativeQuerySort] ")
-						.append(elems[2].getClassName()).append('#')
-						.append(elems[2].getMethodName()).append('@')
-						.append(elems[2].getLineNumber()).append("=")
-						.append(set.size()).append(" : ").append(time)
-						.append("ms").toString());
-			}
-		}
+		if (Tutor.isPerformanceEnabled())
+			Tutor.performance("NativeQuerySort", System.currentTimeMillis()
+					- time, set.size());
 		return set;
 	}
 

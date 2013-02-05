@@ -7,7 +7,6 @@ package com.changev.tutor.web;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.UserModel;
+import com.changev.tutor.util.PageList;
 import com.db4o.ObjectContainer;
 import com.db4o.ext.InvalidIDException;
 
@@ -84,11 +84,11 @@ public final class SessionContainer implements Serializable {
 
 	private Long loginUserId;
 	private Date loginDateTime;
-	private Messages sessionMessage = new Messages();
 	private String checkCode;
-
-	private transient UserModel loginUser;
-	private transient List<QuestionModel> questionList;
+	private String systemMessage;
+	private String actionMessage;
+	private transient PageList<QuestionModel> questionList;
+	private String questionListQuery;
 
 	SessionContainer() {
 	}
@@ -124,7 +124,6 @@ public final class SessionContainer implements Serializable {
 				objc.close();
 				loginUserId = null;
 				loginDateTime = null;
-				loginUser = null;
 			}
 		}
 	}
@@ -135,18 +134,13 @@ public final class SessionContainer implements Serializable {
 	public UserModel getLoginUser() {
 		if (loginUserId == null)
 			return null;
-		if (loginUser == null
-				|| !Tutor.getCurrentContainerExt().isStored(loginUser)) {
-			try {
-				loginUser = Tutor.getCurrentContainerExt().getByID(loginUserId);
-			} catch (InvalidIDException e) {
-				loginUserId = null;
-				loginDateTime = null;
-				loginUser = null;
-				throw e;
-			}
+		try {
+			return Tutor.getCurrentContainerExt().getByID(loginUserId);
+		} catch (InvalidIDException e) {
+			loginUserId = null;
+			loginDateTime = null;
+			throw e;
 		}
-		return loginUser;
 	}
 
 	/**
@@ -164,18 +158,33 @@ public final class SessionContainer implements Serializable {
 	}
 
 	/**
-	 * @return the sessionMessage
+	 * @return the systemMessage
 	 */
-	public Messages getSessionMessage() {
-		return sessionMessage;
+	public String getSystemMessage() {
+		return systemMessage;
 	}
 
 	/**
-	 * @param sessionMessage
-	 *            the sessionMessage to set
+	 * @param systemMessage
+	 *            the systemMessage to set
 	 */
-	public void setSessionMessage(Messages sessionMessage) {
-		this.sessionMessage = sessionMessage;
+	public void setSystemMessage(String systemMessage) {
+		this.systemMessage = systemMessage;
+	}
+
+	/**
+	 * @return the actionMessage
+	 */
+	public String getActionMessage() {
+		return actionMessage;
+	}
+
+	/**
+	 * @param actionMessage
+	 *            the actionMessage to set
+	 */
+	public void setActionMessage(String actionMessage) {
+		this.actionMessage = actionMessage;
 	}
 
 	/**
@@ -198,7 +207,7 @@ public final class SessionContainer implements Serializable {
 	/**
 	 * @return the questionList
 	 */
-	public List<QuestionModel> getQuestionList() {
+	public PageList<QuestionModel> getQuestionList() {
 		return questionList;
 	}
 
@@ -206,8 +215,23 @@ public final class SessionContainer implements Serializable {
 	 * @param questionList
 	 *            the questionList to set
 	 */
-	public void setQuestionList(List<QuestionModel> questionList) {
+	public void setQuestionList(PageList<QuestionModel> questionList) {
 		this.questionList = questionList;
+	}
+
+	/**
+	 * @return the questionListQuery
+	 */
+	public String getQuestionListQuery() {
+		return questionListQuery;
+	}
+
+	/**
+	 * @param questionListQuery
+	 *            the questionListQuery to set
+	 */
+	public void setQuestionListQuery(String questionListQuery) {
+		this.questionListQuery = questionListQuery;
 	}
 
 }

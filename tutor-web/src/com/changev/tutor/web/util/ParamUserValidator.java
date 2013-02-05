@@ -21,6 +21,30 @@ import com.changev.tutor.model.UserRole;
  */
 public class ParamUserValidator extends ParamValidator {
 
+	public static class ParamParentValidator extends ParamUserValidator {
+		public ParamParentValidator() {
+			super(UserRole.Parent);
+		}
+	}
+
+	public static class ParamStudentValidator extends ParamUserValidator {
+		public ParamStudentValidator() {
+			super(UserRole.Student);
+		}
+	}
+
+	public static class ParamOrganizationValidator extends ParamUserValidator {
+		public ParamOrganizationValidator() {
+			super(UserRole.Organization);
+		}
+	}
+
+	public static class ParamTeacherValidator extends ParamUserValidator {
+		public ParamTeacherValidator() {
+			super(UserRole.Teacher);
+		}
+	}
+
 	private UserRole role;
 
 	public ParamUserValidator() {

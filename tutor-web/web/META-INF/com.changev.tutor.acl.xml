@@ -4,23 +4,17 @@
 	<rule pattern="/front/registerStudent.html">
 		<accept		role="Parent"
 					state="Incomplete" />
-		<redirect	path="/front/member.html" />
+		<redirect	path="/front/questionList.html" />
 	</rule>
 	<rule pattern="/front/.*">
 		<accept		role="Parent|Student"
-					state="Activated" />
-		<redirect	role="Parent" 
-					state="Incomplete" 
-					path="/front/registerStudent.html" />
+					state="Activated|Incomplete" />
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
 	<rule pattern="/mobile/(?:login|register)\.html" />
 	<rule pattern="/mobile/.*">
 		<accept		role="Parent|Student"
-					state="Activated" />
-		<redirect	role="Parent" 
-					state="Incomplete" 
-					path="/mobile/registerStudent.html" />
+					state="Activated|Incomplete" />
 		<redirect	path="/mobile/login.html?url={url}" />
 	</rule>
 	<rule pattern="/back/.*">
@@ -37,6 +31,10 @@
 		<redirect	path="/public/login.html?url={url}" />
 	</rule>
 	<rule pattern="/files/.*">
+		<redirect	role="None"
+					path="/public/login.html?url={url}" />
+	</rule>
+	<rule pattern="/upload">
 		<redirect	role="None"
 					path="/public/login.html?url={url}" />
 	</rule>

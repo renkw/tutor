@@ -5,17 +5,6 @@
  */
 package com.changev.tutor.web.back;
 
-import static com.changev.tutor.model.AbstractModel.CREATE_DATE_TIME;
-import static com.changev.tutor.model.AbstractModel.DELETED;
-import static com.changev.tutor.model.QuestionModel.ASSIGN_TO;
-import static com.changev.tutor.model.QuestionModel.CITY;
-import static com.changev.tutor.model.QuestionModel.CLOSED;
-import static com.changev.tutor.model.QuestionModel.EXPIRATION_DATE;
-import static com.changev.tutor.model.QuestionModel.GRADE;
-import static com.changev.tutor.model.QuestionModel.GRADE_LEVEL;
-import static com.changev.tutor.model.QuestionModel.PROVINCE;
-import static com.changev.tutor.model.QuestionModel.SUBJECT;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,13 +17,14 @@ import org.apache.log4j.Logger;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.AnswerModel;
+import com.changev.tutor.model.ModelFactory;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.TeacherModel;
 import com.changev.tutor.model.UserRole;
-import com.changev.tutor.util.QueryBuilder;
-import com.changev.tutor.util.QueryBuilder.SubQuery;
+import com.changev.tutor.util.PageList;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
+import com.db4o.query.Predicate;
 
 /**
  * <p>
@@ -65,34 +55,33 @@ public class QuestionListView implements View {
 			logger.trace("[postRender] called");
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "serial" })
 	protected void searchQuestions(HttpServletRequest request) {
 		if (logger.isTraceEnabled())
 			logger.trace("[searchQuestions] called");
 
 		// parameters
-		String range = StringUtils.defaultIfEmpty(
-				request.getParameter("range"), "month");
-		String sort = StringUtils.defaultIfEmpty(request.getParameter("sort"),
-				"new");
-		String pageno = StringUtils.defaultIfEmpty(
-				request.getParameter("pageno"), "1");
-		String search = request.getParameter("search");
+		String sort = request.getParameter("sort");
+		String range = request.getParameter("range");
+		String pageno = request.getParameter("pageno");
 		if (logger.isDebugEnabled()) {
-			logger.debug("[searchQuestions] range = " + range);
 			logger.debug("[searchQuestions] sort = " + sort);
+			logger.debug("[searchQuestions] range = " + range);
 			logger.debug("[searchQuestions] pageno = " + pageno);
-			logger.debug("[searchQuestions] search = " + search);
 		}
+
+		sort = StringUtils.defaultIfEmpty(sort, "new");
+		range = StringUtils.defaultIfEmpty(range, "month");
 
 		SessionContainer container = SessionContainer.get(request);
 		final TeacherModel teacher = container.getLoginUser().as(
 				UserRole.Teacher);
-		List<QuestionModel> questionList = container.getQuestionList();
-		if (questionList == null || StringUtils.isNotEmpty(search)) {
+		PageList<QuestionModel> questionList = container.getQuestionList();
+		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			if (logger.isDebugEnabled())
 				logger.debug("[search] do search");
 
+			questionList = null;
 			Calendar calendar = Tutor.currentCalendar();
 			if ("week".equals(range))
 				calendar.add(Calendar.DATE, -7);
@@ -105,61 +94,91 @@ public class QuestionListView implements View {
 			else if ("all".equals(range))
 				calendar.clear();
 
-			Date toDate = calendar.getTime();
-			Date now = Tutor.currentDateTime();
+			final Date toDate = calendar.getTime();
 			// get answered questions
-			if ("old".equals(sort)) {
-				List<?> list = new QueryBuilder<AnswerModel>().isFalse(DELETED)
-						.eq(teacher, AnswerModel.ANSWERER)
-						.isTrue(AnswerModel.QUESTION, CLOSED)
-						.execute(AnswerModel.QUESTION);
-				questionList = (List<QuestionModel>) list;
-			} else {
-				QueryBuilder<QuestionModel> q = new QueryBuilder<QuestionModel>();
-				q.isFalse(CLOSED).isFalse(DELETED).ge(toDate, CREATE_DATE_TIME)
-						.gt(now, EXPIRATION_DATE).or(new SubQuery() {
+			if ("new".equals(sort)) {
+				final List<QuestionModel> oldQuestionList = ModelFactory
+						.getAnswerQuestionList(teacher.getAnswers());
+				questionList = new PageList<QuestionModel>(
+						new Predicate<QuestionModel>() {
 							@Override
-							public void query(QueryBuilder<?> q) {
-								q.eq(teacher, ASSIGN_TO).and(new SubQuery() {
-									@Override
-									public void query(QueryBuilder<?> q) {
-										q.isNull(ASSIGN_TO)
-												.eq(teacher.getProvince(),
-														PROVINCE)
-												.eq(teacher.getCity(), CITY)
-												.eq(teacher.getGrade(), GRADE)
-												.range(teacher
-														.getGradeLevelFrom(),
-														teacher.getGradeLevelTo(),
-														GRADE_LEVEL)
-												.in(teacher.getSubjects(),
-														SUBJECT);
-									}
-								});
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& !candidate.getClosed()
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0
+										&& (candidate.getAssignTo() == teacher
+												|| candidate.getAssignTo() == teacher
+														.getOrganization() || candidate
+												.getAssignTo() == null)
+										&& !oldQuestionList.contains(candidate);
 							}
 						});
-				questionList = q.execute();
+			} else if ("old".equals(sort)) {
+				List<AnswerModel> list = Tutor.getCurrentContainer().query(
+						new Predicate<AnswerModel>() {
+							@Override
+							public boolean match(AnswerModel candidate) {
+								return !candidate.getDeleted()
+										&& candidate.getAnswerer() == teacher
+										&& !candidate.getQuestion().getClosed()
+										&& candidate.getQuestion()
+												.getCreateDateTime()
+												.compareTo(toDate) >= 0;
+							}
+						});
+				questionList = new PageList<QuestionModel>(
+						ModelFactory.getAnswerQuestionList(list));
+			} else if ("close".equals(sort)) {
+				questionList = new PageList<QuestionModel>(
+						new Predicate<QuestionModel>() {
+							@Override
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& candidate.getClosed()
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0
+										&& (candidate.getAssignTo() == teacher
+												|| candidate.getAssignTo() == teacher
+														.getOrganization() || candidate
+												.getAssignTo() == null);
+							}
+						});
+			} else if ("all".equals(sort)) {
+				questionList = new PageList<QuestionModel>(
+						new Predicate<QuestionModel>() {
+							@Override
+							public boolean match(QuestionModel candidate) {
+								return !candidate.getDeleted()
+										&& candidate.getCreateDateTime()
+												.compareTo(toDate) >= 0
+										&& (candidate.getAssignTo() == teacher
+												|| candidate.getAssignTo() == teacher
+														.getOrganization() || candidate
+												.getAssignTo() == null);
+							}
+						});
 			}
+
+			questionList.setPageItems(10); // default 10 items per page
 			container.setQuestionList(questionList);
 		}
 
 		// set variables
-		final int items = 10;
-		int size = questionList.size(), start = items
-				* (Integer.parseInt(pageno) - 1);
-		questionList = Tutor.listDesc(questionList, size - start - 1, items);
-		if (!"old".equals(sort)) {
-			List<?> oldQuestionList = new QueryBuilder<AnswerModel>()
-					.isFalse(DELETED).isFalse(AnswerModel.QUESTION, CLOSED)
-					.eq(teacher, AnswerModel.ANSWERER)
-					.execute(AnswerModel.QUESTION);
-			for (QuestionModel question : questionList)
-				question.setNewFlag(!oldQuestionList.contains(question));
-		}
+		int pages = questionList.getTotalPages();
+		int pn = StringUtils.isEmpty(pageno) ? 1 : Math.max(1,
+				Math.min(Integer.parseInt(pageno), pages));
 
-		request.setAttribute("total", size);
-		request.setAttribute("totalPages", (size + items - 1) / items);
-		request.setAttribute("questions", questionList);
+		request.setAttribute("sort", sort);
+		request.setAttribute("range", range);
+		request.setAttribute("pageno", pn);
+		request.setAttribute("total", questionList.getTotalItems());
+		request.setAttribute("totalPages", pages);
+		request.setAttribute("questions", questionList.getPage(pn, false));
+
+		container.setQuestionListQuery(new StringBuilder("?sort=").append(sort)
+				.append("&amp;range=").append(range).append("&amp;pageno=")
+				.append(pn).toString());
 	}
 
 }

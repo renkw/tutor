@@ -6,11 +6,11 @@
 package com.changev.tutor.model;
 
 import java.util.List;
-import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
-import com.db4o.collections.ActivatableHashSet;
 
 /**
  * <p>
@@ -24,12 +24,23 @@ public class ParentModel extends UserModel {
 
 	private static final long serialVersionUID = 5756233700028997499L;
 
-	public static final String CONTACTERS = "contacters";
+	public static final String PROVINCE = "province";
+	public static final String CITY = "city";
+	public static final String DISTRICT = "district";
 
-	private Set<UserModel> contacters;
+	private String province;
+	private String city;
+	private String district;
 
 	public ParentModel() {
 		super.setRole(UserRole.Parent);
+	}
+
+	public String getLocation() {
+		beforeGet();
+		return new StringBuilder().append(StringUtils.defaultString(province))
+				.append(StringUtils.defaultString(city))
+				.append(StringUtils.defaultString(district)).toString();
 	}
 
 	public List<StudentModel> getChildren() {
@@ -40,18 +51,6 @@ public class ParentModel extends UserModel {
 	public List<QuestionModel> getQuestions() {
 		return Tutor.getCurrentContainer().queryByExample(
 				ModelFactory.getUserQuestionExample(getEmail()));
-	}
-
-	public List<QuestionModel> getUnclosedQuestions() {
-		QuestionModel example = ModelFactory.getUserQuestionExample(getEmail());
-		example.setClosed(Boolean.FALSE);
-		return Tutor.getCurrentContainer().queryByExample(example);
-	}
-
-	public List<QuestionModel> getClosedQuestions() {
-		QuestionModel example = ModelFactory.getUserQuestionExample(getEmail());
-		example.setClosed(Boolean.TRUE);
-		return Tutor.getCurrentContainer().queryByExample(example);
 	}
 
 	@Override
@@ -79,23 +78,54 @@ public class ParentModel extends UserModel {
 	}
 
 	/**
-	 * @return the contacters
+	 * @return the province
 	 */
-	public Set<UserModel> getContacters() {
+	public String getProvince() {
 		beforeGet();
-		return contacters;
+		return province;
 	}
 
 	/**
-	 * @return the contacters
+	 * @param province
+	 *            the province to set
 	 */
-	public Set<UserModel> getContactersFor() {
+	public void setProvince(String province) {
+		beforeSet();
+		this.province = province;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
 		beforeGet();
-		if (contacters == null) {
-			beforeSet();
-			contacters = new ActivatableHashSet<UserModel>();
-		}
-		return contacters;
+		return city;
+	}
+
+	/**
+	 * @param city
+	 *            the city to set
+	 */
+	public void setCity(String city) {
+		beforeSet();
+		this.city = city;
+	}
+
+	/**
+	 * @return the district
+	 */
+	public String getDistrict() {
+		beforeGet();
+		return district;
+	}
+
+	/**
+	 * @param district
+	 *            the district to set
+	 */
+	public void setDistrict(String district) {
+		beforeSet();
+		this.district = district;
 	}
 
 }

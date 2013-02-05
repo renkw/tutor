@@ -5,6 +5,7 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +36,6 @@ public class TeacherModel extends UserModel {
 	public static final String TEACHED_YEARS = "teachedYears";
 	public static final String SPECIALITY = "speciality";
 	public static final String HOMEPAGE = "homepage";
-	public static final String CONTACTERS = "contacters";
 	public static final String ORGANIZATION = "organization";
 	public static final String SCORE = "score";
 
@@ -50,7 +50,6 @@ public class TeacherModel extends UserModel {
 	private Byte teachedYears;
 	private Set<String> speciality;
 	private String homepage;
-	private Set<UserModel> contacters;
 	@Indexed
 	private OrganizationModel organization;
 	private Integer score;
@@ -64,19 +63,9 @@ public class TeacherModel extends UserModel {
 				.append(' ').append(getName()).toString();
 	}
 
-	public List<QuestionModel> getAssignedQuestions() {
-		return Tutor.getCurrentContainer().queryByExample(
-				ModelFactory.getAssignedQuestionExample(getEmail()));
-	}
-
 	public List<AnswerModel> getAnswers() {
 		return Tutor.getCurrentContainer().queryByExample(
 				ModelFactory.getTeacherAnswerExample(getEmail()));
-	}
-
-	public List<AnswerModel> getAcceptAnswers() {
-		return Tutor.getCurrentContainer().queryByExample(
-				ModelFactory.getAcceptedAnswerExample(getEmail()));
 	}
 
 	@Override
@@ -143,6 +132,8 @@ public class TeacherModel extends UserModel {
 	 */
 	public Set<String> getSubjects() {
 		beforeGet();
+		if (subjects == null)
+			return Collections.emptySet();
 		return subjects;
 	}
 
@@ -248,6 +239,8 @@ public class TeacherModel extends UserModel {
 	 */
 	public Set<String> getSpeciality() {
 		beforeGet();
+		if (speciality == null)
+			return Collections.emptySet();
 		return speciality;
 	}
 
@@ -295,26 +288,6 @@ public class TeacherModel extends UserModel {
 	public void setHomepage(String homepage) {
 		beforeSet();
 		this.homepage = homepage;
-	}
-
-	/**
-	 * @return the contacters
-	 */
-	public Set<UserModel> getContacters() {
-		beforeGet();
-		return contacters;
-	}
-
-	/**
-	 * @return the contacters
-	 */
-	public Set<UserModel> getContactersFor() {
-		beforeGet();
-		if (contacters == null) {
-			beforeSet();
-			contacters = new ActivatableHashSet<UserModel>();
-		}
-		return contacters;
 	}
 
 	/**

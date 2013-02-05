@@ -5,6 +5,7 @@
  */
 package com.changev.tutor.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class StudentModel extends UserModel {
 	private String grade;
 	private Byte gradeLevel;
 	private String hobby;
-	private Map<String, TeacherModel> defaultAnswerer;
+	private Map<String, UserModel> defaultAnswerer;
 	@Indexed
 	private ParentModel parent;
 
@@ -52,21 +53,7 @@ public class StudentModel extends UserModel {
 
 	public List<QuestionModel> getQuestions() {
 		return Tutor.getCurrentContainer().queryByExample(
-				ModelFactory.getStudentQuestionExample(getEmail()));
-	}
-
-	public List<QuestionModel> getUnclosedQuestions() {
-		QuestionModel example = ModelFactory
-				.getStudentQuestionExample(getEmail());
-		example.setClosed(Boolean.FALSE);
-		return Tutor.getCurrentContainer().queryByExample(example);
-	}
-
-	public List<QuestionModel> getClosedQuestions() {
-		QuestionModel example = ModelFactory
-				.getStudentQuestionExample(getEmail());
-		example.setClosed(Boolean.TRUE);
-		return Tutor.getCurrentContainer().queryByExample(example);
+				ModelFactory.getUserQuestionExample(getEmail()));
 	}
 
 	@Override
@@ -215,19 +202,21 @@ public class StudentModel extends UserModel {
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, TeacherModel> getDefaultAnswerer() {
+	public Map<String, UserModel> getDefaultAnswerer() {
 		beforeGet();
+		if (defaultAnswerer == null)
+			return Collections.emptyMap();
 		return defaultAnswerer;
 	}
 
 	/**
 	 * @return the defaultServicer
 	 */
-	public Map<String, TeacherModel> getDefaultAnswererFor() {
+	public Map<String, UserModel> getDefaultAnswererFor() {
 		beforeGet();
 		if (defaultAnswerer == null) {
 			beforeSet();
-			defaultAnswerer = new ActivatableHashMap<String, TeacherModel>();
+			defaultAnswerer = new ActivatableHashMap<String, UserModel>();
 		}
 		return defaultAnswerer;
 	}

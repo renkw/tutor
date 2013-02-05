@@ -6,10 +6,9 @@
 package com.changev.tutor.model;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
 import com.db4o.ObjectContainer;
@@ -37,39 +36,31 @@ public class QuestionModel extends AbstractModel {
 	private static final long serialVersionUID = -1143983407388574974L;
 
 	public static final String QUESTIONER = "questioner";
-	public static final String STUDENT = "student";
-	public static final String PROVINCE = "province";
-	public static final String CITY = "city";
-	public static final String DISTRICT = "district";
-	public static final String SUBJECT = "subject";
 	public static final String GRADE = "grade";
 	public static final String GRADE_LEVEL = "gradeLevel";
 	public static final String TITLE = "title";
 	public static final String ASSIGN_TO = "assignTo";
 	public static final String FINAL_ANSWERER = "finalAnswerer";
 	public static final String CLOSED = "closed";
+	public static final String ANSWERED = "answered";
 	public static final String EXPIRATION_DATE = "expirationDate";
 	public static final String CLOSED_DATE_TIME = "closedDateTime";
 	public static final String UPLOAD_PICTURES = "uploadPictures";
 
 	@Indexed
 	private UserModel questioner;
-	private StudentModel student;
-	private String province;
-	// XXX 有user的model为什么还需要城市这些？是不是可以去掉
-	private String city;
-	private String district;
 	private String subject;
 	private String grade;
 	private Byte gradeLevel;
 	private String title;
 	@Indexed
-	private TeacherModel assignTo;
+	private UserModel assignTo;
 	private TeacherModel finalAnswerer;
 	private Boolean closed;
+	private Boolean answered;
+	@Indexed
 	private Date expirationDate;
 	private Date closedDateTime;
-	@Indexed
 	private List<String> uploadPictures;
 	/*
 	 * 问题类型
@@ -79,14 +70,21 @@ public class QuestionModel extends AbstractModel {
 	 * 提问人的id
 	 */
 	private String user_id;
-	
-	private transient boolean newFlag;
+
+	public StudentModel getStudent() {
+		UserModel user = getQuestioner();
+		if (user instanceof StudentModel)
+			return (StudentModel) user;
+		if (user instanceof ParentModel)
+			return Tutor.one(((ParentModel) user).getChildren());
+		return null;
+	}
 
 	public String getLocation() {
-		beforeGet();
-		return new StringBuilder().append(StringUtils.defaultString(province))
-				.append(StringUtils.defaultString(city))
-				.append(StringUtils.defaultString(district)).toString();
+		StudentModel student = getStudent();
+		if (student != null && student.getParent() != null)
+			return student.getParent().getLocation();
+		return "";
 	}
 
 	@Override
@@ -97,12 +95,15 @@ public class QuestionModel extends AbstractModel {
 	@Override
 	public void objectOnNew(ObjectContainer container) {
 		super.objectOnNew(container);
-		setProvince(student.getProvince());
-		setCity(student.getCity());
-		setDistrict(student.getDistrict());
-		setGrade(student.getGrade());
-		setGradeLevel(student.getGradeLevel());
+		if (grade == null && gradeLevel == null) {
+			StudentModel student = getStudent();
+			if (student != null) {
+				setGrade(student.getGrade());
+				setGradeLevel(student.getGradeLevel());
+			}
+		}
 		setClosed(Boolean.FALSE);
+		setAnswered(Boolean.FALSE);
 		Calendar today = Tutor.currentDateCalendar();
 		today.add(Calendar.MONTH, 1);
 		setExpirationDate(today.getTime());
@@ -133,74 +134,6 @@ public class QuestionModel extends AbstractModel {
 	public void setQuestioner(UserModel questioner) {
 		beforeSet();
 		this.questioner = questioner;
-	}
-
-	/**
-	 * @return the student
-	 */
-	public StudentModel getStudent() {
-		beforeGet();
-		return student;
-	}
-
-	/**
-	 * @param student
-	 *            the student to set
-	 */
-	public void setStudent(StudentModel student) {
-		beforeSet();
-		this.student = student;
-	}
-
-	/**
-	 * @return the province
-	 */
-	public String getProvince() {
-		beforeGet();
-		return province;
-	}
-
-	/**
-	 * @param province
-	 *            the province to set
-	 */
-	public void setProvince(String province) {
-		beforeSet();
-		this.province = province;
-	}
-
-	/**
-	 * @return the city
-	 */
-	public String getCity() {
-		beforeGet();
-		return city;
-	}
-
-	/**
-	 * @param city
-	 *            the city to set
-	 */
-	public void setCity(String city) {
-		beforeSet();
-		this.city = city;
-	}
-
-	/**
-	 * @return the district
-	 */
-	public String getDistrict() {
-		beforeGet();
-		return district;
-	}
-
-	/**
-	 * @param district
-	 *            the district to set
-	 */
-	public void setDistrict(String district) {
-		beforeSet();
-		this.district = district;
 	}
 
 	/**
@@ -274,7 +207,7 @@ public class QuestionModel extends AbstractModel {
 	/**
 	 * @return the assignTo
 	 */
-	public TeacherModel getAssignTo() {
+	public UserModel getAssignTo() {
 		beforeGet();
 		return assignTo;
 	}
@@ -283,7 +216,7 @@ public class QuestionModel extends AbstractModel {
 	 * @param assignTo
 	 *            the assignTo to set
 	 */
-	public void setAssignTo(TeacherModel assignTo) {
+	public void setAssignTo(UserModel assignTo) {
 		beforeSet();
 		this.assignTo = assignTo;
 	}
@@ -340,6 +273,23 @@ public class QuestionModel extends AbstractModel {
 	}
 
 	/**
+	 * @return the answered
+	 */
+	public Boolean getAnswered() {
+		beforeGet();
+		return answered;
+	}
+
+	/**
+	 * @param answered
+	 *            the answered to set
+	 */
+	public void setAnswered(Boolean answered) {
+		beforeSet();
+		this.answered = answered;
+	}
+
+	/**
 	 * @return the finalAnswerer
 	 */
 	public TeacherModel getFinalAnswerer() {
@@ -361,6 +311,8 @@ public class QuestionModel extends AbstractModel {
 	 */
 	public List<String> getUploadPictures() {
 		beforeGet();
+		if (uploadPictures == null)
+			return Collections.emptyList();
 		return uploadPictures;
 	}
 
@@ -374,20 +326,6 @@ public class QuestionModel extends AbstractModel {
 			uploadPictures = new ActivatableArrayList<String>();
 		}
 		return uploadPictures;
-	}
-
-	/**
-	 * @return the newFlag
-	 */
-	public boolean isNewFlag() {
-		return newFlag;
-	}
-
-	/**
-	 * @param newFlag the newFlag to set
-	 */
-	public void setNewFlag(boolean newFlag) {
-		this.newFlag = newFlag;
 	}
 
 	public int getType() {
