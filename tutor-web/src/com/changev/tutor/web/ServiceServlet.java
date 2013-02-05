@@ -124,7 +124,10 @@ public class ServiceServlet extends HttpServlet {
 					this.publicServices.add(s);
 			}
 		}
-
+		//this.publicServices.add("viewDetailService");
+		//this.publicServices.add("sumbitQuestionService");
+		//this.publicServices.add("loginService");
+		//this.publicServices.add("listMyQuestionService");
 		this.expiration = StringUtils.isEmpty(expiration) ? Long.MAX_VALUE
 				: Long.parseLong(expiration);
 
@@ -160,6 +163,12 @@ public class ServiceServlet extends HttpServlet {
 		}
 	}
 
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		doPost(req, resp);
+	}
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -273,6 +282,7 @@ public class ServiceServlet extends HttpServlet {
 		if (StringUtils.isEmpty(auth)) {
 			// decrypt
 			String content="";
+
 			try {
 				Cipher cipher = Cipher.getInstance("AES");
 				cipher.init(Cipher.DECRYPT_MODE, Tutor.AES_KEY);
@@ -402,8 +412,8 @@ public class ServiceServlet extends HttpServlet {
 		InputStream stream = request.getInputStream();
 		try {
 			// plain text
-			if (type == String.class)
-				return IOUtils.toString(stream, DEFAULT_ENCODING);
+			//if (type == String.class)
+			//	return IOUtils.toString(stream, DEFAULT_ENCODING);
 			// stream
 			if (type == byte[].class)
 				return IOUtils.toByteArray(stream);
