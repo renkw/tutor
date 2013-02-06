@@ -6,10 +6,12 @@
 			</a>
 		</th>
 		<th align="left" valign="top">
-			<#if systemMessage??>
+			<#if user??&user.state=="Incomplete">
 			<div class="ui-state-highlight float-left" style="padding:2px">
 				<div class="ui-icon ui-icon-alert float-left"></div>
-				systemMessage
+				<#if userRole=="Parent"||userRole=="Student"><a href="${request.contextPath}/front/modifyMember.html">
+				<#else><a href="${request.contextPath}/back/modifyMember.html">
+				</#if>为了更好地服务，请补充您的个人资料。</a>
 				<br class="clear-left" />
 			</div>
 			</#if>

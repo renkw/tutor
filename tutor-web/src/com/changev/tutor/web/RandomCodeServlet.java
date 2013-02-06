@@ -11,6 +11,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -73,7 +74,12 @@ public class RandomCodeServlet extends HttpServlet {
 		resp.setHeader("Pragma", "no-cache");
 		resp.setHeader("Cache-Control", "no-cache");
 		resp.setContentType("image/gif");
-		ImageIO.write(img, "gif", resp.getOutputStream());
+		OutputStream stream = resp.getOutputStream();
+		try {
+			ImageIO.write(img, "gif", stream);
+		} finally {
+			stream.close();
+		}
 	}
 
 	/**
