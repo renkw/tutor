@@ -30,7 +30,7 @@ $(function() {
 	
 	
 	var uploader = new plupload.Uploader({
-		"runtimes" : "flash,silverlight",
+		"runtimes" : "flash,silverlight,html5",
 		"url" : "../upload",
 		"multipart" : true,
 		"browse_button" : "selectFile",
@@ -81,24 +81,33 @@ $(function() {
 		$("#upfiles").val(s);
 	});
 	uploader.bind("UploadComplete", function(up, files) {
-		var done = true;
+		var done = true, s = $("#_upfiles").val();
 		for (var i = 0; i < files.length; i++) {
-			if (files[i].status == plupload.FAILED) {
-				if (done) $("#submitButton")[0].disabled = false;
+			if (files[i].status == plupload.DONE) {
+				if (s.length != 0)
+					s += ","
+				s += files[i].name;
+			} else if (files[i].status == plupload.FAILED) {
 				files[i].status = plupload.QUEUED;
 				done = false;
 			}
 		}
+		$("#_upfiles").val(s);
 		if (done) document.getElementById("postForm").submit();
+		else $("#submitButton")[0].disabled = false;
 	});
 	uploader.bind("Error", function(up, err) {
-		$("#uploadMessage").text("上传文件失败");
+		$("#uploadMessage").html("<div class='ui-state-error'><div class='ui-icon ui-icon-close float-left'></div>上传文件失败</div>");
 	});
 	uploader.init();
 	
 	$("#submitButton").click(function() {
-		this.disabled = true;
-		uploader.start();
+		if (uploader.files.length == 0) {
+			document.getElementById("postForm").submit();
+		} else {
+			this.disabled = true;
+			uploader.start();
+		}
 	});
 });
 //-->
@@ -158,8 +167,18 @@ $(function() {
 							<th align="center" class="ui-widget-header noborder">上传图片</th>
 							<td align="left">
 								<input type="button" id="selectFile" value="选择上传文件" />
-								<input type="hidden" name="file" id="upfiles" />
-								<div id="filePane"></div>
+								<input type="hidden" name="file" id="upfiles" value="${file}" />
+								<input type="hidden" name="_file" id="_upfiles" value="${_file}" />
+								<div id="filePane">
+								<#list _file?split(",") as f>
+									<#if f!="">
+									<div class="ui-state-active noborder nobg">
+										<div class="ui-icon ui-icon-circle-check float-left"></div>
+										<span>${f}</span><br class="clear-left" />
+									</div>
+									</#if>
+								</#list>
+								</div>
 								<div id="uploadMessage"></div>
 							</td>
 							<td align="left" class="alpha25">如果单个图片大于500KB可能会导致发布提问失败。</td>

@@ -76,6 +76,24 @@ function add() {
 	<input type="hidden" name="id" id="id" />
 </form>
 <#if result??>
+<#macro outputProperty value>
+<#if instanceof(value, "com.changev.tutor.model.AbstractModel")>
+<a href="javascript:search(${id(value)})">${value.class.simpleName}(${id(value)})</a>
+<#elseif value?is_hash_ex>
+	<#list value?keys as key>
+	${key} = <@outputProperty value=value[key] /><br />
+	</#list>
+<#elseif value?is_enumerable>
+	<#list value as v>
+	${v_index} = <@outputProperty value=v /><br />
+	</#list>
+<#elseif value?is_string>${value?html}
+<#elseif value?is_number>${value?c}
+<#elseif value?is_boolean>${value?string("TRUE","FALSE")}
+<#elseif value?is_date>${value?datetime}
+<#else>${value.toString()?html}
+</#if>
+</#macro>
 <table border="1">
 	<thead>
 		<tr>
@@ -90,11 +108,7 @@ function add() {
 		<tr>
 			<td nowrap="nowrap"><a href="javascript:edit(${id(row)})">EDIT</a> <a href="javascript:del(${id(row)})">DEL</a></td>
 			<#list result.names as name>
-			<#if instanceof(row[name], "com.changev.tutor.model.AbstractModel")>
-			<td nowrap="nowrap"><a href="javascript:search(${id(row[name])})">${row[name].class.simpleName}(${id(row[name])})</a></td>
-			<#else>
-			<td>${toString(row[name])}</td>
-			</#if>
+			<td nowrap="nowrap"><#if row[name]??><@outputProperty value=row[name] /><#else>&nbsp;</#if></td>
 			</#list>
 		</tr>
 		</#list>
@@ -102,4 +116,4 @@ function add() {
 </table>
 </#if>
 </body>
-</html>
+</html> 

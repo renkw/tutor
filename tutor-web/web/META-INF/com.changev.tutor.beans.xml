@@ -50,6 +50,18 @@
 	<!-- Gson -->
 	<bean class="com.google.gson.Gson" />
 
+	<!-- File upload -->
+	<bean class="org.apache.commons.fileupload.servlet.ServletFileUpload"
+		p:sizeMax="#{5*1024*1024}"
+		p:fileSizeMax="#{500*1024}"
+	>
+		<property name="fileItemFactory">
+			<bean class="org.apache.commons.fileupload.disk.DiskFileItemFactory"
+				p:sizeThreshold="#{10*1024}"
+			/>
+		</property>
+	</bean>
+	
 	<!-- ####################################### -->
 	<!-- ##     APPLICATION CONFIGURATION     ## -->
 	<!-- ####################################### -->

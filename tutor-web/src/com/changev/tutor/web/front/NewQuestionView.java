@@ -20,6 +20,7 @@ import com.changev.tutor.model.ParentModel;
 import com.changev.tutor.model.QuestionModel;
 import com.changev.tutor.model.StudentModel;
 import com.changev.tutor.model.UserModel;
+import com.changev.tutor.web.Messages;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.changev.tutor.web.util.ParamUtils;
@@ -141,6 +142,15 @@ public class NewQuestionView implements View {
 		}
 		request.setAttribute("defaultAnswererJson", Tutor.getBeanFactory()
 				.getBean(Gson.class).toJson(defaultAnswerer));
+		if (Messages.hasErrors(request)) {
+			request.setAttribute("file",
+					StringUtils.defaultString(request.getParameter("file")));
+			request.setAttribute("_file",
+					StringUtils.defaultString(request.getParameter("_file")));
+		} else {
+			request.setAttribute("file", "");
+			request.setAttribute("_file", "");
+		}
 	}
 
 	/**

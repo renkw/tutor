@@ -165,8 +165,8 @@ public class DataEditorView implements View {
 		}
 
 		Class<?> type = data.getClass();
-		request.setAttribute("id", Tutor.id(data));
-		request.setAttribute("type", type.getSimpleName());
+		request.setAttribute("dataId", Tutor.id(data));
+		request.setAttribute("dataType", type.getSimpleName());
 
 		if (type != null) {
 			do {
