@@ -272,58 +272,13 @@ public class ServiceServlet extends HttpServlet {
 			logger.debug("[getUserModel] X-Tutor-Auth = " + auth);
 		}
 
-		if (StringUtils.isEmpty(user)) {
+		if (StringUtils.isEmpty(user) || StringUtils.isEmpty(auth)) {
 			// missing required header. send 400
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return null;
 		}
 
-		AuthInfo info;
-		if (StringUtils.isEmpty(auth)) {
-			// decrypt
-			String content="";
-
-			try {
-				Cipher cipher = Cipher.getInstance("AES");
-				cipher.init(Cipher.DECRYPT_MODE, Tutor.AES_KEY);
-				content = new String(cipher.doFinal(user.getBytes()));
-				if (logger.isDebugEnabled())
-					logger.debug("[getUserModel] content = " + content);
-			} catch (Exception e) {
-				logger.error("[getUserModel] AES decrypt failed", e);
-//				throw new ServletException(e);
-			}
-
-			// username::clientToken
-			int sep = content.indexOf("::");
-			if (sep == -1) {
-				// illegal usercode. send 400
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-			} else {
-				String serviceToken = RandomStringUtils.randomAscii(100);
-				info = new AuthInfo(content.substring(0, sep), serviceName,
-						serviceToken, content.substring(sep + 2),
-						(System.currentTimeMillis() + expiration));
-				if (logger.isDebugEnabled())
-					logger.debug("[getUserModel] create authInfo = " + info);
-				tokens.put(user, info);
-				response.setHeader(TUTOR_TOKEN_HEADER, serviceToken);
-				response.getOutputStream().close();
-			}
-			return null;
-		}
-
-		info = tokens.remove(user);
-		if (logger.isDebugEnabled())
-			logger.debug("[getUserModel] get authInfo = " + info);
-		if (info == null || !serviceName.equals(info.serviceName)) {
-			// forbidden. send 403
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
-			return null;
-		}
-
-		ObjectSet<UserModel> userSet = Tutor.getCurrentContainer()
-				.queryByExample(ModelFactory.getUserExample(info.username));
+		ObjectSet<UserModel> userSet = Tutor.getCurrentContainer().queryByExample(ModelFactory.getUserExample(user));
 		if (!userSet.hasNext()) {
 			// user not exists. send 401
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -332,24 +287,84 @@ public class ServiceServlet extends HttpServlet {
 
 		// compare token
 		UserModel userModel = userSet.next();
-		String code = userModel.getSecureCode();
-		String token = info.serviceToken + "::" + info.clientToken;
-		SecretKeySpec secureKey = new SecretKeySpec(code.getBytes(), "HmacMD5");
-		try {
-			Cipher cipher = Cipher.getInstance("HmacMD5");
-			cipher.init(Cipher.ENCRYPT_MODE, secureKey);
-			String tokenHash = new String(cipher.doFinal(token.getBytes()));
-			if (logger.isDebugEnabled())
-				logger.debug("[getUserModel] tokenHash = " + tokenHash);
-			if (!auth.equals(tokenHash)) {
-				// auth failed. send 401
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-				return null;
-			}
-		} catch (Exception e) {
-			logger.error("[getUserModel] HmacMD5 encrypt failed", e);
-//			throw new ServletException(e);
+		String code = userModel.getPassword();
+		auth = ModelFactory.encryptPassword(auth);
+		if(!StringUtils.equals(auth, code)){
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
 		}
+//		AuthInfo info;
+//		if (StringUtils.isEmpty(auth)) {
+//			// decrypt
+//			String content="";
+//
+//			try {
+//				Cipher cipher = Cipher.getInstance("AES");
+//				cipher.init(Cipher.DECRYPT_MODE, Tutor.AES_KEY);
+//				content = new String(cipher.doFinal(user.getBytes()));
+//				if (logger.isDebugEnabled())
+//					logger.debug("[getUserModel] content = " + content);
+//			} catch (Exception e) {
+//				logger.error("[getUserModel] AES decrypt failed", e);
+////				throw new ServletException(e);
+//			}
+//
+//			// username::clientToken
+//			int sep = content.indexOf("::");
+//			if (sep == -1) {
+//				// illegal usercode. send 400
+//				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+//			} else {
+//				String serviceToken = RandomStringUtils.randomAscii(100);
+//				info = new AuthInfo(content.substring(0, sep), serviceName,
+//						serviceToken, content.substring(sep + 2),
+//						(System.currentTimeMillis() + expiration));
+//				if (logger.isDebugEnabled())
+//					logger.debug("[getUserModel] create authInfo = " + info);
+//				tokens.put(user, info);
+//				response.setHeader(TUTOR_TOKEN_HEADER, serviceToken);
+//				response.getOutputStream().close();
+//			}
+//			return null;
+//		}
+//
+//		info = tokens.remove(user);
+//		if (logger.isDebugEnabled())
+//			logger.debug("[getUserModel] get authInfo = " + info);
+//		if (info == null || !serviceName.equals(info.serviceName)) {
+//			// forbidden. send 403
+//			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+//			return null;
+//		}
+//
+//		ObjectSet<UserModel> userSet = Tutor.getCurrentContainer()
+//				.queryByExample(ModelFactory.getUserExample(info.username));
+//		if (!userSet.hasNext()) {
+//			// user not exists. send 401
+//			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+//			return null;
+//		}
+//
+//		// compare token
+//		UserModel userModel = userSet.next();
+//		String code = userModel.getSecureCode();
+//		String token = info.serviceToken + "::" + info.clientToken;
+//		SecretKeySpec secureKey = new SecretKeySpec(code.getBytes(), "HmacMD5");
+//		try {
+//			Cipher cipher = Cipher.getInstance("HmacMD5");
+//			cipher.init(Cipher.ENCRYPT_MODE, secureKey);
+//			String tokenHash = new String(cipher.doFinal(token.getBytes()));
+//			if (logger.isDebugEnabled())
+//				logger.debug("[getUserModel] tokenHash = " + tokenHash);
+//			if (!auth.equals(tokenHash)) {
+//				// auth failed. send 401
+//				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+//				return null;
+//			}
+//		} catch (Exception e) {
+//			logger.error("[getUserModel] HmacMD5 encrypt failed", e);
+////			throw new ServletException(e);
+//		}
 
 		return userModel;
 	}
@@ -423,7 +438,12 @@ public class ServiceServlet extends HttpServlet {
 					.getBean(Gson.class)
 					.fromJson(new InputStreamReader(stream, DEFAULT_ENCODING),
 							type);
-		} finally {
+		} 
+		catch(Exception e){
+			logger.error("reading request stream error", e);
+			throw new IOException(e);
+		}
+		finally {
 			stream.close();
 		}
 	}
@@ -459,10 +479,8 @@ public class ServiceServlet extends HttpServlet {
 			// json
 			response.setContentType("application/json");
 			response.setCharacterEncoding(DEFAULT_ENCODING);
-			Tutor.getBeanFactory()
-					.getBean(Gson.class)
-					.toJson(obj,
-							new OutputStreamWriter(stream, DEFAULT_ENCODING));
+			String json = Tutor.getBeanFactory().getBean(Gson.class).toJson(obj);
+			IOUtils.write(json, stream, DEFAULT_ENCODING);
 		} finally {
 			stream.close();
 		}

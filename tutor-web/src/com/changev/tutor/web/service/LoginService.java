@@ -25,14 +25,14 @@ public class LoginService implements Service<Map> {
 	@Override
 	public String run(UserModel user, Map input) throws Throwable {
 		String result = "登陆成功";
-//		if(user == null){
-//			result = "用户不存在";
-//		}
-		String password = String.valueOf(input.get("password"));
-		//XXX need hash?
-		if(!StringUtils.equals(password, user.getPassword())){
-			result = "密码不正确";
+		if(user == null){
+			result = "用户不存在";
 		}
+		
+		////XXX need hash?
+		//if(!StringUtils.equals(password, user.getPassword())){
+		//	result = "密码不正确";
+		//}
 		return result;
 	}
 
