@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>教师列表</title>
+<#include "/_inc/head.html">
+<style type="text/css">
+<!--
+#teacherList TH { text-align: left; font-weight: bold; border-bottom: 1px solid #e0eeef; }
+#teacherList TD.datarow { text-align: left; border-width: 0 !important; font-weight: normal !important; cursor: pointer; }
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function() {
+	$("#teacherList td.datarow").hover(function() {
+		$(this).parent().children().toggleClass("ui-state-hover");
+	}).click(function() {
+		var id = $(this).parent().attr("id");
+		if (id) location.href = "modifyTeacher.html?id=" + id;
+	});
+});
+//-->
+</script>
+</head>
+<body>
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
+<#include "/_inc/bar.html">
+<tbody>
+	<tr>
+		<td align="left" valign="top">
+			<!-- REPLACE HERE WITH CONTENT -->
+			<div class="box-body ui-widget-content ui-corner-all">
+				<div class="box-content ui-widget-content">
+					<table id="teacherList" width="100%" border="0" cellspacing="0" cellpadding="3">
+					<thead>
+						<tr>
+							<th>姓名</th>
+							<th>性别</th>
+							<th>学科</th>
+							<th>年级</th>
+							<th>固定电话</th>
+							<th>移动电话</th>
+							<th>邮件地址</th>
+						</tr>
+					</thead>
+					<tbody>
+					<#if teachers?size==0>
+						<tr>
+							<td colspan="7" align="center">
+								还没有
+							</td>
+						</tr>
+					</#if>
+					<#list teachers as teacher>
+						<#assign style=(teacher_index%2==0)?string('odd', 'even')>
+						<tr id="${id(teacher)}">
+							<td class="datarow ${style}">${teacher.name!}</td>
+							<td class="datarow ${style}">${(teacher.male?string('男', '女'))!}</td>
+							<td class="datarow ${style}">${join(teacher.subjects)}</td>
+							<td class="datarow ${style}">${teacher.grade!} ${teacher.gradeLevelFrom!}～${teacher.gradeLevelTo!}年级</td>
+							<td class="datarow ${style}">${(teacher.contact.telephone)!}</td>
+							<td class="datarow ${style}">${(teacher.contact.cellphone)!}</td>
+							<td class="datarow ${style}">${teacher.email!}</td>
+						</tr>
+					</#list>
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</td>
+	</tr>
+</tbody>
+<#include "/_inc/foot.html">
+</table>
+</body>
+</html>

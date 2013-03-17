@@ -295,6 +295,9 @@
 		</property>
 	</bean>
 	
+	<bean id="back.userlist" class="com.changev.tutor.web.back.UserListView">
+	</bean>
+	
 	<bean id="public.faqView" class="com.changev.tutor.web.manage.EditFaq">
 	</bean>
 	
