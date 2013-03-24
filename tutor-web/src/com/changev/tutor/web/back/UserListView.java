@@ -3,6 +3,8 @@
  */
 package com.changev.tutor.web.back;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +26,17 @@ public class UserListView implements View {
 	public boolean preRender(HttpServletRequest request,
 			HttpServletResponse response) throws Throwable {
 		ListIterator<UserModel> all = getAll();
-		request.setAttribute("users", all);
-		return false;
+		List<UserModel> u10 = new ArrayList<UserModel>();
+		int count = 0;
+		while(all.hasNext()){
+			count++;
+			if(u10.size() < 10){
+				u10.add(all.next());
+			}
+		}
+		request.setAttribute("users", u10);
+		request.setAttribute("count", count);
+		return true;
 	}
 
 	@Override

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>提问列表</title> <#include "/_inc/head.html">
+<style type="text/css">
+<!--
+#questionList {
+	overflow: auto;
+}
+
+#questionList .odd,#questionList .even {
+	height: 50px;
+}
+
+-->
+</style>
+<script type="text/javascript">
+<!--
+
+$(function() {
+	$("#pagebar a").click(function() {
+		var pn = $(this).attr("href");
+		if (pn != "#") 
+			location.search = "?pageno=" + pn.slice(1);
+		return false;
+	});
+});
+
+function delete1(id1){
+	$.post("faq.html",
+			  {
+			    m:"delete",
+			    id:id1
+			  },
+			  function(data,status){
+			    alert("Data: " + data + "\nStatus: " + status);
+			  }
+	);
+	
+}
+
+//-->
+</script>
+</head>
+<body>
+	<table id="box" border="0" cellspacing="5" cellpadding="0"
+		class="ui-widget-content">
+		<#include "/_inc/bar.html">
+		<tbody>
+			<tr>
+				<td align="left" valign="top" colspan=2>
+					<div id="questionList" class="box-content ui-widget-content">
+						<table>
+							<tr class="#questionList">
+								<td width="100">标题</td><td width="300">内容</td><td width="100">标签</td><td width="150">创建时间</td><td width="150">修改时间</td>
+								<td><a href="faq.html">新建</a></td><td>修改</td><td>删除</td>
+							</tr>
+							<#list questions as q> <#assign style=(q_index%2==0)?string("odd", "even")>
+							<tr class="${style}">
+								<td>${q.title!}</td>
+								<td>
+									<#if (q.content?length > 30)>
+										${q.content?substring(0, 29)}...
+									<#else>
+										${q.content!}
+									</#if>
+								</td>
+								<td>${q.tags!}</td><td>${q.createDateTime!}</td><td>${q.updateDateTime!}</td>
+								<td>&nbsp;</td><td><a href="faq.html?id=${q.id!}&m=edit">修改</a></td>
+								<#if q.deleted==true>
+								<td><a href="javascript:delete1('${q.id!}')">恢复</a></td>
+								<#else>
+								<td><a href="javascript:delete1('${q.id!}')">删除</a></td>
+								</#if>
+							</tr>
+							</#list>
+						</table>
+					</div>
+					<div id="pagebar"
+						class="pagebar ui-state-default ui-corner-bottom float-right"
+						style="margin-right: 2px">
+						<@pager total=totalPages page=params.pageno!1 />
+					</div>
+				</td>
+			</tr>
+		</tbody>
+		<#include "/_inc/foot.html">
+	</table>
+</body>
+</html>

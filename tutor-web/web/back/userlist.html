@@ -46,25 +46,25 @@ $(function() {
 						</tr>
 					</thead>
 					<tbody>
-					<#if teachers?size==0>
+					<#if users?size==0>
 						<tr>
 							<td colspan="7" align="center">
 								还没有
 							</td>
 						</tr>
 					</#if>
-					<#list teachers as teacher>
-						<#assign style=(teacher_index%2==0)?string('odd', 'even')>
-						<tr id="${id(teacher)}">
-							<td class="datarow ${style}">${teacher.name!}</td>
-							<td class="datarow ${style}">${(teacher.male?string('男', '女'))!}</td>
-							<td class="datarow ${style}">${join(teacher.subjects)}</td>
-							<td class="datarow ${style}">${teacher.grade!} ${teacher.gradeLevelFrom!}～${teacher.gradeLevelTo!}年级</td>
-							<td class="datarow ${style}">${(teacher.contact.telephone)!}</td>
-							<td class="datarow ${style}">${(teacher.contact.cellphone)!}</td>
-							<td class="datarow ${style}">${teacher.email!}</td>
+					<#list users as user>
+						<tr id="${id(user)}">
+							<td>${user.name!}</td>
+							<td></td>
+							<td></td>
+							<td>${user.lastLoginDateTime}</td>
+							<td>${(user.contact.telephone)!}</td>
+							<td>${(user.contact.cellphone)!}</td>
+							<td>${user.email!}</td>
 						</tr>
 					</#list>
+					<p>总数:${count!}</p>
 					</tbody>
 					</table>
 				</div>

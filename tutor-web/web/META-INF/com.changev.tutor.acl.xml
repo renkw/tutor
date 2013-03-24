@@ -17,7 +17,7 @@
 					state="Activated|Incomplete" />
 		<redirect	path="/mobile/login.html?url={url}" />
 	</rule>
-	<rule pattern="/back/.*">
+	<!-- rule pattern="/back/.*">
 		<accept		role="Organization|Teacher"
 					state="Activated" />
 		<redirect	role="Organization"
@@ -29,7 +29,7 @@
 	<rule pattern="/manage/.*">
 		<accept		role="Admin" />
 		<redirect	path="/public/login.html?url={url}" />
-	</rule>
+	</rule-->
 	<rule pattern="/files/.*">
 		<redirect	role="None"
 					path="/public/login.html?url={url}" />
