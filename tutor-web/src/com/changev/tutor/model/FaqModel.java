@@ -21,12 +21,29 @@ public class FaqModel extends AbstractModel {
 	private String title;
 	private String content;
 	private String tags;
+	/**
+	 * 0  faq
+	 * 1  news
+	 * 2  activity
+	 */
+	@Indexed
+	private int type = 0;
 	
 	public FaqModel() {
 	}
 
 	public FaqModel(String id) {
 		this.id = Long.parseLong(id);
+	}
+	
+	public int getType() {
+		beforeGet();
+		return type;
+	}
+	
+	public void setType(int type) {
+		beforeSet();
+		this.type = type;
 	}
 	
 	public String getTags() {

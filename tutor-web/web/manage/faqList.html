@@ -62,17 +62,17 @@ function delete1(id1){
 								<td>${q.title!}</td>
 								<td>
 									<#if (q.content?length > 30)>
-										${q.content?substring(0, 29)}...
+										${q.content?substring(0, 29)?replace('<', '&lt;')}...
 									<#else>
 										${q.content!}
 									</#if>
 								</td>
 								<td>${q.tags!}</td><td>${q.createDateTime!}</td><td>${q.updateDateTime!}</td>
-								<td>&nbsp;</td><td><a href="faq.html?id=${q.id!}&m=edit">修改</a></td>
+								<td>&nbsp;</td><td><a href="faq.html?id=${q.id?c}&m=edit">修改</a></td>
 								<#if q.deleted==true>
-								<td><a href="javascript:delete1('${q.id!}')">恢复</a></td>
+								<td><a href="javascript:delete1('${q.id?c}')">恢复</a></td>
 								<#else>
-								<td><a href="javascript:delete1('${q.id!}')">删除</a></td>
+								<td><a href="javascript:delete1('${q.id?c}')">删除</a></td>
 								</#if>
 							</tr>
 							</#list>

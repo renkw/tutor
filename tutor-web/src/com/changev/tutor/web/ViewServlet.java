@@ -163,7 +163,8 @@ public class ViewServlet extends HttpServlet {
 		// render template
 		try {
 			TemplateModel model = getTemplateModel(req);
-			Template template = config.getTemplate(req.getServletPath());
+			
+			Template template = config.getTemplate(getRewritePath(req.getServletPath()));
 			resp.setContentType("text/html; charset=" + template.getEncoding());
 			resp.setHeader("Pragma", "no-cache");
 			resp.setHeader("Cache-Control", "no-cache");
@@ -210,6 +211,15 @@ public class ViewServlet extends HttpServlet {
 		}
 	}
 
+	protected String getRewritePath(String path){
+		if(path.contains("_")){
+			String[] r_name = path.split("\\_");
+			path = r_name[0] + ".html";
+		}
+		return path;
+	}
+	
+	
 	/**
 	 * <p>
 	 * 取得请求路径对应的View实例名称。
@@ -225,10 +235,17 @@ public class ViewServlet extends HttpServlet {
 			int end = path.lastIndexOf('.');
 			if (end == -1)
 				end = path.length();
-			name = StringUtils.replaceChars(path.substring(start, end), '/',
+			name = path.substring(start, end);
+			//rewrite
+			if(name.contains("_")){
+				String[] r_name = name.split("\\_");
+				name = r_name[0];
+			}
+			name = StringUtils.replaceChars(name, '/',
 					'.') + "View";
 			viewNameMap.put(path, name);
 		}
+				
 		return name;
 	}
 

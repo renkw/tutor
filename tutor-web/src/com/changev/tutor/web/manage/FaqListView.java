@@ -54,7 +54,7 @@ public class FaqListView implements View {
 						}
 					});
 
-			questionList.setPageItems(1);
+			questionList.setPageItems(20);
 		}
 
 		// set variables

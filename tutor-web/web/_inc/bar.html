@@ -1,6 +1,6 @@
 <thead>
 	<tr>
-		<th rowspan="2" height="80" align="left" valign="top" style="width:200px">
+		<th rowspan="1" height="80" align="left" valign="top" style="width:200px">
 			<a href="${request.contextPath}/home.html">
 				<img src="${request.contextPath}/images/wendaoo.png" border="0" width="200" height="80" alt="闻道" title="闻道" />
 			</a>
@@ -21,6 +21,22 @@
 				<input type="text" id="search" name="s" value="搜索" />
 			</form>
 			-->
+			<!-- Baidu Button BEGIN -->
+			<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+				<a class="bds_qzone"></a>
+				<a class="bds_tsina"></a>
+				<a class="bds_tqq"></a>
+				<a class="bds_renren"></a>
+				<a class="bds_t163"></a>
+				<span class="bds_more">更多</span>
+				<a class="shareCount"></a>
+			</div>
+			<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6641270" ></script>
+			<script type="text/javascript" id="bdshell_js"></script>
+			<script type="text/javascript">
+			document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+			</script>
+			<!-- Baidu Button END -->
 			<div class="float-right" style="margin-top:2px">
 			<#if user??>
 				${user.name!maskEmail(user.email)}
@@ -35,7 +51,7 @@
 		</th>
 	</tr>
 	<tr>
-		<th align="left" valign="bottom">
+		<th align="left" valign="bottom" colspan=2>
 			<div class="menubar">
 			<#switch userRole!>
 				<#case "Parent"><#case "Student">
@@ -63,7 +79,7 @@
 				</a>
 				<#break>
 				<#default>
-				<a href="${request.contextPath}/public/faq.html" class="ui-corner-top ${request.requestURL?ends_with('/faq.html')?string('active','')}">学习方法问答</a>
+				<a href="${request.contextPath}/public/main.html" class="ui-corner-top ${request.requestURL?ends_with('/main.html')?string('active','')}">首页</a>
 				<a href="${request.contextPath}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">向专家提问</a>
 				<a target="_blank" href="${request.contextPath}/tuan/quan.html" class="ui-corner-top ${request.requestURL?ends_with('/quan.html')?string('active','')}">优惠券</a>
 				<a href="${request.contextPath}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>

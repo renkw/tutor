@@ -4,17 +4,43 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>教育_辅导_优惠</title>
-<#include "/_inc/head.html">
+<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/jquery.cleditor.css" />
+<script type="text/javascript" src="../css/jquery.cleditor.min.js"></script>
+<script type="text/javascript">
+      $(document).ready(function() {
+        $("#content").cleditor({width:800, height:400, useCSS:true})[0].focus();
+      });
+</script>
 </head>
 <body>
 <form name="frmEditor" action="faq.html" method="post">
 <table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
 <#include "/_inc/bar.html">
 <tbody>
-	<tr><td align="center" colspan="2">标题:<input type="input" name="title"  value="${faq.title!}"/><@message name="title" /></td></tr>
-	<tr><td align="center" colspan="2">内容:<br><textarea rows="75" cols="100" name="content">${faq.content!}</textarea><@message name="content" /></td></tr>
-	<tr><td align="center" colspan="2">标签:<input type="input" name="tags" value="${faq.tags!}"/><@message name="tags" /></td></tr>
-	<tr><td align="center" colspan="2"><input type="hidden" name="id" value="${faq.id!}"/></td></tr>
+	<tr><td align="center" colspan="2">标题:<input type="input" name="title"  value="${(faq.title)!}"/><@message name="title" /></td></tr>
+		<tr><td align="center" colspan="2">类型:
+			<select id="type" name="type">
+  				<#if (faq.type == "0")>
+					<option value ="0" selected="selected">问答</option>
+				<#else>
+					<option value ="0">问答</option>
+				</#if>
+				<#if (faq.type == "1")>
+					<option value ="1" selected="selected">新闻</option>
+				<#else>
+					<option value ="1">新闻</option>
+				</#if>
+				<#if (faq.type == "2")>
+					<option value="2" selected="selected">活动</option>
+				<#else>
+					<option value="2">活动</option>
+				</#if>
+			</select>
+		</td></tr>
+	<tr><td align="center" colspan="2">内容:<br><textarea rows="75" cols="100" id="content" name="content">${(faq.content)!}</textarea><@message name="content" /></td></tr>
+	<tr><td align="center" colspan="2">标签:<input type="input" name="tags" value="${(faq.tags)!}"/><@message name="tags" /></td></tr>
+	<tr><td align="center" colspan="2"><input type="hidden" name="id" value="${faq.id?c}"/></td></tr>
 	<tr><td align="center" colspan="2"><input type="submit" name="submit" value="提交" /></td></tr>
 </tbody>
 <#include "/_inc/foot.html">

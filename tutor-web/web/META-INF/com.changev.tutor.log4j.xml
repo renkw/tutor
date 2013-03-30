@@ -8,7 +8,7 @@
       <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
     </layout>
   </appender>
-  <!-- 
+  
   <appender name="default" class="org.apache.log4j.DailyRollingFileAppender">
   	<param name="File" value="/data/wendaoo/logs/default.log" />
   	<param name="DatePattern" value="'-'yyyyMMdd" />
@@ -32,9 +32,9 @@
       <param name="ConversionPattern" value="%d{yyyy-MM-dd hh:mm:ss.SSS} %p %c - %m%n" />
     </layout>
   </appender>
-   -->
+   
   <!-- Loggers -->
-  <!-- 
+   
   <logger name="com.changev.tutor.AUTH" additivity="false">
     <level value="INFO" />
     <appender-ref ref="auth" />
@@ -49,11 +49,11 @@
     <level value="TRACE" />
     <appender-ref ref="default" />
   </logger>
-   -->
-  <logger name="com.changev.tutor" additivity="false">
+   
+  <!--  logger name="com.changev.tutor" additivity="false">
     <level value="TRACE" />
     <appender-ref ref="console" />
-  </logger>
+  </logger -->
   
   <!-- Root Logger -->
   <root>

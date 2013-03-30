@@ -298,6 +298,9 @@
 	<bean id="back.userlistView" class="com.changev.tutor.web.back.UserListView">
 	</bean>
 	
+	<bean id="public.mainView" class="com.changev.tutor.web.pub.MainView"/>
+	<bean id="public.detailView" class="com.changev.tutor.web.pub.DetailView"/>
+	
 	<bean id="manage.faqView" class="com.changev.tutor.web.manage.FaqView">
 		<property name="submitValidator">
 			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">

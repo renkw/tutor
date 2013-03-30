@@ -103,9 +103,16 @@ public class FaqView implements View {
 			faq = new FaqModel();
 			faq.setId(System.currentTimeMillis());
 		}
+		String type = request.getParameter("type");
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");
 		String tags = request.getParameter("tags");
+		if(StringUtils.isEmpty(type)){
+			faq.setType(0);
+		}
+		else{
+			faq.setType(Integer.parseInt(type));
+		}
 		if(StringUtils.isNotEmpty(title)){
 			faq.setTitle(title);
 		}
