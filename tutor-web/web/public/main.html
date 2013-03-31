@@ -8,8 +8,7 @@
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<table class="mainw bodertop" width="980%" border="0" cellspacing="0"
-		cellpadding="0">
+	<table class="mainw bodertop" width="980" border="0" cellspacing="0" cellpadding="0">
 		<#include "/_inc/bar.html">
 		<tbody>
 				<tr>
@@ -20,12 +19,12 @@
 								<td valign="top">
 									<div class="indnews">
 										<h1>
-											<a href="#none">教育新闻</a>
+											<a target="_blank" href="${request.contextPath}/public/list.html?type=1">教育新闻</a>
 										</h1>
 										<ul>
 											<#list mainDTO.newses as news>
 											<li>
-												<a target="_blank" href="${request.contextPath}/public/detail_${faq.id?c}.html" alt="${news.title!}">
+												<a target="_blank" href="${request.contextPath}/public/detail_${news.id?c}.html" title="${news.title!}">
 													<#if (news.title?length > 15)>
 														${news.title?substring(0, 12)}...
 													<#else>
@@ -113,14 +112,17 @@
 								<td>
 									<div class="indrcont h203">
 										<ul>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
+											<#list mainDTO.orgs as org>
+											<li>
+												<a target="_blank" href="${request.contextPath}/public/org_${org.uid?c}.html" title="${org.name!}">
+													<#if (org.name?? && org.name?length > 15)>
+														${org.name?substring(0, 12)}...
+													<#else>
+														${(org.name)!}
+													</#if>
+												</a>
+											</li>
+											</#list>
 										</ul>
 									</div>
 								</td>
@@ -131,7 +133,7 @@
 							style="margin-top: 15px">
 							<tr>
 								<td height="27" class="indrt"><h1>家教解惑</h1>
-									<span><a href="#none">更多>></a></span></td>
+									<span><a target="_blank" href="${request.contextPath}/public/list.html?type=0">更多>></a></span></td>
 							</tr>
 							<tr>
 								<td>
@@ -139,7 +141,7 @@
 										<ul>
 											<#list mainDTO.faqs as faq>
 											<li>
-												<a target="_blank" href="${request.contextPath}/public/detail_${faq.id?c}.html" alt="${faq.title!}">
+												<a target="_blank" href="${request.contextPath}/public/detail_${faq.id?c}.html" title="${faq.title!}">
 													<#if (faq.title?length > 15)>
 														${faq.title?substring(0, 12)}...
 													<#else>

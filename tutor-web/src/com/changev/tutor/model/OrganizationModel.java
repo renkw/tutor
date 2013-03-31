@@ -5,6 +5,7 @@
  */
 package com.changev.tutor.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,8 @@ public class OrganizationModel extends UserModel {
 	private Integer teacherCount;
 	private Integer score;
 	private Integer accountLevel;
+	
+	private transient long uid;
 
 	public OrganizationModel() {
 		super.setRole(UserRole.Organization);
@@ -64,6 +67,17 @@ public class OrganizationModel extends UserModel {
 				ModelFactory.getOrganizationTeacherExample(getEmail()));
 	}
 
+	public List<TeacherModel> getAlivableTeachers(int count) {
+		List<TeacherModel> ts = this.getTeachers();
+		List<TeacherModel> r = new ArrayList<TeacherModel>();
+		for(int i = 0; i < count && i < ts.size() - 1; i++){
+			if(ts.get(i).getDeleted() == false){
+				r.add(ts.get(i));
+			}
+		}
+		return r;
+	}
+	
 	public Set<UserModel> getContacters() {
 		Set<UserModel> contacters = new HashSet<UserModel>();
 		for (TeacherModel teacher : getTeachers())
@@ -256,4 +270,11 @@ public class OrganizationModel extends UserModel {
 		this.district = district;
 	}
 
+	public long getUid() {
+		return uid;
+	}
+	
+	public void setUid(long uid) {
+		this.uid = uid;
+	}
 }

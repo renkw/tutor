@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.changev.tutor.Tutor;
 import com.changev.tutor.dto.MainPageDTO;
 import com.changev.tutor.model.FaqModel;
+import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.web.View;
 import com.db4o.ObjectSet;
 import com.db4o.query.Predicate;
@@ -31,6 +32,7 @@ public class MainView implements View {
 		
 		man.setFaqs(queryFaq());
 		man.setNewses(queryNews());
+		man.setOrgs(queryOrg());
 		
 		request.setAttribute("mainDTO", man);
 		return true;
@@ -44,6 +46,32 @@ public class MainView implements View {
 	}
 
 	
+	private List<OrganizationModel> queryOrg(){
+		List<OrganizationModel> orgs = new ArrayList<OrganizationModel>();
+		ObjectSet<OrganizationModel> questions = Tutor.getCurrentContainer().query(
+		
+		new Predicate<OrganizationModel>() {
+			@Override
+			public boolean match(OrganizationModel candidate) {
+				return candidate.getDeleted() == false;
+			}
+		},
+		new QueryComparator<OrganizationModel>() {
+			public int compare(OrganizationModel first, OrganizationModel second) {
+				return first.getCreateDateTime().compareTo(second.getCreateDateTime());
+			}
+		});
+		ListIterator<OrganizationModel> r = questions.listIterator();
+		int count = 0;
+		while(r.hasNext() && count < 8){
+			count++;
+			OrganizationModel org = r.next();
+			org.setUid(Tutor.getCurrentContainerExt().getID(org));
+			orgs.add(org);
+		}
+		return orgs;
+	}
+	
 	private List<FaqModel> queryNews(){
 		List<FaqModel> news = new ArrayList<FaqModel>();
 		ObjectSet<FaqModel> questions = Tutor.getCurrentContainer().query(
@@ -51,12 +79,12 @@ public class MainView implements View {
 		new Predicate<FaqModel>() {
 			@Override
 			public boolean match(FaqModel candidate) {
-				return candidate.getType() == 1;
+				return candidate.getType() == 1 && candidate.getDeleted() == false;
 			}
 		},
 		new QueryComparator<FaqModel>() {
 			public int compare(FaqModel first, FaqModel second) {
-				return first.getCreateDateTime().compareTo(second.getCreateDateTime());
+				return second.getCreateDateTime().compareTo(first.getCreateDateTime());
 			}
 		});
 		ListIterator<FaqModel> r = questions.listIterator();
@@ -76,12 +104,12 @@ public class MainView implements View {
 		new Predicate<FaqModel>() {
 			@Override
 			public boolean match(FaqModel candidate) {
-				return candidate.getType() == 0;
+				return candidate.getType() == 0  && candidate.getDeleted() == false;
 			}
 		},
 		new QueryComparator<FaqModel>() {
 			public int compare(FaqModel first, FaqModel second) {
-				return first.getCreateDateTime().compareTo(second.getCreateDateTime());
+				return second.getCreateDateTime().compareTo(first.getCreateDateTime());
 			}
 		});
 		ListIterator<FaqModel> r = questions.listIterator();

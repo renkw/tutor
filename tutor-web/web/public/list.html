@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>教育_辅导_问答</title>
+<#include "/_inc/head.html">
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<!--body-->
+<table class="mainw" width="980" border="0" cellspacing="0" cellpadding="0">
+<#include "/_inc/bar.html">
+<tbody>
+  <tr>
+    <td valign="top" bgcolor="#FFFFFF" class="paddtop" width="736">
+    	<div class="newslist">
+	        <#list questions as q>
+	        <div class="newslist1">
+	          <h1><a href="${request.contextPath}/public/detail_${q.id?c}.html" target="_blank" title="${q.title!}">${q.title!}</a></h1>
+	          <p>
+	          	<#if (q.content?length > 2000)>
+					${q.content?substring(0, 1997)}...
+				<#else>
+					${q.content!}
+				</#if>
+	          </p>
+	          <div>${q.createDateTime!}<span>来源：<a target="_blank" href="http://www.wendaoo.com">本站</a></span></div>
+	        </div>
+	        </#list>
+	        <div id="pagebar" class="pagebar ui-state-default ui-corner-bottom float-right" style="margin-right: 2px">
+			  <@pager total=totalPages page=params.pageno!1 />
+			</div>
+	     </div>
+    </td>
+    <td width="244" valign="top" bgcolor="#FFFFFF" class="paddtop"><div class="indadv" style="margin-top:0"><img src="../images/adv/adv.jpg" width="242" height="64" /></div>
+      <div class="indadv"><img src="../images/adv/adv.jpg" width="242" height="64" /></div>
+      <div class="indadv"><img src="../images/adv/adv1.jpg" width="242" /></div></td>
+  </tr>
+ </tbody>
+ <#include "/_inc/foot.html"> 
+</table>
+
+
+</body>
+</html>
+    

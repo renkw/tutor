@@ -22,7 +22,7 @@
 			</form>
 			-->
 			<!-- Baidu Button BEGIN -->
-			<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+			<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare" style="float:right">
 				<a class="bds_qzone"></a>
 				<a class="bds_tsina"></a>
 				<a class="bds_tqq"></a>
@@ -52,8 +52,9 @@
 	</tr>
 	<tr>
 		<th align="left" valign="bottom" colspan=2>
-			<div class="menubar">
-			<#switch userRole!>
+			<table class="mainw nav" width="980" border="0" cellspacing="0" cellpadding="0">
+			  <tr>
+			  <#switch userRole!>
 				<#case "Parent"><#case "Student">
 				<a href="${request.contextPath}/front/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
 					提问列表
@@ -79,12 +80,21 @@
 				</a>
 				<#break>
 				<#default>
-				<a href="${request.contextPath}/public/main.html" class="ui-corner-top ${request.requestURL?ends_with('/main.html')?string('active','')}">首页</a>
-				<a href="${request.contextPath}/public/login.html" class="ui-corner-top ${request.requestURL?ends_with('/login.html')?string('active','')}">向专家提问</a>
-				<a target="_blank" href="${request.contextPath}/tuan/quan.html" class="ui-corner-top ${request.requestURL?ends_with('/quan.html')?string('active','')}">优惠券</a>
-				<a href="${request.contextPath}/public/register.html" class="ui-corner-top ${request.requestURL?ends_with('/register.html')?string('active','')}">注册</a>
+				<td class="${request.requestURL?ends_with('/main.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/main.html">首页</a></td>
+				<td class="${request.requestURL?ends_with('/login.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/login.html">向专家提问</a></td>
+				<td class="${request.requestURL?ends_with('/quan.html')?string('onm','')}" width="111"><a target="_blank" href="${request.contextPath}/tuan/quan.html">优惠券</a></td>
 				<#break>
 			</#switch>
+			    <td>&nbsp;</td>
+			  </tr>
+			</table>
+			
+		</th>
+	</tr>
+	<tr>
+		<th align="left" valign="bottom" colspan=2>
+			<div class="menubar">
+			
 			</div>
 		</th>
 	</tr>

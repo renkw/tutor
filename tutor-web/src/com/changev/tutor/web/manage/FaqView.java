@@ -117,7 +117,7 @@ public class FaqView implements View {
 			faq.setTitle(title);
 		}
 		if(StringUtils.isNotEmpty(content)){
-			faq.setContent(content);
+			faq.setContent(content.trim());
 		}
 		if(StringUtils.isNotEmpty(tags)){
 			faq.setTags(tags);

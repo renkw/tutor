@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
 import com.changev.tutor.model.FaqModel;
+import com.changev.tutor.util.Rewriter;
 import com.changev.tutor.web.View;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -36,7 +37,7 @@ public class DetailView implements View {
 	}
 	
 	private void select(HttpServletRequest request){
-		String id = getViewId(request.getServletPath());
+		String id = Rewriter.getViewId(request.getServletPath());
 		ObjectContainer objc = Tutor.getCurrentContainer();
 		FaqModel faq = null;
 		if(StringUtils.isNotEmpty(id)){
@@ -46,28 +47,6 @@ public class DetailView implements View {
 		}
 	}
 	
-	/**
-	 * <p>
-	 * rewrite 取请求的id
-	 * </p>
-	 * 
-	 * @param path
-	 * @return
-	 */
-	protected String getViewId(String path) {
-		String id = "";
-		int start = path.charAt(0) == '/' ? 1 : 0;
-		int end = path.lastIndexOf('.');
-		if (end == -1)
-			end = path.length();
-		id = path.substring(start, end);
-		//rewrite
-		if(id.contains("_")){
-			String[] r_name = id.split("\\_");
-			id = r_name[1];
-		}
-				
-		return id;
-	}
+	
 
 }

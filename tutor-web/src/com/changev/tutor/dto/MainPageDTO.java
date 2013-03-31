@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.changev.tutor.model.FaqModel;
+import com.changev.tutor.model.OrganizationModel;
 import com.changev.tutor.model.PictureModel;
 
 /**
@@ -20,6 +21,17 @@ public class MainPageDTO {
 	private List<FaqModel> newses = new ArrayList<FaqModel>();
 	
 	private List<PictureModel> advs = new ArrayList<PictureModel>();
+	
+	private List<OrganizationModel> orgs = new ArrayList<OrganizationModel>();
+	
+	
+	public List<OrganizationModel> getOrgs() {
+		return orgs;
+	}
+	
+	public void setOrgs(List<OrganizationModel> orgs) {
+		this.orgs = orgs;
+	}
 
 	public List<FaqModel> getFaqs() {
 		return faqs;

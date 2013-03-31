@@ -300,6 +300,8 @@
 	
 	<bean id="public.mainView" class="com.changev.tutor.web.pub.MainView"/>
 	<bean id="public.detailView" class="com.changev.tutor.web.pub.DetailView"/>
+	<bean id="public.listView" class="com.changev.tutor.web.pub.ListView"/>
+	<bean id="public.orgView" class="com.changev.tutor.web.pub.OrgView"/>
 	
 	<bean id="manage.faqView" class="com.changev.tutor.web.manage.FaqView">
 		<property name="submitValidator">
@@ -311,8 +313,19 @@
 		</property>	
 	</bean>
 	
+	<bean id="manage.orgEditorView" class="com.changev.tutor.web.manage.OrgEditorView">
+		<property name="submitValidator">
+			<util:map map-class="com.changev.tutor.web.util.ParamValidatorMap">
+				<entry key="title.required" value="请输入标题。" />
+				<entry key="content.required" value="请输入内容。" />
+				<entry key="tags.required" value="请输入标签。" />
+			</util:map>
+		</property>	
+	</bean>
+	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 	<bean id="manage.faqListView" class="com.changev.tutor.web.manage.FaqListView" />
+	<bean id="manage.orgEditorListView" class="com.changev.tutor.web.manage.OrgEditorListView" />
 	
 	<bean id="manage.dataEditorView" class="com.changev.tutor.web.manage.DataEditorView" />
 

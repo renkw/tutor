@@ -21,17 +21,17 @@
 	<tr><td align="center" colspan="2">标题:<input type="input" name="title"  value="${(faq.title)!}"/><@message name="title" /></td></tr>
 		<tr><td align="center" colspan="2">类型:
 			<select id="type" name="type">
-  				<#if (faq.type == "0")>
+  				<#if ((faq.type)! == "0")>
 					<option value ="0" selected="selected">问答</option>
 				<#else>
 					<option value ="0">问答</option>
 				</#if>
-				<#if (faq.type == "1")>
+				<#if ((faq.type)! == "1")>
 					<option value ="1" selected="selected">新闻</option>
 				<#else>
 					<option value ="1">新闻</option>
 				</#if>
-				<#if (faq.type == "2")>
+				<#if ((faq.type)! == "2")>
 					<option value="2" selected="selected">活动</option>
 				<#else>
 					<option value="2">活动</option>

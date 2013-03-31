@@ -1,7 +1,5 @@
 package com.changev.tutor.web.manage;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,12 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.changev.tutor.Tutor;
 import com.changev.tutor.model.FaqModel;
-import com.changev.tutor.model.QuestionModel;
-import com.changev.tutor.model.UserModel;
 import com.changev.tutor.util.PageList;
-import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.db4o.query.Predicate;
 
