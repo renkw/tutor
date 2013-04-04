@@ -3,6 +3,11 @@
  */
 package com.changev.tutor.util;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.changev.tutor.web.SessionContainer;
+
+
 /**
  * @author zhaoqing
  *
@@ -32,5 +37,26 @@ public class Rewriter {
 		}
 				
 		return id;
+	}
+	
+	public static final String str2Asii(String source){
+		StringBuffer buffer = new StringBuffer();
+		for(char c : source.toCharArray()){
+			buffer.append((int)c);
+			
+		}
+		
+		return buffer.toString();
+	}
+	
+	public static final long userHash(String userEmail){
+		long hashId;
+		if(StringUtils.isEmpty(userEmail)){
+			hashId = "admin@localhost".hashCode();
+		}
+		else{
+			hashId = userEmail.hashCode();
+		}
+		return hashId;	
 	}
 }

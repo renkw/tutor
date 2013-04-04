@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.Tutor;
-import com.changev.tutor.model.OrgInfoModel;
+import com.changev.tutor.model.PictureModel;
 import com.changev.tutor.util.Rewriter;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
@@ -23,7 +23,7 @@ import com.db4o.ObjectSet;
  * @author zhaoqing
  *
  */
-public class OrgEditorView implements View {
+public class AdvEditorView implements View {
 
 	private ParamValidator submitValidator;
 	
@@ -41,7 +41,7 @@ public class OrgEditorView implements View {
 		if (StringUtils.isNotEmpty(request.getParameter("submit"))){
 			//if (submitValidator == null || submitValidator.validate(request)) {
 				edit(request, response);
-				response.sendRedirect(request.getContextPath() + "/manage/orgEditorList.html");
+				response.sendRedirect(request.getContextPath() + "/manage/advEditorList.html");
 			//}
 		}
 		if(StringUtils.equals("edit", request.getParameter("m"))){
@@ -54,6 +54,9 @@ public class OrgEditorView implements View {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.changev.tutor.web.View#postRender(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	@Override
 	public void postRender(HttpServletRequest request,
 			HttpServletResponse response) throws Throwable {
@@ -64,20 +67,20 @@ public class OrgEditorView implements View {
 	private void select(HttpServletRequest request){
 		String id = request.getParameter("id");
 		ObjectContainer objc = Tutor.getCurrentContainer();
-		OrgInfoModel faq = null;
+		PictureModel faq = null;
 		if(StringUtils.isNotEmpty(id)){
-			ObjectSet<OrgInfoModel> oset = objc.queryByExample(new OrgInfoModel(id));
+			ObjectSet<PictureModel> oset = objc.queryByExample(new PictureModel(id));
 			faq = oset.get(0);
-			request.setAttribute("faq", faq);
+			request.setAttribute("adv", faq);
 		}
 	}
 	
 	private void delete(HttpServletRequest request){
 		String id = request.getParameter("id");
 		ObjectContainer objc = Tutor.getCurrentContainer();
-		OrgInfoModel faq = null;
+		PictureModel faq = null;
 		if(StringUtils.isNotEmpty(id)){
-			ObjectSet<OrgInfoModel> oset = objc.queryByExample(new OrgInfoModel(id));
+			ObjectSet<PictureModel> oset = objc.queryByExample(new PictureModel(id));
 			faq = oset.get(0);
 			faq.setDeleted(!faq.getDeleted());
 			objc.store(faq);
@@ -88,35 +91,35 @@ public class OrgEditorView implements View {
 	private void edit(HttpServletRequest request, HttpServletResponse response){
 		String id = request.getParameter("id");
 		ObjectContainer objc = Tutor.getCurrentContainer();
-		OrgInfoModel faq = null;
+		PictureModel faq = null;
 		if(StringUtils.isNotEmpty(id)){
-			ObjectSet<OrgInfoModel> oset = objc.queryByExample(new OrgInfoModel(id));
+			ObjectSet<PictureModel> oset = objc.queryByExample(new PictureModel(id));
 			faq = oset.get(0);
 			faq.setUpdateDateTime(new Date());
 		}
 		else{
-			faq = new OrgInfoModel();
+			faq = new PictureModel();
 			faq.setId(System.currentTimeMillis());
 		}
-		String type = request.getParameter("type");
 		String title = request.getParameter("title");
-		String content = request.getParameter("content");
-		String tags = request.getParameter("tags");
-		faq.setOwerner(Rewriter.userHash(SessionContainer.get(request).getLoginUserId_str()));
-		if(StringUtils.isEmpty(type)){
-			faq.setType(0);
+		String url = request.getParameter("url");
+		String link2 = request.getParameter("link2");
+		String index = request.getParameter("index");
+		faq.setOwener(Rewriter.userHash(SessionContainer.get(request).getLoginUserId_str()));
+		if(StringUtils.isEmpty(index)){
+			faq.setIndex(0);
 		}
 		else{
-			faq.setType(Integer.parseInt(type));
+			faq.setIndex(Integer.parseInt(index));
 		}
 		if(StringUtils.isNotEmpty(title)){
 			faq.setTitle(title);
 		}
-		if(StringUtils.isNotEmpty(content)){
-			faq.setContent(content.trim());
+		if(StringUtils.isNotEmpty(url)){
+			faq.setUrl(url);
 		}
-		if(StringUtils.isNotEmpty(tags)){
-			faq.setTags(tags);
+		if(StringUtils.isNotEmpty(link2)){
+			faq.setLink2(link2);
 		}
 		objc.store(faq);
 		objc.commit();

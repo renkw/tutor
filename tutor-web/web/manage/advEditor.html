@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>教育_辅导_优惠</title>
+<#include "/_inc/head.html">
+</head>
+<body>
+<form name="frmEditor" action="advEditor.html" method="post">
+<table id="box" border="0" cellspacing="5" cellpadding="0" class="ui-widget-content">
+<#include "/_inc/bar.html">
+<tbody>
+	<tr><td align="center" colspan="2">标题:<input type="input" name="title"  value="${(adv.title)!}"/></td></tr>
+	<tr><td align="center" colspan="2">图片链接(用http://xxx):<input type="input" name="url"  value="${(adv.url)!}"/></td></tr>
+	<tr><td align="center" colspan="2">跳转链接(用http://xxx):<input type="input" name="link2"  value="${(adv.link2)!}"/></td></tr>
+	<tr><td align="center" colspan="2">排序:<input type="input" name="index"  value="${(adv.index)!}"/></td></tr>
+	<tr><td align="center" colspan="2"><input type="hidden" name="id" value="${adv.id?c}"/></td></tr>
+	<tr><td align="center" colspan="2"><input type="submit" name="submit" value="提交" /></td></tr>
+</tbody>
+<#include "/_inc/foot.html">
+</table>
+</form>
+</body>
+</html>

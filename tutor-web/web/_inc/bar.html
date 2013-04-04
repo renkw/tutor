@@ -51,33 +51,42 @@
 		</th>
 	</tr>
 	<tr>
-		<th align="left" valign="bottom" colspan=2>
-			<table class="mainw nav" width="980" border="0" cellspacing="0" cellpadding="0">
+		<Th vAlign="bottom" colSpan="2" align="left" class="nav">
+		  <TABLE  border="0" cellSpacing="0" cellPadding="0" >
 			  <tr>
 			  <#switch userRole!>
 				<#case "Parent"><#case "Student">
-				<a href="${request.contextPath}/front/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<td class="${request.requestURL?ends_with('/main.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/main.html">首页</a></td>
+				<td class="${request.requestURL?ends_with('/login.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/login.html">向专家提问</a></td>
+				<td class="${request.requestURL?ends_with('/quan.html')?string('onm','')}" width="111"><a target="_blank" href="${request.contextPath}/tuan/quan.html">优惠券</a></td>
+				<td class="${request.requestURL?ends_with('/questionList.html')?string('onm','')}" width='111'><a href="${request.contextPath}/front/questionList.html" >
 					提问列表
-				</a>
-				<a href="${request.contextPath}/front/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+				</a></td>
+				<td class="${request.requestURL?ends_with('/modifyMember.html')?string('onm','')}" width='111'><a href="${request.contextPath}/front/modifyMember.html">
 					修改资料
-				</a>
+				</a></td>
 				<#break>
 				<#case "Organization">
-				<a href="${request.contextPath}/back/teacherList.html" class="ui-corner-top ${request.requestURL?ends_with('/teacherList.html')?string('active','')}">
+				<td class="${request.requestURL?ends_with('/main.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/main.html">首页</a></td>
+				<td class="${request.requestURL?ends_with('/login.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/login.html">向专家提问</a></td>
+				<td class="${request.requestURL?ends_with('/quan.html')?string('onm','')}" width="111"><a target="_blank" href="${request.contextPath}/tuan/quan.html">优惠券</a></td>
+				<td class="${request.requestURL?ends_with('/teacherList.html')?string('onm','')}" width="111"><a href="${request.contextPath}/back/teacherList.html">
 					教师列表
-				</a>
-				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+				</a></td>
+				<td class="${request.requestURL?ends_with('/modifyMember.html')?string('onm','')}" width="111"><a href="${request.contextPath}/back/modifyMember.html">
 					修改资料
-				</a>
+				</a></td>
 				<#break>
 				<#case "Teacher">
-				<a href="${request.contextPath}/back/questionList.html" class="ui-corner-top ${request.requestURL?ends_with('/questionList.html')?string('active','')}">
+				<td class="${request.requestURL?ends_with('/main.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/main.html">首页</a></td>
+				<td class="${request.requestURL?ends_with('/login.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/login.html">向专家提问</a></td>
+				<td class="${request.requestURL?ends_with('/quan.html')?string('onm','')}" width="111"><a target="_blank" href="${request.contextPath}/tuan/quan.html">优惠券</a></td>
+				<td class="${request.requestURL?ends_with('/questionList.html')?string('onm','')}" width="111"><a href="${request.contextPath}/back/questionList.html">
 					提问列表
-				</a>
-				<a href="${request.contextPath}/back/modifyMember.html" class="ui-corner-top ${request.requestURL?ends_with('/modifyMember.html')?string('active','')}">
+				</a></td>
+				<td class="${request.requestURL?ends_with('/modifyMember.html')?string('onm','')}" width="111"><a href="${request.contextPath}/back/modifyMember.html">
 					修改资料
-				</a>
+				</a></td>
 				<#break>
 				<#default>
 				<td class="${request.requestURL?ends_with('/main.html')?string('onm','')}" width="111"><a href="${request.contextPath}/public/main.html">首页</a></td>

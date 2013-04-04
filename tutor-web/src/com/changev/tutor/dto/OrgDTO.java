@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.changev.tutor.model.OrgInfoModel;
 import com.changev.tutor.model.OrganizationModel;
+import com.changev.tutor.model.PictureModel;
 import com.changev.tutor.model.TeacherModel;
 
 /**
@@ -20,6 +21,17 @@ public class OrgDTO {
 	private OrganizationModel org = null;
 	private List<OrgInfoModel> newses = new ArrayList<OrgInfoModel>();
 	private List<OrgInfoModel> activitys = new ArrayList<OrgInfoModel>();
+	
+	private List<PictureModel> advs = new ArrayList<PictureModel>();
+	
+	
+	public List<PictureModel> getAdvs() {
+		return advs;
+	}
+	
+	public void setAdvs(List<PictureModel> advs) {
+		this.advs = advs;
+	}
 	
 	public List<TeacherModel> getTeachers() {
 		return teachers;

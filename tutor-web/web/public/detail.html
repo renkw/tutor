@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="keywords" content="${(faq.tags)!}，专业教育">
 <title>教育_辅导_问答</title>
 <#include "/_inc/head.html">
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
@@ -42,7 +43,14 @@
           </div>
         </div>
       </div>
-    
+      <div class="newscon">
+      	<p><h3>相关教育咨询</h3></p>
+      	<ul>
+      	<#list relations as r>
+      		<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${request.contextPath}/public/detail_${r.id?c}.html">${r.title!}</a></li>
+      	</#list>	
+      	</ul>
+      </div>	
     </td>
     
     

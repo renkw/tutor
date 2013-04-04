@@ -2,8 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta name="keywords" content="免费课程，家教团购，家教，家教大全，专业教育">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>教育_辅导_问答</title>
+<title>最好的教育_辅导_问答平台</title>
 <#include "/_inc/head.html">
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 </head>
@@ -41,46 +42,18 @@
 										type="text/javascript" src="../css/focus.js"></script>
 									<div id="focus_pic_box">
 										<ul id="focusPic">
-											<li><a href="#none" target="_blank"><img
-													alt="&#13;&#10;一年之"
-													绩"在于春 2012春季班报名" src="img/174956_4f324544cfe99.jpg"
+											<#list mainDTO.advs as adv>
+											<li><a href="${adv.link2!}" target="_blank"><img
+													alt="&#13;&#10;${adv.title!}" src="${adv.url!}"
 													width="492" height="224"></a></li>
-											<li><a href="#none" target="_blank"><img
-													alt="&#9;&#13;&#10;冲刺百天 笑傲高考"
-													src="img/094021_4f7cf805ca6b8.jpg" width="492" height="224"></a></li>
-											<li><a href="#none" target="_blank"><img
-													alt="&#9;&#13;&#10;巩固提升 冲刺中考"
-													src="img/094021_4f7cf805a3f5e.jpg" width="492" height="224"></a></li>
-											<li><a href="#none" target="_blank"><img
-													alt="&#13;&#10;一年之"
-													绩"在于春 2012春季班报名" src="img/174956_4f324544cfe99.jpg"
-													width="492" height="224"></a></li>
-											<li><a href="#none" target="_blank"><img
-													alt="&#9;&#13;&#10;冲刺百天 笑傲高考"
-													src="img/094021_4f7cf805ca6b8.jpg" width="492" height="224"></a></li>
-											<li><a href="#none" target="_blank"><img
-													alt="&#9;&#13;&#10;巩固提升 冲刺中考"
-													src="img/094021_4f7cf805a3f5e.jpg" width="492" height="224"></a></li>
+											</#list>		
 										</ul>
 										<div id="pic_txt">
-											<P>
-												<A href="#none" target="_blank">一年之"绩"在于春 2012春季班报名</A>
-											</P>
-											<P>
-												<A href="#none" target="_blank">高考指导 冲刺百天 笑傲高考</A>
-											</P>
-											<P>
-												<A href="#none" target="_blank">中考指导 巩固提升 冲刺中考</A>
-											</P>
-											<P>
-												<A href="#none" target="_blank">2012中考冲刺课：四项服务立体学习</A>
-											</P>
-											<P>
-												<A href="#none" target="_blank">制胜高考！2012高考大揭秘！</A>
-											</P>
-											<P>
-												<A href="#none" target="_blank">美国纽交所上市</A>
-											</P>
+											<#list mainDTO.advs as adv>
+											<p>
+												<A href="${adv.link2!}" target="_blank">${adv.title!}</A>
+											</p>
+											</#list>
 										</div>
 										<div id="num">
 											<SPAN class="on">1</SPAN><SPAN>2</SPAN><SPAN>3</SPAN><SPAN>4</SPAN><SPAN>5</SPAN><SPAN>6</SPAN>
@@ -160,20 +133,23 @@
 							style="margin-top: 15px">
 							<tr>
 								<td height="27" class="indrt"><h1>推广活动</h1>
-									<span><a href="#none">更多>></a></span></td>
+									<span><a href="${request.contextPath}/public/list.html?type=2" target="_blank">更多>></a></span></td>
 							</tr>
 							<tr>
 								<td>
 									<div class="indrcont h203">
 										<ul>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
-											<li>机构名称机构名称机构名称机构名称</li>
+											<#list mainDTO.activities as activity>
+											<li>
+												<a target="_blank" href="${request.contextPath}/public/detail_${activity.id?c}.html" title="${activity.title!}">
+													<#if (activity.title?length > 15)>
+														${activity.title?substring(0, 12)}...
+													<#else>
+														${activity.title!}
+													</#if>
+												</a>
+											</li>
+											</#list>
 										</ul>
 									</div>
 								</td>

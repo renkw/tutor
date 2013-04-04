@@ -83,6 +83,7 @@ public final class SessionContainer implements Serializable {
 	}
 
 	private Long loginUserId;
+	private String loginUserId_str;
 	private Date loginDateTime;
 	private String checkCode;
 	private String systemMessage;
@@ -100,9 +101,13 @@ public final class SessionContainer implements Serializable {
 	 * 
 	 * @param loginUser
 	 */
-	public void login(long loginUserId) {
+	public void login(long loginUserId, String loginUserId_str) {
 		this.loginUserId = loginUserId;
 		this.loginDateTime = Tutor.currentDateTime();
+	}
+	
+	public String getLoginUserId_str() {
+		return loginUserId_str;
 	}
 
 	/**

@@ -323,9 +323,14 @@
 		</property>	
 	</bean>
 	
+	<bean id="manage.advEditorView" class="com.changev.tutor.web.manage.AdvEditorView"/>
+		
+	
 	<bean id="manage.dataView" class="com.changev.tutor.web.manage.DataView" />
 	<bean id="manage.faqListView" class="com.changev.tutor.web.manage.FaqListView" />
 	<bean id="manage.orgEditorListView" class="com.changev.tutor.web.manage.OrgEditorListView" />
+	<bean id="manage.advEditorListView" class="com.changev.tutor.web.manage.AdvEditorListView" />
+	
 	
 	<bean id="manage.dataEditorView" class="com.changev.tutor.web.manage.DataEditorView" />
 

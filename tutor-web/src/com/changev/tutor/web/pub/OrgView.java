@@ -14,6 +14,7 @@ import com.changev.tutor.Tutor;
 import com.changev.tutor.dto.OrgDTO;
 import com.changev.tutor.model.OrgInfoModel;
 import com.changev.tutor.model.OrganizationModel;
+import com.changev.tutor.model.PictureModel;
 import com.changev.tutor.util.Rewriter;
 import com.changev.tutor.web.View;
 import com.db4o.ObjectSet;
@@ -32,6 +33,7 @@ public class OrgView implements View {
 			HttpServletResponse response) throws Throwable {
 		String id = Rewriter.getViewId(request.getServletPath());
 		final long l_id = Long.parseLong(id);
+
 		OrgDTO orgDTO = new OrgDTO();
 
 		OrganizationModel org = queryOrg(l_id);
@@ -41,8 +43,11 @@ public class OrgView implements View {
 		
 		orgDTO.setTeachers(org.getAlivableTeachers(12));
 		orgDTO.setOrg(org);
-		orgDTO.setActivitys(queryActivity(l_id));
-		orgDTO.setNewses(queryNews(l_id));
+		
+		final long owener_id = Rewriter.userHash(org.getEmail());
+		orgDTO.setActivitys(queryActivity(owener_id));
+		orgDTO.setNewses(queryNews(owener_id));
+		orgDTO.setAdvs(queryAdv(owener_id));
 		
 		request.setAttribute("orgDTO", orgDTO);
 		return true;
@@ -65,6 +70,31 @@ public class OrgView implements View {
 					}
 				});
 		return orgs.get(0);
+	}
+	
+	private List<PictureModel> queryAdv(final long owener){
+		List<PictureModel> orgs = new ArrayList<PictureModel>();
+		ObjectSet<PictureModel> questions = Tutor.getCurrentContainer().query(
+		
+		new Predicate<PictureModel>() {
+			@Override
+			public boolean match(PictureModel candidate) {
+				return candidate.getDeleted() == false && candidate.getOwener() == owener;
+			}
+		},
+		new QueryComparator<PictureModel>() {
+			public int compare(PictureModel first, PictureModel second) {
+				return first.getCreateDateTime().compareTo(second.getCreateDateTime());
+			}
+		});
+		ListIterator<PictureModel> r = questions.listIterator();
+		int count = 0;
+		while(r.hasNext() && count < 6){
+			count++;
+			PictureModel org = r.next();
+			orgs.add(org);
+		}
+		return orgs;
 	}
 	
 	private List<OrgInfoModel> queryNews(final long owener){

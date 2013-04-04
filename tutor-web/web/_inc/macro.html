@@ -37,7 +37,7 @@
 	<a href="#1" title="第一页"><span class="ui-icon ui-icon-seek-first"></span></a>
 </#if>
 <#if pageno gt 1>
-	<a href="#${pageno-1}" title="上一页"><span class="ui-icon ui-icon-seek-prev"></span></a>
+	<a href="#${pageno-1}" title="上一页"><span class="ui-icon ui-icon-seek-prev">上一页</span></a>
 </#if>
 <#list start..end as page>
 	<#if page==pageno>
@@ -47,7 +47,7 @@
 	</#if>
 </#list>
 <#if pageno lt total>
-	<a href="#${pageno+1}" title="下一页"><span class="ui-icon ui-icon-seek-next"></span></a>
+	<a href="#${pageno+1}" title="下一页"><span class="ui-icon ui-icon-seek-next">下一页</span></a>
 </#if>
 <#if end != total>
 	<a href="#${total}" title="最后一页"><span class="ui-icon ui-icon-seek-end"></span></a>

@@ -22,6 +22,8 @@ public class MainPageDTO {
 	
 	private List<PictureModel> advs = new ArrayList<PictureModel>();
 	
+	private List<FaqModel> activities = new ArrayList<FaqModel>();
+	
 	private List<OrganizationModel> orgs = new ArrayList<OrganizationModel>();
 	
 	
@@ -55,6 +57,14 @@ public class MainPageDTO {
 	
 	public List<FaqModel> getNewses() {
 		return newses;
+	}
+	
+	public List<FaqModel> getActivities() {
+		return activities;
+	}
+	
+	public void setActivities(List<FaqModel> activities) {
+		this.activities = activities;
 	}
 	
 }

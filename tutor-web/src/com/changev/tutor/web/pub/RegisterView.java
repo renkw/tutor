@@ -132,7 +132,7 @@ public class RegisterView implements View {
 						// login
 						request.getSession().invalidate();
 						SessionContainer.get(request).login(
-								objc.ext().getID(userModel));
+								objc.ext().getID(userModel), userModel.getEmail());
 						return false;
 					}
 				} catch (Throwable t) {

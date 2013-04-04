@@ -6,6 +6,16 @@
 <title>教育_辅导_问答</title>
 <#include "/_inc/head.html">
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+$(function() {
+	$("#pagebar a").click(function() {
+		var pn = $(this).attr("href");
+		if (pn != "#") 
+			location.search = "?pageno=" + pn.slice(1);
+		return false;
+	});
+});
+</script>
 </head>
 <body>
 
@@ -20,8 +30,8 @@
 	        <div class="newslist1">
 	          <h1><a href="${request.contextPath}/public/detail_${q.id?c}.html" target="_blank" title="${q.title!}">${q.title!}</a></h1>
 	          <p>
-	          	<#if (q.content?length > 2000)>
-					${q.content?substring(0, 1997)}...
+	          	<#if (q.content?length > 5000)>
+					${q.content?substring(0, 4997)}...
 				<#else>
 					${q.content!}
 				</#if>

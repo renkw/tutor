@@ -7,14 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.changev.tutor.model.OrgInfoModel;
+import com.changev.tutor.model.PictureModel;
 import com.changev.tutor.util.PageList;
 import com.changev.tutor.util.Rewriter;
 import com.changev.tutor.web.SessionContainer;
 import com.changev.tutor.web.View;
 import com.db4o.query.Predicate;
 
-public class OrgEditorListView implements View {
+public class AdvEditorListView implements View {
 
 	@Override
 	public boolean preRender(HttpServletRequest request,
@@ -36,22 +36,22 @@ public class OrgEditorListView implements View {
 		String pageno = request.getParameter("pageno");
 
 //		SessionContainer container = SessionContainer.get(request);
-		PageList<OrgInfoModel> questionList = null;
+		PageList<PictureModel> questionList = null;
 		if (questionList == null || StringUtils.isEmpty(pageno)) {
 			//pageno = "1";
 			questionList = null;
 
 			// get answered questions
-			questionList = new PageList<OrgInfoModel>(
-					new Predicate<OrgInfoModel>() {
-						final long hashId = Rewriter.userHash(SessionContainer.get(request).getLoginUserId_str());
+			questionList = new PageList<PictureModel>(
+					new Predicate<PictureModel>() {
+						long hashId = Rewriter.userHash(SessionContainer.get(request).getLoginUserId_str());
 						@Override
-						public boolean match(OrgInfoModel candidate) {
-							return candidate.getOwerner() == hashId;
+						public boolean match(PictureModel candidate) {
+							return candidate.getOwener() == hashId;
 						}
 					});
 
-			questionList.setPageItems(20);
+			questionList.setPageItems(8);
 		}
 
 		// set variables
@@ -62,7 +62,7 @@ public class OrgEditorListView implements View {
 		request.setAttribute("pageno", pn);
 		request.setAttribute("total", questionList.getTotalItems());
 		request.setAttribute("totalPages", pages);
-		List<OrgInfoModel> pl = questionList.getPage(pn, false);
+		List<PictureModel> pl = questionList.getPage(pn, false);
 		request.setAttribute("questions", pl);
 
 //		container.setQuestionListQuery(new StringBuilder("?pageno=").append(pn).toString());

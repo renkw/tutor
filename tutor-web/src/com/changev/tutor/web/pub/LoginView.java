@@ -95,7 +95,7 @@ public class LoginView implements View {
 				UserState state = user.getState();
 				// reset session
 				request.getSession().invalidate();
-				SessionContainer.get(request, true).login(userId);
+				SessionContainer.get(request, true).login(userId, user.getEmail());
 				if (state == UserState.Incomplete) {
 					// warnings
 					SessionContainer.get(request).setSystemMessage(
