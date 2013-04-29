@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>教育_辅导_问答</title>
+<title>${(orgDTO.org.name)!}-闻道教育机构大全</title>
 <#include "/_inc/head.html">
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 </head>
@@ -108,7 +108,7 @@
               <ul>
                 <#list orgDTO.newses as news>
 				<li>
-					<a target="_blank" href="${request.contextPath}/public/detail_${news.id?c}.html" title="${news.title!}">
+					<a target="_blank" href="${request.contextPath}/public/orgDetail_${news.id?c}.html" title="${news.title!}">
 					<#if (news.title?length > 15)>
 						${news.title?substring(0, 12)}...
 					<#else>
@@ -133,7 +133,7 @@
           <ul>
             <#list orgDTO.activitys as act>
 				<li>
-					<a target="_blank" href="${request.contextPath}/public/detail_${act.id?c}.html" title="${act.title!}">
+					<a target="_blank" href="${request.contextPath}/public/orgDetail_${act.id?c}.html" title="${act.title!}">
 					<#if (act.title?length > 15)>
 						${act.title?substring(0, 12)}...
 					<#else>

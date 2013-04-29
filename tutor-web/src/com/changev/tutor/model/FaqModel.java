@@ -85,4 +85,8 @@ public class FaqModel extends AbstractModel {
 		beforeSet();
 		this.content = content;
 	}
+	
+	public void setContentNoActive(String content){
+		this.content = content;
+	}
 }

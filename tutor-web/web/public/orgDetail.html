@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="keywords" content="${(faq.tags)!}，专业教育">
-<title>${(faq.title)!}-教育_辅导_问答</title>
+<title>教育_辅导_问答</title>
 <#include "/_inc/head.html">
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 </head>
@@ -47,7 +47,7 @@
       	<p><h3>相关教育咨询</h3></p>
       	<ul>
       	<#list relations as r>
-      		<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${request.contextPath}/public/detail_${r.id?c}.html">${r.title!}</a></li>
+      		<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${request.contextPath}/public/orgDetail_${r.id?c}.html">${r.title!}</a></li>
       	</#list>	
       	</ul>
       </div>	

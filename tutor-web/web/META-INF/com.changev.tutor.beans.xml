@@ -300,6 +300,7 @@
 	
 	<bean id="public.mainView" class="com.changev.tutor.web.pub.MainView"/>
 	<bean id="public.detailView" class="com.changev.tutor.web.pub.DetailView"/>
+	<bean id="public.orgDetailView" class="com.changev.tutor.web.pub.OrgDetailView"/>
 	<bean id="public.listView" class="com.changev.tutor.web.pub.ListView"/>
 	<bean id="public.orgView" class="com.changev.tutor.web.pub.OrgView"/>
 	

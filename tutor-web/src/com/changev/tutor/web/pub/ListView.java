@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.changev.tutor.model.FaqModel;
 import com.changev.tutor.util.PageList;
+import com.changev.tutor.util.Rewriter;
 import com.changev.tutor.web.View;
 import com.db4o.query.Predicate;
 import com.db4o.query.QueryComparator;
@@ -73,11 +74,15 @@ public class ListView  implements View {
 		int pages = questionList.getTotalPages();
 		int pn = StringUtils.isEmpty(pageno) ? 1 : Math.max(1,
 				Math.min(Integer.parseInt(pageno), pages));
-
+		
+		request.setAttribute("type", type);
 		request.setAttribute("pageno", pn);
 		request.setAttribute("total", questionList.getTotalItems());
 		request.setAttribute("totalPages", pages);
 		List<FaqModel> pl = questionList.getPage(pn, false);
+		for(FaqModel fp : pl){
+			fp.setContentNoActive(Rewriter.html2Text(fp.getContent()));
+		}
 		request.setAttribute("questions", pl);
 
 //		container.setQuestionListQuery(new StringBuilder("?pageno=").append(pn).toString());

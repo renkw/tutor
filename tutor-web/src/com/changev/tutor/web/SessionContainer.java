@@ -103,6 +103,7 @@ public final class SessionContainer implements Serializable {
 	 */
 	public void login(long loginUserId, String loginUserId_str) {
 		this.loginUserId = loginUserId;
+		this.loginUserId_str = loginUserId_str;
 		this.loginDateTime = Tutor.currentDateTime();
 	}
 	

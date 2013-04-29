@@ -11,7 +11,7 @@ $(function() {
 	$("#pagebar a").click(function() {
 		var pn = $(this).attr("href");
 		if (pn != "#") 
-			location.search = "?pageno=" + pn.slice(1);
+			location.search = "?type=${type}&pageno=" + pn.slice(1);
 		return false;
 	});
 });
@@ -30,8 +30,8 @@ $(function() {
 	        <div class="newslist1">
 	          <h1><a href="${request.contextPath}/public/detail_${q.id?c}.html" target="_blank" title="${q.title!}">${q.title!}</a></h1>
 	          <p>
-	          	<#if (q.content?length > 5000)>
-					${q.content?substring(0, 4997)}...
+	          	<#if (q.content?length > 200)>
+					${q.content?substring(0, 197)}...
 				<#else>
 					${q.content!}
 				</#if>

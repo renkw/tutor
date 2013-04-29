@@ -21,17 +21,17 @@
 	<tr><td align="center" colspan="2">标题:<input type="input" name="title"  value="${(faq.title)!}"/><@message name="title" /></td></tr>
 		<tr><td align="center" colspan="2">类型:
 			<select id="type" name="type">
-  				<#if (faq.type == "0")>
-					<option value ="0" selected="selected">问答</option>
+  				<#if ((faq.type)! == "0")>
+					<option value ="0" selected="selected">新闻</option>
 				<#else>
-					<option value ="0">问答</option>
+					<option value ="0">新闻</option>
 				</#if>
-				<#if (faq.type == "1")>
-					<option value ="1" selected="selected">新闻</option>
+				<#if ((faq.type)! == "1")>
+					<option value ="1" selected="selected">招生</option>
 				<#else>
-					<option value ="1">新闻</option>
+					<option value ="1">招生</option>
 				</#if>
-				<#if (faq.type == "2")>
+				<#if ((faq.type)! == "2")>
 					<option value="2" selected="selected">活动</option>
 				<#else>
 					<option value="2">活动</option>
@@ -40,7 +40,7 @@
 		</td></tr>
 	<tr><td align="center" colspan="2">内容:<br><textarea rows="75" cols="100" id="content" name="content">${(faq.content)!}</textarea><@message name="content" /></td></tr>
 	<tr><td align="center" colspan="2">标签:<input type="input" name="tags" value="${(faq.tags)!}"/><@message name="tags" /></td></tr>
-	<tr><td align="center" colspan="2"><input type="hidden" name="id" value="${faq.id?c}"/></td></tr>
+	<tr><td align="center" colspan="2"><input type="hidden" name="id" value="${(faq.id)?c}"/></td></tr>
 	<tr><td align="center" colspan="2"><input type="submit" name="submit" value="提交" /></td></tr>
 </tbody>
 <#include "/_inc/foot.html">
